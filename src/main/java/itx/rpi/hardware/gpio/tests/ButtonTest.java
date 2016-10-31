@@ -1,4 +1,4 @@
-package itx.rpi.hardware.gpio;
+package itx.rpi.hardware.gpio.tests;
 
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;

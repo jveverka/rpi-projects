@@ -1,4 +1,4 @@
-package itx.rpi.hardware.gpio;
+package itx.rpi.hardware.gpio.tests;
 
 import itx.rpi.hardware.gpio.sensors.BMP180;
 import itx.rpi.hardware.gpio.sensors.HTU21DF;

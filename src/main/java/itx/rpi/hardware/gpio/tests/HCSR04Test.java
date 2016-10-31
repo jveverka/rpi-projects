@@ -1,4 +1,4 @@
-package itx.rpi.hardware.gpio;
+package itx.rpi.hardware.gpio.tests;
 
 import itx.rpi.hardware.gpio.sensors.HCSR04;
 
