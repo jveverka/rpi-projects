@@ -21,15 +21,19 @@ how to use this:
 
 maven:
 ------
+```
 <dependency>
     <groupId>itx.rpi.hardware</groupId>
     <artifactId>itx-rpi-drivers</artifactId>
     <version>1.0.0</version>
 </dependency>
+```
 
 gradle:
 -------
+```
 compile 'itx.rpi.hardware:itx-rpi-drivers:1.0.0'
+```
 
 testing:
 --------
