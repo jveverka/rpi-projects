@@ -31,7 +31,8 @@ This is description of initial setup of raspberry pi device.
   spi-dev
   ```
 * install java ``apt-get install openjdk-8-jdk-headless``
-* download and install [gradle](https://services.gradle.org/distributions/gradle-5.0-bin.zip) 
+* download and install [gradle](https://services.gradle.org/distributions/gradle-5.0-bin.zip)
+* install wiringpi ``apt-get install wiringpi``
 * make sure wiringpi is installed by running ``gpio -v``
 * install git ``apt-get install git``
 
