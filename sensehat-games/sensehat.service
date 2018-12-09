@@ -1,0 +1,14 @@
+[Unit]
+Description=Raspberry PI SenseHat Demo
+After=network.target
+
+[Service]
+User=root
+Type=simple
+WorkingDirectory=/opt/sensehat-games
+ExecStart=/opt/sensehat-games/start-sensehat-demo.sh
+ExecStop=/opt/sensehat-games/stop-sensehat-demo.sh
+
+[Install]
+WantedBy=multi-user.target
+
