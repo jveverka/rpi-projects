@@ -1,0 +1,41 @@
+
+apply plugin: 'maven'
+
+group = 'itx.raspberry.drivers.waveshare'
+version = '1.0.0'
+
+task BuildNative(type:Exec) {
+   commandLine "./build-native.sh"
+}
+
+task CleanNative(type:Exec) {
+   commandLine "./clean-native.sh"
+}
+
+build.dependsOn BuildNative
+clean.dependsOn CleanNative
+
+test {
+   useTestNG()
+   //testLogging.showStandardStreams = true
+   testLogging {
+      events "passed", "skipped", "failed"
+   }
+}
+
+dependencies {
+   testCompile 'org.testng:testng:6.14.3'
+}
+
+repositories {
+   mavenLocal()
+   mavenCentral()
+}
+
+jar {
+   baseName = 'lcd-13-240x240-driver'
+}
+
+artifacts {
+   archives jar
+}

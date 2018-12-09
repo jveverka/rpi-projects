@@ -1,0 +1,6 @@
+
+task CreateApplication(type:Exec) {
+    commandLine "./build-application.sh"
+}
+
+build.finalizedBy CreateApplication

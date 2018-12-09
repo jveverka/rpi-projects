@@ -1,0 +1,27 @@
+
+subprojects {
+
+    apply plugin: "java"
+
+    targetCompatibility = '8'
+    sourceCompatibility = '8'
+  
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+
+    dependencies {
+    }
+
+}
+
+project(':lcd-13-240x240-driver') {
+}
+
+project(':lcd-13-240x240-driver-example') {
+    dependencies {
+        compile project(':lcd-13-240x240-driver')
+    }
+}
+

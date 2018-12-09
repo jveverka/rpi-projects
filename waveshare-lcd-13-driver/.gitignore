@@ -1,0 +1,9 @@
+*.o
+*.so
+*.iml
+.gradle
+.idea
+build
+out
+itx_raspberry_drivers_waveshare_lcd13_240x240_NativeDriverLowLevel.h
+
