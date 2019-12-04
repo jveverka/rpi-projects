@@ -5,9 +5,9 @@ After=network.target
 [Service]
 User=root
 Type=simple
-WorkingDirectory=/opt/sensehat-games
-ExecStart=/opt/sensehat-games/start-sensehat-demo.sh
-ExecStop=/opt/sensehat-games/stop-sensehat-demo.sh
+WorkingDirectory=/opt/itx-rpi-drivers/sensehat-games
+ExecStart=/opt/itx-rpi-drivers/sensehat-games/start-sensehat-demo.sh
+ExecStop=/opt/itx-rpi-drivers/sensehat-games/stop-sensehat-demo.sh
 
 [Install]
 WantedBy=multi-user.target

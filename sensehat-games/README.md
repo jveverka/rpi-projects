@@ -12,19 +12,20 @@ This is simple implementation of selected RaspberryPi SenseHAT games in python3.
 
 ## Hardware requirements
 - Raspberry PI 2, 3, zero
-- [Sense hat](https://www.raspberrypi.org/products/sense-hat/) installed
+- [Sense hat hardware](https://www.raspberrypi.org/products/sense-hat/) installed
 
-### Install & Setup
+### Install & Setup dependencies
 ```
 sudo apt-get install python3-pip
 sudo apt-get install sense-hat
 sudo apt-get install python3-pygame
-pip3 install pygame
+sudo pip3 install pygame
 ```
 
-### Setup to autorun on startup
+### Install and Setup to autorun on startup
 ```
-sudo cp /opt/sensehat-games/sensehat.service /etc/systemd/system/
+git clone <repository-url>
+sudo cp /opt/itx-rpi-drivers/sensehat-games/sensehat.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable sensehat
 sudo systemctl start sensehat
