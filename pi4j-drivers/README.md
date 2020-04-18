@@ -11,10 +11,10 @@ Written in Java using [pi4j](http://pi4j.com/).
 * HTU21D - I2C relative humidity and temperature sensor
 * MCP9808 - I2C digital temperature sensor
 
-## how to use this:
-* git clone this repository
-* use ``gradle clean install`` to install this jar locally
-* than use maven or gradle dependency below
+## Compile and Install:
+* Clone this git repository.
+* Run ``gradle clean build test publishToMavenLocal`` to install this jar locally.
+* Use maven or gradle dependency below.
 
 ### maven:
 ```
@@ -27,7 +27,7 @@ Written in Java using [pi4j](http://pi4j.com/).
 
 ### gradle:
 ```
-compile 'itx.rpi.hardware:itx-rpi-drivers:1.0.0'
+implementation 'itx.rpi.hardware:itx-rpi-drivers:1.0.0'
 ```
 
 ### testing:

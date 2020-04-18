@@ -1,6 +1,5 @@
 apply plugin: 'java'
-apply plugin: 'maven'
-apply plugin: 'eclipse-wtp'
+apply plugin: 'maven-publish'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -9,43 +8,27 @@ buildDir="build_gradle"
 group = 'itx.rpi.hardware'
 version = '1.0.0'
 
-eclipse {
-   wtp {
-      facet {
-          facet name: 'java', version: '1.8'
-      }
-   }
-}
- 
-sourceSets{  
-    main{  
-        java{  
-            srcDir 'src/main/java'  
-        }
-    }  
-}  
-        
 repositories {
    mavenLocal()
    mavenCentral()
 }
 
 dependencies {
-   compile 'com.pi4j:pi4j-core:1.1'
+   implementation 'com.pi4j:pi4j-core:1.1'
 }
 
 jar {
-   baseName = 'itx-rpi-drivers'
+    archiveBaseName = 'itx-rpi-drivers'
 }
 
 task jarSources(type: Jar, dependsOn: classes) {
-   classifier = 'sources'
-   baseName = 'itx-rpi-drivers'
+    archiveClassifier = 'sources'
+    archiveBaseName = 'itx-rpi-drivers'
 }
 
 task jarJavadoc(type: Jar, dependsOn: javadoc) {
-   classifier = 'javadoc'
-   baseName = 'itx-rpi-drivers'
+    archiveClassifier = 'javadoc'
+    archiveBaseName = 'itx-rpi-drivers'
 }
 
 artifacts {
