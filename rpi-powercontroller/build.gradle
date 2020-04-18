@@ -11,12 +11,14 @@ version = '1.0.0'
 mainClassName = 'itx.rpi.powercontroller.PowerControllerApp'
 
 repositories {
-   mavenLocal()
-   mavenCentral()
+    mavenLocal()
+    mavenCentral()
 }
 
 dependencies {
-   implementation 'com.pi4j:pi4j-core:1.2'
+    implementation 'com.pi4j:pi4j-core:1.2'
+    implementation 'org.slf4j:slf4j-api:1.7.30'
+    implementation 'org.slf4j:slf4j-simple:1.7.30'
 }
 
 jar {
@@ -34,8 +36,8 @@ task jarJavadoc(type: Jar, dependsOn: javadoc) {
 }
 
 artifacts {
-  archives jar
-  archives jarSources
-  archives jarJavadoc
+    archives jar
+    archives jarSources
+    archives jarJavadoc
 }
 
