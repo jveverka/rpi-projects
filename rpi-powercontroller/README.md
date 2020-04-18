@@ -40,4 +40,32 @@ gradle clean build test installDist distZip
 5. Install java
    * Raspberry PI zero [32bit Oracle JRE 8 for ARM](https://www.oracle.com/java/technologies/javase-jdk8-downloads.html)
    * Raspberry 3 or later ``apt install default-jdk``
-   
+6. Create installation directory on target RPi device.
+   ```
+   mkdir -p /opt/rpi-powercontroller
+   ```   
+7. Build distribution zip and copy the zip to target RPi device.
+   ```
+   scp build/distributions/rpi-powercontroller-1.0.0.zip pi@<ip-address>:/opt/rpi-powercontroller/
+   ```
+8. Copy init scripts to target RPi device.
+   ```
+   scp -r scripts/* pi@<ip-address>:/opt/rpi-powercontroller/
+   ```
+9. Finish installation on target RPi device.
+   ```
+   cd /opt/rpi-powercontroller
+   unzip rpi-powercontroller-1.0.0.zip
+   chmod 755 controller-start.sh
+   chmod 755 controller-stop.sh
+   sudo cp rpi-powercontroller.service /etc/systemd/system/
+   sudo chown root:root /etc/systemd/system/rpi-powercontroller.service
+   sudo systemctl daemon-reload
+   sudo systemctl enable rpi-powercontroller
+   ```
+10. Start, stop, get status of rpi-powercontroller service.
+   ```
+   sudo systemctl start rpi-powercontroller
+   sudo systemctl stop rpi-powercontroller
+   sudo systemctl status rpi-powercontroller
+   ```   
