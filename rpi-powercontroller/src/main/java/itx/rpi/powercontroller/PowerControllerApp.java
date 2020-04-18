@@ -3,10 +3,16 @@ package itx.rpi.powercontroller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
+import io.undertow.server.handlers.BlockingHandler;
 import io.undertow.server.handlers.PathHandler;
 import itx.rpi.powercontroller.config.Configuration;
+import itx.rpi.powercontroller.handlers.MeasurementsHandler;
+import itx.rpi.powercontroller.handlers.PortStateHandler;
 import itx.rpi.powercontroller.handlers.SystemInfoHandler;
+import itx.rpi.powercontroller.handlers.SystemStateHandler;
+import itx.rpi.powercontroller.services.RPiService;
 import itx.rpi.powercontroller.services.SystemInfoService;
+import itx.rpi.powercontroller.services.impl.RPiServiceFactory;
 import itx.rpi.powercontroller.services.impl.SystemInfoServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,11 +47,20 @@ public class PowerControllerApp {
         LOG.info("#CONFIG: host={}", configuration.getHost());
         LOG.info("#CONFIG: port={}", configuration.getPort());
         LOG.info("#CONFIG: hardware={}", configuration.isHardware());
+
         SystemInfoService systemInfoService = new SystemInfoServiceImpl(configuration);
-        PathHandler systemInfoHandler = Handlers.path().addPrefixPath("system/info", new SystemInfoHandler(mapper, systemInfoService));
+        RPiService rPiService = RPiServiceFactory.createService(configuration);
+
+        PathHandler handler = Handlers.path()
+                .addPrefixPath("/system/info", new SystemInfoHandler(mapper, systemInfoService))
+                .addPrefixPath("/system/measurements", new MeasurementsHandler(mapper, rPiService))
+                .addPrefixPath("/system/state", new SystemStateHandler(mapper, rPiService))
+                .addPrefixPath("/system/port", new BlockingHandler(new PortStateHandler(mapper, rPiService)));
+
         Undertow server = Undertow.builder()
                 .addHttpListener(configuration.getPort(), configuration.getHost())
-                .setHandler(systemInfoHandler).build();
+                .setHandler(handler)
+                .build();
         server.start();
     }
 
