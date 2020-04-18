@@ -1,0 +1,9 @@
+subprojects {
+    apply plugin: "java"
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+project(':pi4j-drivers') {}
