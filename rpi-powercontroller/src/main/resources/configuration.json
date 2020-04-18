@@ -13,5 +13,66 @@
     "5": "INPUT",
     "6": "INPUT",
     "7": "INPUT"
-  }
+  },
+  "jobConfigurations": [
+    {
+      "id": "switch-off-all-ports",
+      "name": "Switch OFF all output ports.",
+      "actions" : [
+        {
+          "typeId": "itx.rpi.powercontroller.config.actions.ActionPortLowConfig",
+          "port": 0
+        },
+        {
+          "typeId": "itx.rpi.powercontroller.config.actions.ActionPortLowConfig",
+          "port": 1
+        },
+        {
+          "typeId": "itx.rpi.powercontroller.config.actions.ActionPortLowConfig",
+          "port": 2
+        },
+        {
+          "typeId": "itx.rpi.powercontroller.config.actions.ActionPortLowConfig",
+          "port": 3
+        }
+      ]
+    },
+    {
+      "id": "complex-job-001",
+      "name": "Complex port switching.",
+      "actions" : [
+        {
+          "typeId": "itx.rpi.powercontroller.config.actions.ActionPortHighConfig",
+          "port": 0
+        },
+        {
+          "typeId": "itx.rpi.powercontroller.config.actions.ActionWaitConfig",
+          "delay": 20,
+          "timeUnit": "SECONDS"
+        },
+        {
+          "typeId": "itx.rpi.powercontroller.config.actions.ActionPortLowConfig",
+          "port": 0
+        },
+        {
+          "typeId": "itx.rpi.powercontroller.config.actions.ActionWaitConfig",
+          "delay": 5,
+          "timeUnit": "SECONDS"
+        },
+        {
+          "typeId": "itx.rpi.powercontroller.config.actions.ActionPortHighConfig",
+          "port": 0
+        },
+        {
+          "typeId": "itx.rpi.powercontroller.config.actions.ActionWaitConfig",
+          "delay": 20,
+          "timeUnit": "SECONDS"
+        },
+        {
+          "typeId": "itx.rpi.powercontroller.config.actions.ActionPortLowConfig",
+          "port": 0
+        }
+      ]
+    }
+  ]
 }

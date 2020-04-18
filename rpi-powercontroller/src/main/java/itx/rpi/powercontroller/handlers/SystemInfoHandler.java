@@ -20,7 +20,7 @@ public class SystemInfoHandler implements HttpHandler {
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         HttpString requestMethod = exchange.getRequestMethod();
-        if ("GET".equals(requestMethod.toString())) {
+        if (HandlerUtils.METHOD_GET.equals(requestMethod.toString())) {
             exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, HandlerUtils.JSON_TYPE);
             exchange.getResponseSender().send(mapper.writeValueAsString(systemInfoService.getSystemInfo()));
         } else {

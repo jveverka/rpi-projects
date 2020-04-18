@@ -8,6 +8,7 @@
   ``
   { "port": 0, "state": true }
   ``
+* __GET__ ``/system/jobs``
 
 ## Build & Run
 ```

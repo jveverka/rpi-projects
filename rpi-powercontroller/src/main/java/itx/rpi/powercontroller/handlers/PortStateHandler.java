@@ -24,7 +24,7 @@ public class PortStateHandler implements HttpHandler {
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         HttpString requestMethod = exchange.getRequestMethod();
-        if ("PUT".equals(requestMethod.toString())) {
+        if (HandlerUtils.METHOD_PUT.equals(requestMethod.toString())) {
             exchange.startBlocking();
             InputStream is = exchange.getInputStream();
             SetPortRequest setPortRequest = mapper.readValue(is, SetPortRequest.class);

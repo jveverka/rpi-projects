@@ -6,6 +6,7 @@ import io.undertow.Undertow;
 import io.undertow.server.handlers.BlockingHandler;
 import io.undertow.server.handlers.PathHandler;
 import itx.rpi.powercontroller.config.Configuration;
+import itx.rpi.powercontroller.handlers.JobInfoHandler;
 import itx.rpi.powercontroller.handlers.MeasurementsHandler;
 import itx.rpi.powercontroller.handlers.PortStateHandler;
 import itx.rpi.powercontroller.handlers.SystemInfoHandler;
@@ -14,9 +15,11 @@ import itx.rpi.powercontroller.services.PortListener;
 import itx.rpi.powercontroller.services.RPiService;
 import itx.rpi.powercontroller.services.ShutdownHook;
 import itx.rpi.powercontroller.services.SystemInfoService;
+import itx.rpi.powercontroller.services.TaskManagerService;
 import itx.rpi.powercontroller.services.impl.PortListenerImpl;
 import itx.rpi.powercontroller.services.impl.RPiServiceFactory;
 import itx.rpi.powercontroller.services.impl.SystemInfoServiceImpl;
+import itx.rpi.powercontroller.services.jobs.TaskManagerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,12 +35,14 @@ public class PowerControllerApp {
         PortListener portListener = new PortListenerImpl();
         SystemInfoService systemInfoService = new SystemInfoServiceImpl(configuration);
         RPiService rPiService = RPiServiceFactory.createService(configuration, portListener);
+        TaskManagerService taskManagerService = TaskManagerFactory.createTaskManagerService(configuration, rPiService);
 
         PathHandler handler = Handlers.path()
                 .addPrefixPath("/system/info", new SystemInfoHandler(mapper, systemInfoService))
                 .addPrefixPath("/system/measurements", new MeasurementsHandler(mapper, rPiService))
                 .addPrefixPath("/system/state", new SystemStateHandler(mapper, rPiService))
-                .addPrefixPath("/system/port", new BlockingHandler(new PortStateHandler(mapper, rPiService)));
+                .addPrefixPath("/system/port", new BlockingHandler(new PortStateHandler(mapper, rPiService)))
+                .addPrefixPath("/system/jobs", new JobInfoHandler(mapper, taskManagerService));
 
 
         Undertow server = Undertow.builder()
@@ -45,7 +50,7 @@ public class PowerControllerApp {
                 .setHandler(handler)
                 .build();
 
-        return new Services(rPiService, server);
+        return new Services(rPiService, server, taskManagerService);
     }
 
     public static void main(String[] args) throws IOException {
@@ -83,10 +88,12 @@ public class PowerControllerApp {
 
         private final RPiService rPiService;
         private final Undertow server;
+        private final TaskManagerService taskManagerService;
 
-        public Services(RPiService rPiService, Undertow server) {
+        public Services(RPiService rPiService, Undertow server, TaskManagerService taskManagerService) {
             this.rPiService = rPiService;
             this.server = server;
+            this.taskManagerService = taskManagerService;
         }
 
         public RPiService getRPiService() {
@@ -97,8 +104,13 @@ public class PowerControllerApp {
             return server;
         }
 
+        public TaskManagerService getTaskManagerService() {
+            return taskManagerService;
+        }
+
         public void shutdown() throws Exception {
             this.server.stop();
+            this.taskManagerService.close();
             this.rPiService.close();
         }
 
