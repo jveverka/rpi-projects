@@ -3,6 +3,7 @@ package itx.rpi.powercontroller.handlers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
+import io.undertow.util.Headers;
 import io.undertow.util.HttpString;
 import itx.rpi.powercontroller.dto.JobId;
 import itx.rpi.powercontroller.dto.TaskId;
@@ -31,6 +32,8 @@ public class SubmitTaskHandler implements HttpHandler {
             JobId jobId = mapper.readValue(is, JobId.class);
             Optional<TaskId> taskInfo = taskManagerService.submitTask(jobId);
             if (taskInfo.isPresent()) {
+                exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, HandlerUtils.JSON_TYPE);
+                exchange.getResponseSender().send(mapper.writeValueAsString(taskInfo.get()));
                 exchange.setStatusCode(200);
             } else {
                 exchange.setStatusCode(404);

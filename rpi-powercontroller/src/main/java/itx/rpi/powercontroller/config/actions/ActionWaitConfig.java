@@ -1,7 +1,6 @@
 package itx.rpi.powercontroller.config.actions;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import itx.rpi.powercontroller.config.ActionConfiguration;
 
@@ -20,7 +19,11 @@ public class ActionWaitConfig implements ActionConfiguration {
     }
 
     @Override
-    @JsonIgnore
+    public String getDescription() {
+        return "Wait for " + delay + " " + timeUnit;
+    }
+
+    @Override
     public Class<? extends ActionConfiguration> getType() {
         return ActionWaitConfig.class;
     }

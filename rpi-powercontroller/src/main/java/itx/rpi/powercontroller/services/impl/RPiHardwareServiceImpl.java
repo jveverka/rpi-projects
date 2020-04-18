@@ -46,7 +46,9 @@ public class RPiHardwareServiceImpl implements RPiService {
             Pin pin = mapPin(k);
             GpioPinDigitalMultipurpose gpioPinDigitalMultipurpose = gpio.provisionDigitalMultipurposePin(pin, mapPinMode(v));
             gpioPinDigitalMultipurpose.addListener(new PinListener(k, portListener));
-            gpioPinDigitalMultipurpose.setState(false);
+            if (PortType.OUTPUT.equals(v)) {
+                gpioPinDigitalMultipurpose.setState(false);
+            }
             ports.put(k, gpioPinDigitalMultipurpose);
         });
         LOG.info("hardware initialization done.");

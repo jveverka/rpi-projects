@@ -15,6 +15,11 @@ public class ActionPortHighConfig implements ActionConfiguration {
     }
 
     @Override
+    public String getDescription() {
+        return "Switch ON Port " + port;
+    }
+
+    @Override
     @JsonIgnore
     public Class<? extends ActionConfiguration> getType() {
         return ActionPortHighConfig.class;

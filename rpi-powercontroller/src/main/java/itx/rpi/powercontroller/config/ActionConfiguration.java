@@ -10,6 +10,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public interface ActionConfiguration {
 
     @JsonIgnore
+    String getDescription();
+
+    @JsonIgnore
     Class<? extends ActionConfiguration> getType();
 
 }

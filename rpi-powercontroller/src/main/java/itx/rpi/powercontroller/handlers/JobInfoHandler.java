@@ -5,6 +5,7 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
 import io.undertow.util.HttpString;
+import itx.rpi.powercontroller.config.ActionConfiguration;
 import itx.rpi.powercontroller.dto.ActionInfo;
 import itx.rpi.powercontroller.dto.JobInfo;
 import itx.rpi.powercontroller.services.TaskManagerService;
@@ -32,8 +33,8 @@ public class JobInfoHandler implements HttpHandler {
             Collection<JobInfo> jobInfos = new ArrayList<>();
             for (Job job: taskManagerService.getJobs()) {
                 Collection<ActionInfo> actionInfos = new ArrayList<>();
-                for (Action action: job.getActions()) {
-                    ActionInfo actionInfo = new ActionInfo(action.getType(), action.getDescription());
+                for (ActionConfiguration actionConfiguration: job.getActions()) {
+                    ActionInfo actionInfo = new ActionInfo(actionConfiguration.getType().getTypeName(), actionConfiguration.getDescription());
                     actionInfos.add(actionInfo);
                 }
                 JobInfo jobInfo = new JobInfo(job.getId(), job.getName(), actionInfos);
