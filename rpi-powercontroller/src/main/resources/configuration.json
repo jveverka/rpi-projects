@@ -38,8 +38,8 @@
       ]
     },
     {
-      "id": "complex-job-001",
-      "name": "Complex port switching.",
+      "id": "switching-job-001",
+      "name": "Switching port with timer job.",
       "actions" : [
         {
           "typeId": "itx.rpi.powercontroller.config.actions.ActionPortHighConfig",

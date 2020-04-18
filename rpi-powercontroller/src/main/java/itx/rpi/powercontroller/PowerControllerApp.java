@@ -6,9 +6,11 @@ import io.undertow.Undertow;
 import io.undertow.server.handlers.BlockingHandler;
 import io.undertow.server.handlers.PathHandler;
 import itx.rpi.powercontroller.config.Configuration;
+import itx.rpi.powercontroller.handlers.CancelTaskHandler;
 import itx.rpi.powercontroller.handlers.JobInfoHandler;
 import itx.rpi.powercontroller.handlers.MeasurementsHandler;
 import itx.rpi.powercontroller.handlers.PortStateHandler;
+import itx.rpi.powercontroller.handlers.SubmitTaskHandler;
 import itx.rpi.powercontroller.handlers.SystemInfoHandler;
 import itx.rpi.powercontroller.handlers.SystemStateHandler;
 import itx.rpi.powercontroller.handlers.TasksInfoHandler;
@@ -44,7 +46,9 @@ public class PowerControllerApp {
                 .addPrefixPath("/system/state", new SystemStateHandler(mapper, rPiService))
                 .addPrefixPath("/system/port", new BlockingHandler(new PortStateHandler(mapper, rPiService)))
                 .addPrefixPath("/system/jobs", new JobInfoHandler(mapper, taskManagerService))
-                .addPrefixPath("/system/tasks", new TasksInfoHandler(mapper, taskManagerService));
+                .addPrefixPath("/system/tasks", new TasksInfoHandler(mapper, taskManagerService))
+                .addPrefixPath("/system/tasks/submit", new BlockingHandler(new SubmitTaskHandler(mapper, taskManagerService)))
+                .addPrefixPath("/system/tasks/cancel", new BlockingHandler(new CancelTaskHandler(mapper, taskManagerService)));
 
 
         Undertow server = Undertow.builder()
@@ -57,6 +61,7 @@ public class PowerControllerApp {
 
     public static void main(String[] args) throws IOException {
         LOG.info("Starting PowerController APP ...");
+        long timeStart = System.currentTimeMillis();
         ObjectMapper mapper = new ObjectMapper();
         Configuration configuration = null;
         if (args.length > 0) {
@@ -83,6 +88,7 @@ public class PowerControllerApp {
 
         LOG.info("registering shutdown hook ...");
         Runtime.getRuntime().addShutdownHook(new ShutdownHook(services));
+        LOG.info("Server started in {} ms", (System.currentTimeMillis() - timeStart));
         services.getServer().start();
     }
 

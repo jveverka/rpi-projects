@@ -4,13 +4,20 @@
 * __GET__ ``/system/info``
 * __GET__ ``/system/measurements``
 * __GET__ ``/system/state``
-* __PUT__ ``/system/port``
+* __PUT__ ``/system/port``  
   ``
   { "port": 0, "state": true }
   ``
 * __GET__ ``/system/jobs``
 * __GET__ ``/system/tasks``
-
+* __PUT__ ``/system/tasks/submit``  
+  ``
+  { "id": "job-001" }
+  ``
+* __PUT__ ``/system/tasks/cancel``  
+  ``
+  { "id": "task-001" }
+  ``
 ## Build & Run
 ```
 gradle clean build test installDist distZip

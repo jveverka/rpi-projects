@@ -3,22 +3,23 @@ package itx.rpi.powercontroller.handlers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.util.Headers;
 import io.undertow.util.HttpString;
-import itx.rpi.powercontroller.dto.SetPortRequest;
-import itx.rpi.powercontroller.services.RPiService;
+import itx.rpi.powercontroller.dto.JobId;
+import itx.rpi.powercontroller.dto.TaskId;
+import itx.rpi.powercontroller.dto.TaskInfo;
+import itx.rpi.powercontroller.services.TaskManagerService;
 
 import java.io.InputStream;
 import java.util.Optional;
 
-public class PortStateHandler implements HttpHandler {
+public class SubmitTaskHandler implements HttpHandler {
 
     private final ObjectMapper mapper;
-    private final RPiService rPiService;
+    private final TaskManagerService taskManagerService;
 
-    public PortStateHandler(ObjectMapper mapper, RPiService rPiService) {
+    public SubmitTaskHandler(ObjectMapper mapper, TaskManagerService taskManagerService) {
         this.mapper = mapper;
-        this.rPiService = rPiService;
+        this.taskManagerService = taskManagerService;
     }
 
     @Override
@@ -27,16 +28,15 @@ public class PortStateHandler implements HttpHandler {
         if (HandlerUtils.METHOD_PUT.equals(requestMethod.toString())) {
             exchange.startBlocking();
             InputStream is = exchange.getInputStream();
-            SetPortRequest setPortRequest = mapper.readValue(is, SetPortRequest.class);
-            Optional<Boolean> result = rPiService.setPortState(setPortRequest.getPort(), setPortRequest.getState());
-            if (result.isPresent()) {
+            JobId jobId = mapper.readValue(is, JobId.class);
+            Optional<TaskId> taskInfo = taskManagerService.submitTask(jobId);
+            if (taskInfo.isPresent()) {
                 exchange.setStatusCode(200);
             } else {
-                exchange.setStatusCode(400);
+                exchange.setStatusCode(404);
             }
         } else {
             exchange.setStatusCode(405);
         }
     }
-
 }

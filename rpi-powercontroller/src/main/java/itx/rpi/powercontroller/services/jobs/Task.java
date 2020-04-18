@@ -1,10 +1,12 @@
 package itx.rpi.powercontroller.services.jobs;
 
+import itx.rpi.powercontroller.dto.TaskId;
+
 import java.util.Collection;
 
 public class Task implements Runnable {
 
-    private final String id;
+    private final TaskId id;
     private final String jobId;
     private final String jobName;
     private final Collection<Action> actions;
@@ -13,7 +15,7 @@ public class Task implements Runnable {
     private boolean stopped;
     private Action executedAction;
 
-    public Task(String id, String jobId, String jobName, Collection<Action> actions) {
+    public Task(TaskId id, String jobId, String jobName, Collection<Action> actions) {
         this.id = id;
         this.jobId = jobId;
         this.jobName = jobName;
@@ -22,7 +24,7 @@ public class Task implements Runnable {
         this.stopped = false;
     }
 
-    public String getId() {
+    public TaskId getId() {
         return id;
     }
 
