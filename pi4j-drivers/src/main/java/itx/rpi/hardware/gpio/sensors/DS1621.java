@@ -64,7 +64,7 @@ public class DS1621 {
 		        if (temp <= -55) {
 		            return getTemperature();
 		        }
-		        return new Double(temp);
+		        return Double.valueOf(temp);
 			}
 		} catch (IOException | InterruptedException | I2CFactory.UnsupportedBusNumberException e) {
 		      System.err.println(e.getMessage());
