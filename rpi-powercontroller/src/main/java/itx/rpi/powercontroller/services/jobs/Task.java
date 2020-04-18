@@ -1,17 +1,25 @@
 package itx.rpi.powercontroller.services.jobs;
 
-public class Task {
+import java.util.Collection;
+
+public class Task implements Runnable {
 
     private final String id;
     private final String jobId;
     private final String jobName;
-    private final ExecutionStatus status;
+    private final Collection<Action> actions;
 
-    public Task(String id, String jobId, String jobName, ExecutionStatus status) {
+    private ExecutionStatus status;
+    private boolean stopped;
+    private Action executedAction;
+
+    public Task(String id, String jobId, String jobName, Collection<Action> actions) {
         this.id = id;
         this.jobId = jobId;
         this.jobName = jobName;
-        this.status = status;
+        this.status = ExecutionStatus.WAITING;
+        this.actions = actions;
+        this.stopped = false;
     }
 
     public String getId() {
@@ -28,6 +36,37 @@ public class Task {
 
     public ExecutionStatus getStatus() {
         return status;
+    }
+
+    @Override
+    public void run() {
+        try {
+            this.stopped = false;
+            this.status = ExecutionStatus.IN_PROGRESS;
+            for (Action action : actions) {
+                executedAction = action;
+                executedAction.execute();
+                if (stopped) {
+                    this.status = ExecutionStatus.ABORTED;
+                    return;
+                }
+            }
+            this.status = ExecutionStatus.FINISHED;
+        } catch (Exception e) {
+            this.status = ExecutionStatus.FAILED;
+        }
+    }
+
+    public void shutdown() {
+        this.stopped = true;
+        if (executedAction != null) {
+            executedAction.stop();
+        }
+        this.status = ExecutionStatus.ABORTED;
+    }
+
+    public Collection<Action> getActions() {
+        return actions;
     }
 
 }

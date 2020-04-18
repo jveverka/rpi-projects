@@ -9,6 +9,7 @@
   { "port": 0, "state": true }
   ``
 * __GET__ ``/system/jobs``
+* __GET__ ``/system/tasks``
 
 ## Build & Run
 ```

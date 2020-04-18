@@ -11,6 +11,7 @@ import itx.rpi.powercontroller.handlers.MeasurementsHandler;
 import itx.rpi.powercontroller.handlers.PortStateHandler;
 import itx.rpi.powercontroller.handlers.SystemInfoHandler;
 import itx.rpi.powercontroller.handlers.SystemStateHandler;
+import itx.rpi.powercontroller.handlers.TasksInfoHandler;
 import itx.rpi.powercontroller.services.PortListener;
 import itx.rpi.powercontroller.services.RPiService;
 import itx.rpi.powercontroller.services.ShutdownHook;
@@ -42,7 +43,8 @@ public class PowerControllerApp {
                 .addPrefixPath("/system/measurements", new MeasurementsHandler(mapper, rPiService))
                 .addPrefixPath("/system/state", new SystemStateHandler(mapper, rPiService))
                 .addPrefixPath("/system/port", new BlockingHandler(new PortStateHandler(mapper, rPiService)))
-                .addPrefixPath("/system/jobs", new JobInfoHandler(mapper, taskManagerService));
+                .addPrefixPath("/system/jobs", new JobInfoHandler(mapper, taskManagerService))
+                .addPrefixPath("/system/tasks", new TasksInfoHandler(mapper, taskManagerService));
 
 
         Undertow server = Undertow.builder()

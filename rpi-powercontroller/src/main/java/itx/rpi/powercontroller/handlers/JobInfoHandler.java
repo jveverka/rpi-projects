@@ -39,6 +39,7 @@ public class JobInfoHandler implements HttpHandler {
                 JobInfo jobInfo = new JobInfo(job.getId(), job.getName(), actionInfos);
                 jobInfos.add(jobInfo);
             }
+            exchange.setStatusCode(200);
             exchange.getResponseSender().send(mapper.writeValueAsString(jobInfos));
         } else {
             exchange.setStatusCode(405);
