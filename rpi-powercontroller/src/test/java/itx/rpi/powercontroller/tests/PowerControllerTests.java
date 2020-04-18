@@ -3,6 +3,7 @@ package itx.rpi.powercontroller.tests;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import itx.rpi.powercontroller.PowerControllerApp;
 import itx.rpi.powercontroller.config.Configuration;
+import itx.rpi.powercontroller.dto.Measurements;
 import itx.rpi.powercontroller.dto.SystemInfo;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -25,6 +26,7 @@ import java.util.concurrent.Executors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class PowerControllerTests {
@@ -75,6 +77,22 @@ public class PowerControllerTests {
         assertNotNull(systemInfo.getVersion());
         assertNotNull(systemInfo.getName());
         assertNotNull(systemInfo.getType());
+    }
+
+    @Test
+    @Order(2)
+    public void testSystemMeasurements() throws IOException {
+        HttpGet get = new HttpGet(BASE_URL + "/system/measurements");
+        CloseableHttpResponse response = httpClient.execute(get);
+        assertEquals(200, response.getStatusLine().getStatusCode());
+        Measurements measurements = mapper.readValue(response.getEntity().getContent(), Measurements.class);
+        assertNotNull(measurements);
+        assertNotNull(measurements.getPressureUnit());
+        assertNotNull(measurements.getRelHumidityUnit());
+        assertNotNull(measurements.getTemperatureUnit());
+        assertNull(measurements.getPressure());
+        assertNull(measurements.getRelHumidity());
+        assertNull(measurements.getTemperature());
     }
 
     @AfterAll
