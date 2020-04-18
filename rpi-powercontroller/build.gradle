@@ -1,0 +1,41 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'application'
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+group = 'itx.rpi.powercontroller'
+version = '1.0.0'
+mainClassName = 'itx.rpi.powercontroller.PowerControllerApp'
+
+repositories {
+   mavenLocal()
+   mavenCentral()
+}
+
+dependencies {
+   implementation 'com.pi4j:pi4j-core:1.2'
+}
+
+jar {
+    archiveBaseName = 'rpi-powercontroller'
+}
+
+task jarSources(type: Jar, dependsOn: classes) {
+    archiveClassifier = 'sources'
+    archiveBaseName = 'rpi-powercontroller'
+}
+
+task jarJavadoc(type: Jar, dependsOn: javadoc) {
+    archiveClassifier = 'javadoc'
+    archiveBaseName = 'rpi-powercontroller'
+}
+
+artifacts {
+  archives jar
+  archives jarSources
+  archives jarJavadoc
+}
+

@@ -6,4 +6,11 @@ subprojects {
     }
 }
 
-project(':pi4j-drivers') {}
+project(':pi4j-drivers') {
+}
+
+project(':rpi-powercontroller') {
+    dependencies {
+        implementation project(':pi4j-drivers')
+    }
+}

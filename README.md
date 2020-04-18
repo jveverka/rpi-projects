@@ -9,3 +9,7 @@ This project contains various hardware drivers, schematics and code examples for
 
 *Enjoy !*
 
+## Build and Test
+``
+gradle clean build test
+``
