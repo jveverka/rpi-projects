@@ -12,6 +12,7 @@ import itx.rpi.powercontroller.handlers.SystemInfoHandler;
 import itx.rpi.powercontroller.handlers.SystemStateHandler;
 import itx.rpi.powercontroller.services.PortListener;
 import itx.rpi.powercontroller.services.RPiService;
+import itx.rpi.powercontroller.services.ShutdownHook;
 import itx.rpi.powercontroller.services.SystemInfoService;
 import itx.rpi.powercontroller.services.impl.PortListenerImpl;
 import itx.rpi.powercontroller.services.impl.RPiServiceFactory;
@@ -26,6 +27,26 @@ import java.io.InputStream;
 public class PowerControllerApp {
 
     private static final Logger LOG = LoggerFactory.getLogger(PowerControllerApp.class);
+
+    public static Services initialize(ObjectMapper mapper, Configuration configuration) {
+        PortListener portListener = new PortListenerImpl();
+        SystemInfoService systemInfoService = new SystemInfoServiceImpl(configuration);
+        RPiService rPiService = RPiServiceFactory.createService(configuration, portListener);
+
+        PathHandler handler = Handlers.path()
+                .addPrefixPath("/system/info", new SystemInfoHandler(mapper, systemInfoService))
+                .addPrefixPath("/system/measurements", new MeasurementsHandler(mapper, rPiService))
+                .addPrefixPath("/system/state", new SystemStateHandler(mapper, rPiService))
+                .addPrefixPath("/system/port", new BlockingHandler(new PortStateHandler(mapper, rPiService)));
+
+
+        Undertow server = Undertow.builder()
+                .addHttpListener(configuration.getPort(), configuration.getHost())
+                .setHandler(handler)
+                .build();
+
+        return new Services(rPiService, server);
+    }
 
     public static void main(String[] args) throws IOException {
         LOG.info("Starting PowerController APP ...");
@@ -50,21 +71,37 @@ public class PowerControllerApp {
         LOG.info("#CONFIG: port={}", configuration.getPort());
         LOG.info("#CONFIG: hardware={}", configuration.isHardware());
 
-        PortListener portListener = new PortListenerImpl();
-        SystemInfoService systemInfoService = new SystemInfoServiceImpl(configuration);
-        RPiService rPiService = RPiServiceFactory.createService(configuration, portListener);
+        LOG.info("initializing services ...");
+        Services services = initialize(mapper, configuration);
 
-        PathHandler handler = Handlers.path()
-                .addPrefixPath("/system/info", new SystemInfoHandler(mapper, systemInfoService))
-                .addPrefixPath("/system/measurements", new MeasurementsHandler(mapper, rPiService))
-                .addPrefixPath("/system/state", new SystemStateHandler(mapper, rPiService))
-                .addPrefixPath("/system/port", new BlockingHandler(new PortStateHandler(mapper, rPiService)));
+        LOG.info("registering shutdown hook ...");
+        Runtime.getRuntime().addShutdownHook(new ShutdownHook(services));
+        services.getServer().start();
+    }
 
-        Undertow server = Undertow.builder()
-                .addHttpListener(configuration.getPort(), configuration.getHost())
-                .setHandler(handler)
-                .build();
-        server.start();
+    public static class Services {
+
+        private final RPiService rPiService;
+        private final Undertow server;
+
+        public Services(RPiService rPiService, Undertow server) {
+            this.rPiService = rPiService;
+            this.server = server;
+        }
+
+        public RPiService getRPiService() {
+            return rPiService;
+        }
+
+        public Undertow getServer() {
+            return server;
+        }
+
+        public void shutdown() throws Exception {
+            this.server.stop();
+            this.rPiService.close();
+        }
+
     }
 
 }
