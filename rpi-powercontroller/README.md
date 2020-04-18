@@ -1,5 +1,14 @@
 # RPi Power Controller
 
+## REST Endpoints
+* __GET__ ``/system/info``
+* __GET__ ``/system/measurements``
+* __GET__ ``/system/state``
+* __PUT__ ``/system/port``
+  ``
+  { "port": 0, "state": true }
+  ``
+
 ## Build & Run
 ```
 gradle clean build test installDist distZip

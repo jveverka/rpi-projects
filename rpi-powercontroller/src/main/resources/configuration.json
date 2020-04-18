@@ -3,5 +3,15 @@
   "name": "power-controller-unit",
   "host": "0.0.0.0",
   "port": 8080,
-  "hardware": false
+  "hardware": false,
+  "portTypes": {
+    "0": "OUTPUT",
+    "1": "OUTPUT",
+    "2": "OUTPUT",
+    "3": "OUTPUT",
+    "4": "INPUT",
+    "5": "INPUT",
+    "6": "INPUT",
+    "7": "INPUT"
+  }
 }

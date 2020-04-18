@@ -10,8 +10,10 @@ import itx.rpi.powercontroller.handlers.MeasurementsHandler;
 import itx.rpi.powercontroller.handlers.PortStateHandler;
 import itx.rpi.powercontroller.handlers.SystemInfoHandler;
 import itx.rpi.powercontroller.handlers.SystemStateHandler;
+import itx.rpi.powercontroller.services.PortListener;
 import itx.rpi.powercontroller.services.RPiService;
 import itx.rpi.powercontroller.services.SystemInfoService;
+import itx.rpi.powercontroller.services.impl.PortListenerImpl;
 import itx.rpi.powercontroller.services.impl.RPiServiceFactory;
 import itx.rpi.powercontroller.services.impl.SystemInfoServiceImpl;
 import org.slf4j.Logger;
@@ -48,8 +50,9 @@ public class PowerControllerApp {
         LOG.info("#CONFIG: port={}", configuration.getPort());
         LOG.info("#CONFIG: hardware={}", configuration.isHardware());
 
+        PortListener portListener = new PortListenerImpl();
         SystemInfoService systemInfoService = new SystemInfoServiceImpl(configuration);
-        RPiService rPiService = RPiServiceFactory.createService(configuration);
+        RPiService rPiService = RPiServiceFactory.createService(configuration, portListener);
 
         PathHandler handler = Handlers.path()
                 .addPrefixPath("/system/info", new SystemInfoHandler(mapper, systemInfoService))
