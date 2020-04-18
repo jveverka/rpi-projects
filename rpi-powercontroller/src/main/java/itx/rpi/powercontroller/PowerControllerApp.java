@@ -6,6 +6,8 @@ import io.undertow.Undertow;
 import io.undertow.server.handlers.PathHandler;
 import itx.rpi.powercontroller.config.Configuration;
 import itx.rpi.powercontroller.handlers.SystemInfoHandler;
+import itx.rpi.powercontroller.services.SystemInfoService;
+import itx.rpi.powercontroller.services.impl.SystemInfoServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,9 +36,15 @@ public class PowerControllerApp {
             InputStream is = PowerControllerApp.class.getResourceAsStream("/configuration.json");
             configuration = mapper.readValue(is, Configuration.class);
         }
-        PathHandler systemInfoHandler = Handlers.path().addPrefixPath("system/info", new SystemInfoHandler(mapper, configuration));
+        LOG.info("#CONFIG: id={}", configuration.getId());
+        LOG.info("#CONFIG: name={}", configuration.getName());
+        LOG.info("#CONFIG: host={}", configuration.getHost());
+        LOG.info("#CONFIG: port={}", configuration.getPort());
+        LOG.info("#CONFIG: hardware={}", configuration.isHardware());
+        SystemInfoService systemInfoService = new SystemInfoServiceImpl(configuration);
+        PathHandler systemInfoHandler = Handlers.path().addPrefixPath("system/info", new SystemInfoHandler(mapper, systemInfoService));
         Undertow server = Undertow.builder()
-                .addHttpListener(8080, "0.0.0.0")
+                .addHttpListener(configuration.getPort(), configuration.getHost())
                 .setHandler(systemInfoHandler).build();
         server.start();
     }
