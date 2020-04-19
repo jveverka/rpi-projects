@@ -1,6 +1,6 @@
 # RPi Power Controller
-This project describes AC power switching device controlled over HTTP / REST base on 
-RaspberryPI hardware and compatible hardware peripherals.
+This project describes hot build AC power switching device controlled remotely over __HTTP / REST__ interface.
+The device is based on [RaspberryPI](https://www.raspberrypi.org/) and compatible hardware peripherals.
 
 ## Hardware Architecture
 ![hw-arch](docs/rpi-powercontroller-hardware-architecture.svg)
@@ -15,6 +15,7 @@ Detailed [hardware bill of material](docs/hardware-bom.md).
 * [undertow.io](http://undertow.io/) as web server.
 * [com.fasterxml.jackson](https://github.com/FasterXML/jackson) for JSON processing.
 * No frameworks, plain java.
+* [Raspbian Lite](https://www.raspberrypi.org/downloads/raspbian/), [WiringPi](http://wiringpi.com/), [pi4j](https://pi4j.com/1.2/index.html)
 
 ## REST APIs and Endpoints
 * [Complete Postman collection](docs/rpi-powercontroller.postman_collection.json)

@@ -9,7 +9,7 @@ targetCompatibility = 1.8
 group = 'itx.rpi.powercontroller'
 version = '1.0.0'
 mainClassName = 'itx.rpi.powercontroller.PowerControllerApp'
-applicationDefaultJvmArgs = ['-Xms42m', '-Xmx42m', '-XX:MaxMetaspaceSize=42m']
+applicationDefaultJvmArgs = ['-Xms32m', '-Xmx32m', '-XX:MaxMetaspaceSize=32m']
 
 repositories {
     mavenLocal()
