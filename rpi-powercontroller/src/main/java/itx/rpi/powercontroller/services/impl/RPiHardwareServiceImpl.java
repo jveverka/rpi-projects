@@ -59,7 +59,7 @@ public class RPiHardwareServiceImpl implements RPiService {
     public Measurements getMeasurements() {
         try {
             float temperature = bmp180.readTemperature();
-            float pressure = bmp180.readPressure();
+            float pressure = bmp180.readPressure() / 1000f;
             float relHumidity = htu21DF.readHumidity();
             return new Measurements(new Date(), temperature, "celsius", relHumidity, "percent", pressure, "kPa");
         } catch (Exception e) {
