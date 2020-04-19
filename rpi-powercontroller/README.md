@@ -5,8 +5,16 @@ RaspberryPI hardware and compatible hardware peripherals.
 ## Hardware Architecture
 ![hw-arch](docs/rpi-powercontroller-hardware-architecture.svg)
 
+Detailed [hardware bill of material](docs/hardware-bom.md).  
+
 ## Software Architecture
 ![sw-arch](docs/rpi-powercontroller-software-architecture.svg)
+
+* Tiny software stack, 32 MB of heap space to run.
+* Java 8 and Java 11 compatible.
+* [undertow.io](http://undertow.io/) as web server.
+* [com.fasterxml.jackson](https://github.com/FasterXML/jackson) for JSON processing.
+* No frameworks, plain java.
 
 ## REST APIs and Endpoints
 * [Complete Postman collection](docs/rpi-powercontroller.postman_collection.json)
@@ -53,15 +61,12 @@ gradle clean build test installDist distZip
    ```
    mkdir -p /opt/rpi-powercontroller
    ```   
-7. Build distribution zip and copy the zip to target RPi device.
+7. Build distribution zip and copy the zip and init scripts to target RPi device.
    ```
    scp build/distributions/rpi-powercontroller-1.0.0.zip pi@<ip-address>:/opt/rpi-powercontroller/
-   ```
-8. Copy init scripts to target RPi device.
-   ```
    scp -r scripts/* pi@<ip-address>:/opt/rpi-powercontroller/
    ```
-9. Finish installation on target RPi device.
+8. Finish installation on target RPi device.
    ```
    cd /opt/rpi-powercontroller
    unzip rpi-powercontroller-1.0.0.zip
@@ -72,7 +77,7 @@ gradle clean build test installDist distZip
    sudo systemctl daemon-reload
    sudo systemctl enable rpi-powercontroller
    ```
-10. Start, stop, get status of rpi-powercontroller service.
+9. Start, stop, get status of rpi-powercontroller service.
    ```
    sudo systemctl start rpi-powercontroller
    sudo systemctl stop rpi-powercontroller
