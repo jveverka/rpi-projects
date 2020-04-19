@@ -70,7 +70,7 @@ public class TaskManagerServiceImpl implements TaskManagerService {
                 ActionTaskInfo actionTaskInfo = new ActionTaskInfo(action.getType(),  action.getDescription(), action.getStatus());
                 actionTaskInfos.add(actionTaskInfo);
             }
-            TaskInfo taskInfo = new TaskInfo(task.getId().getId(), task.getJobId(), task.getJobName(), task.getStatus(), actionTaskInfos);
+            TaskInfo taskInfo = new TaskInfo(task.getId().getId(), task.getJobId(), task.getJobName(), task.getStatus(), actionTaskInfos, task.getStarted(), task.getDuration());
             taskInfos.add(taskInfo);
         }
         return taskInfos;

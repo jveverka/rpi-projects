@@ -1,5 +1,8 @@
 package itx.rpi.powercontroller.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Collection;
 
 public class JobInfo {
@@ -8,7 +11,10 @@ public class JobInfo {
     private final String name;
     private final Collection<ActionInfo> actions;
 
-    public JobInfo(String id, String name, Collection<ActionInfo> actions) {
+    @JsonCreator
+    public JobInfo(@JsonProperty("id") String id,
+                   @JsonProperty("name") String name,
+                   @JsonProperty("actions") Collection<ActionInfo> actions) {
         this.id = id;
         this.name = name;
         this.actions = actions;

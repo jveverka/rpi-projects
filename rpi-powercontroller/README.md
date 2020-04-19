@@ -68,4 +68,4 @@ gradle clean build test installDist distZip
    sudo systemctl start rpi-powercontroller
    sudo systemctl stop rpi-powercontroller
    sudo systemctl status rpi-powercontroller
-   ```   
+   ```

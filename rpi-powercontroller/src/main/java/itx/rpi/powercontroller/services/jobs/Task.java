@@ -3,6 +3,7 @@ package itx.rpi.powercontroller.services.jobs;
 import itx.rpi.powercontroller.dto.TaskId;
 
 import java.util.Collection;
+import java.util.Date;
 
 public class Task implements Runnable {
 
@@ -14,6 +15,8 @@ public class Task implements Runnable {
     private ExecutionStatus status;
     private boolean stopped;
     private Action executedAction;
+    private Date started;
+    private Long duration;
 
     public Task(TaskId id, String jobId, String jobName, Collection<Action> actions) {
         this.id = id;
@@ -44,17 +47,21 @@ public class Task implements Runnable {
     public void run() {
         try {
             this.stopped = false;
+            this.started = new Date();
             this.status = ExecutionStatus.IN_PROGRESS;
             for (Action action : actions) {
                 executedAction = action;
                 executedAction.execute();
                 if (stopped) {
+                    this.duration = new Date().getTime() - this.started.getTime();
                     this.status = ExecutionStatus.ABORTED;
                     return;
                 }
             }
+            this.duration = new Date().getTime() - this.started.getTime();
             this.status = ExecutionStatus.FINISHED;
         } catch (Exception e) {
+            this.duration = new Date().getTime() - this.started.getTime();
             this.status = ExecutionStatus.FAILED;
         }
     }
@@ -64,11 +71,18 @@ public class Task implements Runnable {
         if (executedAction != null) {
             executedAction.stop();
         }
-        this.status = ExecutionStatus.ABORTED;
     }
 
     public Collection<Action> getActions() {
         return actions;
+    }
+
+    public Date getStarted() {
+        return started;
+    }
+
+    public Long getDuration() {
+        return duration;
     }
 
 }

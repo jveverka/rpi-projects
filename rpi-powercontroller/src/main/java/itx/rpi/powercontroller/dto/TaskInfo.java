@@ -1,8 +1,11 @@
 package itx.rpi.powercontroller.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import itx.rpi.powercontroller.services.jobs.ExecutionStatus;
 
 import java.util.Collection;
+import java.util.Date;
 
 public class TaskInfo {
 
@@ -11,13 +14,24 @@ public class TaskInfo {
     private final String jobName;
     private final ExecutionStatus status;
     private final Collection<ActionTaskInfo> actions;
+    private final Date started;
+    private final Long duration;
 
-    public TaskInfo(String id, String jobId, String jobName, ExecutionStatus status, Collection<ActionTaskInfo> actions) {
+    @JsonCreator
+    public TaskInfo(@JsonProperty("id") String id,
+                    @JsonProperty("jobId") String jobId,
+                    @JsonProperty("jobName") String jobName,
+                    @JsonProperty("status") ExecutionStatus status,
+                    @JsonProperty("actions") Collection<ActionTaskInfo> actions,
+                    @JsonProperty("started") Date started,
+                    @JsonProperty("duration") Long duration) {
         this.id = id;
         this.jobId = jobId;
         this.jobName = jobName;
         this.status = status;
         this.actions = actions;
+        this.started = started;
+        this.duration = duration;
     }
 
     public String getId() {
@@ -40,4 +54,11 @@ public class TaskInfo {
         return actions;
     }
 
+    public Date getStarted() {
+        return started;
+    }
+
+    public Long getDuration() {
+        return duration;
+    }
 }

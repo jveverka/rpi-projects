@@ -1,5 +1,7 @@
 package itx.rpi.powercontroller.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import itx.rpi.powercontroller.services.jobs.ExecutionStatus;
 
 public class ActionTaskInfo {
@@ -8,7 +10,10 @@ public class ActionTaskInfo {
     private final String description;
     private final ExecutionStatus status;
 
-    public ActionTaskInfo(String type, String description, ExecutionStatus status) {
+    @JsonCreator
+    public ActionTaskInfo(@JsonProperty("type") String type,
+                          @JsonProperty("description") String description,
+                          @JsonProperty("status") ExecutionStatus status) {
         this.type = type;
         this.description = description;
         this.status = status;
