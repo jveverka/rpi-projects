@@ -1,6 +1,14 @@
 # RPi Power Controller
+This project describes AC power switching device controlled over HTTP / REST base on 
+RaspberryPI hardware and compatible hardware peripherals.
 
-## REST Endpoints
+## Hardware Architecture
+![hw-arch](docs/rpi-powercontroller-hardware-architecture.svg)
+
+## Software Architecture
+![sw-arch](docs/rpi-powercontroller-software-architecture.svg)
+
+## REST APIs and Endpoints
 * [Complete Postman collection](docs/rpi-powercontroller.postman_collection.json)
 * __GET__ ``/system/info``
 * __GET__ ``/system/measurements``
