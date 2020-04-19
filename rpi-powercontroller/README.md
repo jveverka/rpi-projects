@@ -17,7 +17,12 @@ Detailed [hardware bill of material](docs/hardware-bom.md).
 * No frameworks, plain java.
 * [Raspbian Lite](https://www.raspberrypi.org/downloads/raspbian/), [WiringPi](http://wiringpi.com/), [pi4j](https://pi4j.com/1.2/index.html)
 
-## REST APIs and Endpoints
+### Configuration
+__rpi-powercontroller__ requires external [JSON configuration](src/main/resources/configuration.json) file in order to load initial configuration. 
+This file contains basic host/port configuration for http server, port type configuration (INPUT | OUTPUT) and client credentials.
+Job definitions are also part of this file.
+
+### REST APIs and Endpoints
 * [Complete Postman collection](docs/rpi-powercontroller.postman_collection.json)
 * __GET__ ``/system/info``
 * __GET__ ``/system/measurements``
@@ -36,6 +41,14 @@ Detailed [hardware bill of material](docs/hardware-bom.md).
   ``
   { "id": "task-001" }
   ``
+#### REST Security  
+All REST endpoint require [HTTP basic authorization](https://en.wikipedia.org/wiki/Basic_access_authentication) header to be used, valid __client-id / clientse-cret__.
+Check configuration section.
+
+``
+curl -u <client-id>:<client-secret> http://<server>:<port>/uri
+``
+  
 ## Build & Run
 ```
 gradle clean build test installDist distZip

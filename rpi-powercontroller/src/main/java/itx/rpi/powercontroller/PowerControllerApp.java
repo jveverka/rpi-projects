@@ -14,11 +14,13 @@ import itx.rpi.powercontroller.handlers.SubmitTaskHandler;
 import itx.rpi.powercontroller.handlers.SystemInfoHandler;
 import itx.rpi.powercontroller.handlers.SystemStateHandler;
 import itx.rpi.powercontroller.handlers.TasksInfoHandler;
+import itx.rpi.powercontroller.services.AAService;
 import itx.rpi.powercontroller.services.PortListener;
 import itx.rpi.powercontroller.services.RPiService;
 import itx.rpi.powercontroller.services.ShutdownHook;
 import itx.rpi.powercontroller.services.SystemInfoService;
 import itx.rpi.powercontroller.services.TaskManagerService;
+import itx.rpi.powercontroller.services.impl.AAServiceImpl;
 import itx.rpi.powercontroller.services.impl.PortListenerImpl;
 import itx.rpi.powercontroller.services.impl.RPiServiceFactory;
 import itx.rpi.powercontroller.services.impl.SystemInfoServiceImpl;
@@ -35,20 +37,21 @@ public class PowerControllerApp {
     private static final Logger LOG = LoggerFactory.getLogger(PowerControllerApp.class);
 
     public static Services initialize(ObjectMapper mapper, Configuration configuration) {
+        AAService aaService = new AAServiceImpl(configuration.getCredentials());
         PortListener portListener = new PortListenerImpl();
         SystemInfoService systemInfoService = new SystemInfoServiceImpl(configuration);
         RPiService rPiService = RPiServiceFactory.createService(configuration, portListener);
         TaskManagerService taskManagerService = TaskManagerFactory.createTaskManagerService(configuration, rPiService);
 
         PathHandler handler = Handlers.path()
-                .addPrefixPath("/system/info", new SystemInfoHandler(mapper, systemInfoService))
-                .addPrefixPath("/system/measurements", new MeasurementsHandler(mapper, rPiService))
-                .addPrefixPath("/system/state", new SystemStateHandler(mapper, rPiService))
-                .addPrefixPath("/system/port", new BlockingHandler(new PortStateHandler(mapper, rPiService)))
-                .addPrefixPath("/system/jobs", new JobInfoHandler(mapper, taskManagerService))
-                .addPrefixPath("/system/tasks", new TasksInfoHandler(mapper, taskManagerService))
-                .addPrefixPath("/system/tasks/submit", new BlockingHandler(new SubmitTaskHandler(mapper, taskManagerService)))
-                .addPrefixPath("/system/tasks/cancel", new BlockingHandler(new CancelTaskHandler(mapper, taskManagerService)));
+                .addPrefixPath("/system/info", new SystemInfoHandler(mapper, aaService, systemInfoService))
+                .addPrefixPath("/system/measurements", new MeasurementsHandler(mapper, aaService, rPiService))
+                .addPrefixPath("/system/state", new SystemStateHandler(mapper, aaService, rPiService))
+                .addPrefixPath("/system/port", new BlockingHandler(new PortStateHandler(mapper, aaService, rPiService)))
+                .addPrefixPath("/system/jobs", new JobInfoHandler(mapper, aaService, taskManagerService))
+                .addPrefixPath("/system/tasks", new TasksInfoHandler(mapper, aaService, taskManagerService))
+                .addPrefixPath("/system/tasks/submit", new BlockingHandler(new SubmitTaskHandler(mapper, aaService, taskManagerService)))
+                .addPrefixPath("/system/tasks/cancel", new BlockingHandler(new CancelTaskHandler(mapper, aaService, taskManagerService)));
 
 
         Undertow server = Undertow.builder()

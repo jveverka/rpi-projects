@@ -14,6 +14,10 @@
     "6": "INPUT",
     "7": "INPUT"
   },
+  "credentials": {
+    "client-001": "ex4ooNgexoo2aeSho7del8caiPh8iegi",
+    "client-002": "EejeekeeShilooMeoG8sieng2deVu2qu"
+  },
   "jobConfigurations": [
     {
       "id": "switch-off-all-ports",

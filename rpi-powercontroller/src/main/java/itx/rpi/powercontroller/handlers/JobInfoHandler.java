@@ -8,8 +8,8 @@ import io.undertow.util.HttpString;
 import itx.rpi.powercontroller.config.ActionConfiguration;
 import itx.rpi.powercontroller.dto.ActionInfo;
 import itx.rpi.powercontroller.dto.JobInfo;
+import itx.rpi.powercontroller.services.AAService;
 import itx.rpi.powercontroller.services.TaskManagerService;
-import itx.rpi.powercontroller.services.jobs.Action;
 import itx.rpi.powercontroller.services.jobs.Job;
 
 import java.util.ArrayList;
@@ -17,16 +17,22 @@ import java.util.Collection;
 
 public class JobInfoHandler implements HttpHandler {
 
+    private final AAService aaService;
     private final ObjectMapper mapper;
     private final TaskManagerService taskManagerService;
 
-    public JobInfoHandler(ObjectMapper mapper, TaskManagerService taskManagerService) {
+    public JobInfoHandler(ObjectMapper mapper, AAService aaService, TaskManagerService taskManagerService) {
+        this.aaService = aaService;
         this.mapper = mapper;
         this.taskManagerService = taskManagerService;
     }
 
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
+        if (!HandlerUtils.validateRequest(aaService, exchange)) {
+            exchange.setStatusCode(HandlerUtils.FORBIDDEN);
+            return;
+        }
         HttpString requestMethod = exchange.getRequestMethod();
         if (HandlerUtils.METHOD_GET.equals(requestMethod.toString())) {
             exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, HandlerUtils.JSON_TYPE);
@@ -40,10 +46,10 @@ public class JobInfoHandler implements HttpHandler {
                 JobInfo jobInfo = new JobInfo(job.getId(), job.getName(), actionInfos);
                 jobInfos.add(jobInfo);
             }
-            exchange.setStatusCode(200);
+            exchange.setStatusCode(HandlerUtils.OK);
             exchange.getResponseSender().send(mapper.writeValueAsString(jobInfos));
         } else {
-            exchange.setStatusCode(405);
+            exchange.setStatusCode(HandlerUtils.METHOD_NOT_ALLOWED);
         }
     }
 

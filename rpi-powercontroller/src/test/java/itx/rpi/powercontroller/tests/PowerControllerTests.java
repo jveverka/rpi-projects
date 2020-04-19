@@ -6,6 +6,7 @@ import itx.rpi.powercontroller.config.Configuration;
 import itx.rpi.powercontroller.dto.Measurements;
 import itx.rpi.powercontroller.dto.SystemInfo;
 import itx.rpi.powercontroller.dto.SystemState;
+import itx.rpi.powercontroller.handlers.HandlerUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.HttpHostConnectException;
@@ -35,12 +36,14 @@ public class PowerControllerTests {
     private static final Logger LOG = LoggerFactory.getLogger(PowerControllerTests.class);
 
     private static final String BASE_URL = "http://localhost:8080/";
+    private static final String CLIENT_ID = "client-001";
 
     private static CloseableHttpClient httpClient;
     private static PowerControllerApp.Services services;
     private static ExecutorService executorService;
     private static ObjectMapper mapper;
     private static Configuration configuration;
+    private static String clientSecret;
 
     @BeforeAll
     public static void init() throws IOException {
@@ -49,6 +52,7 @@ public class PowerControllerTests {
         mapper = new ObjectMapper();
         InputStream is = PowerControllerApp.class.getResourceAsStream("/configuration.json");
         configuration = mapper.readValue(is, Configuration.class);
+        clientSecret = configuration.getCredentials().get(CLIENT_ID);
         services = PowerControllerApp.initialize(mapper, configuration);
         executorService.submit(() -> services.getServer().start());
         for (int i=0; i<10; i++) {
@@ -70,6 +74,7 @@ public class PowerControllerTests {
     @Order(1)
     public void testSystemInfo() throws IOException {
         HttpGet get = new HttpGet(BASE_URL + "/system/info");
+        get.addHeader("Authorization", HandlerUtils.createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
         CloseableHttpResponse response = httpClient.execute(get);
         assertEquals(200, response.getStatusLine().getStatusCode());
         SystemInfo systemInfo = mapper.readValue(response.getEntity().getContent(), SystemInfo.class);
@@ -85,6 +90,7 @@ public class PowerControllerTests {
     @Order(2)
     public void testSystemMeasurements() throws IOException {
         HttpGet get = new HttpGet(BASE_URL + "/system/measurements");
+        get.addHeader("Authorization", HandlerUtils.createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
         CloseableHttpResponse response = httpClient.execute(get);
         assertEquals(200, response.getStatusLine().getStatusCode());
         Measurements measurements = mapper.readValue(response.getEntity().getContent(), Measurements.class);
@@ -102,6 +108,7 @@ public class PowerControllerTests {
     @Order(3)
     public void testSystemState() throws IOException {
         HttpGet get = new HttpGet(BASE_URL + "/system/state");
+        get.addHeader("Authorization", HandlerUtils.createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
         CloseableHttpResponse response = httpClient.execute(get);
         assertEquals(200, response.getStatusLine().getStatusCode());
         SystemState systemState = mapper.readValue(response.getEntity().getContent(), SystemState.class);
