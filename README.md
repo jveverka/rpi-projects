@@ -7,10 +7,15 @@
 
 This project contains various hardware drivers, schematics and code examples for Raspberry PI.
 
-*Enjoy !*
+* [pi4j-drivers](pi4j-drivers) - java APIs for some PRi compatible hardware.
+* [rpi-powercontroller](rpi-powercontroller) - control relay power switch with REST APIs. 
+* [waveshare-lcd-13-driver](waveshare-lcd-13-driver) - java driver for small LCD display.
+* [sensehat-games](sensehat-games) - simple compilation of python games for 8x8 sensehat display.
 
 ## Build and Test
 ``
 gradle clean build test
 ``
+
+*Enjoy !*
 

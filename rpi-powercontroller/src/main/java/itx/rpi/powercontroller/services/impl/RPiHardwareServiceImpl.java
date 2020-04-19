@@ -19,6 +19,7 @@ import itx.rpi.powercontroller.services.RPiService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -60,9 +61,9 @@ public class RPiHardwareServiceImpl implements RPiService {
             float temperature = bmp180.readTemperature();
             float pressure = bmp180.readPressure();
             float relHumidity = htu21DF.readHumidity();
-            return new Measurements(temperature, "celsius", relHumidity, "percent", pressure, "kPa");
+            return new Measurements(new Date(), temperature, "celsius", relHumidity, "percent", pressure, "kPa");
         } catch (Exception e) {
-            return new Measurements(null, "celsius", null, "percent", null, "kPa");
+            return new Measurements(new Date(),null, "celsius", null, "percent", null, "kPa");
         }
     }
 
@@ -72,7 +73,7 @@ public class RPiHardwareServiceImpl implements RPiService {
         ports.forEach((k,v) -> {
             result.put(k, v.isHigh());
         });
-        return new SystemState(result, portTypes);
+        return new SystemState(new Date(), result, portTypes);
     }
 
     @Override

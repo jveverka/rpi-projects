@@ -5,6 +5,7 @@ import itx.rpi.powercontroller.PowerControllerApp;
 import itx.rpi.powercontroller.config.Configuration;
 import itx.rpi.powercontroller.dto.Measurements;
 import itx.rpi.powercontroller.dto.SystemInfo;
+import itx.rpi.powercontroller.dto.SystemState;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.HttpHostConnectException;
@@ -77,6 +78,7 @@ public class PowerControllerTests {
         assertNotNull(systemInfo.getVersion());
         assertNotNull(systemInfo.getName());
         assertNotNull(systemInfo.getType());
+        assertNotNull(systemInfo.getStarted());
     }
 
     @Test
@@ -87,12 +89,26 @@ public class PowerControllerTests {
         assertEquals(200, response.getStatusLine().getStatusCode());
         Measurements measurements = mapper.readValue(response.getEntity().getContent(), Measurements.class);
         assertNotNull(measurements);
+        assertNotNull(measurements.getTimeStamp());
         assertNotNull(measurements.getPressureUnit());
         assertNotNull(measurements.getRelHumidityUnit());
         assertNotNull(measurements.getTemperatureUnit());
         assertNull(measurements.getPressure());
         assertNull(measurements.getRelHumidity());
         assertNull(measurements.getTemperature());
+    }
+
+    @Test
+    @Order(3)
+    public void testSystemState() throws IOException {
+        HttpGet get = new HttpGet(BASE_URL + "/system/state");
+        CloseableHttpResponse response = httpClient.execute(get);
+        assertEquals(200, response.getStatusLine().getStatusCode());
+        SystemState systemState = mapper.readValue(response.getEntity().getContent(), SystemState.class);
+        assertNotNull(systemState);
+        assertNotNull(systemState.getTimeStamp());
+        assertNotNull(systemState.getPortTypes());
+        assertNotNull(systemState.getPorts());
     }
 
     @AfterAll

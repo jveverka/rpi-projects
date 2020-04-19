@@ -3,8 +3,11 @@ package itx.rpi.powercontroller.dto;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Date;
+
 public class Measurements {
 
+    private final Date timeStamp;
     private final Float temperature;
     private final String temperatureUnit;
     private final Float relHumidity;
@@ -13,12 +16,14 @@ public class Measurements {
     private final String pressureUnit;
 
     @JsonCreator
-    public Measurements(@JsonProperty("temperature")  Float temperature,
+    public Measurements(@JsonProperty("timeStamp") Date timeStamp,
+                        @JsonProperty("temperature")  Float temperature,
                         @JsonProperty("temperatureUnit") String temperatureUnit,
                         @JsonProperty("relHumidity") Float relHumidity,
                         @JsonProperty("relHumidityUnit") String relHumidityUnit,
                         @JsonProperty("pressure") Float pressure,
                         @JsonProperty("pressureUnit") String pressureUnit) {
+        this.timeStamp = timeStamp;
         this.temperature = temperature;
         this.temperatureUnit = temperatureUnit;
         this.relHumidity = relHumidity;
@@ -49,6 +54,10 @@ public class Measurements {
 
     public String getPressureUnit() {
         return pressureUnit;
+    }
+
+    public Date getTimeStamp() {
+        return timeStamp;
     }
 
 }

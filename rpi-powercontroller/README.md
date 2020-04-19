@@ -1,7 +1,7 @@
 # RPi Power Controller
 
 ## REST Endpoints
-* [Complete Postman collection](docs/RPi-powercontroller-postman.json)
+* [Complete Postman collection](docs/rpi-powercontroller.postman_collection.json)
 * __GET__ ``/system/info``
 * __GET__ ``/system/measurements``
 * __GET__ ``/system/state``
@@ -70,3 +70,4 @@ gradle clean build test installDist distZip
    sudo systemctl stop rpi-powercontroller
    sudo systemctl status rpi-powercontroller
    ```
+

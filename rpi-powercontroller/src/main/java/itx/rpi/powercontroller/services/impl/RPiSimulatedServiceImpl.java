@@ -9,6 +9,7 @@ import itx.rpi.powercontroller.services.RPiService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,12 +31,12 @@ public class RPiSimulatedServiceImpl implements RPiService {
 
     @Override
     public Measurements getMeasurements() {
-        return new Measurements(null, "celsius", null, "percent", null, "kPa");
+        return new Measurements(new Date(),null, "celsius", null, "percent", null, "kPa");
     }
 
     @Override
     public SystemState getSystemState() {
-        return new SystemState(ports, portTypes);
+        return new SystemState(new Date(), ports, portTypes);
     }
 
     @Override
