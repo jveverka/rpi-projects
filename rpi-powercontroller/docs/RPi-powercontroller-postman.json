@@ -1,0 +1,206 @@
+{
+	"info": {
+		"_postman_id": "c02b5c48-a7cf-41bb-9a8f-f62d691e4bed",
+		"name": "rpi-powercontroller",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET System Info",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{servername}}:8080/system/info",
+					"host": [
+						"{{servername}}"
+					],
+					"port": "8080",
+					"path": [
+						"system",
+						"info"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Set Port State",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"port\": 3,\n\t\"state\": true\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{servername}}:8080/system/port",
+					"host": [
+						"{{servername}}"
+					],
+					"port": "8080",
+					"path": [
+						"system",
+						"port"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Port States",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{servername}}:8080/system/state",
+					"host": [
+						"{{servername}}"
+					],
+					"port": "8080",
+					"path": [
+						"system",
+						"state"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Available Jobs in the system",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{servername}}:8080/system/jobs",
+					"host": [
+						"{{servername}}"
+					],
+					"port": "8080",
+					"path": [
+						"system",
+						"jobs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get State of Task Queue",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{servername}}:8080/system/tasks",
+					"host": [
+						"{{servername}}"
+					],
+					"port": "8080",
+					"path": [
+						"system",
+						"tasks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Submit new Task",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": \"switching-job-001\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{servername}}:8080/system/tasks/submit",
+					"host": [
+						"{{servername}}"
+					],
+					"port": "8080",
+					"path": [
+						"system",
+						"tasks",
+						"submit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cancel running task",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "secret",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "juraj",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": \"b8060e54-7838-4e6b-8d41-50f81eb5fd50\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{servername}}:8080/system/tasks/cancel",
+					"host": [
+						"{{servername}}"
+					],
+					"port": "8080",
+					"path": [
+						"system",
+						"tasks",
+						"cancel"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET sensor readings",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{servername}}:8080/system/measurements",
+					"host": [
+						"{{servername}}"
+					],
+					"port": "8080",
+					"path": [
+						"system",
+						"measurements"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

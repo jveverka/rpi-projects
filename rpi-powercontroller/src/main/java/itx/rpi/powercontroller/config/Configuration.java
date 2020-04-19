@@ -1,9 +1,11 @@
 package itx.rpi.powercontroller.config;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 
 public class Configuration {
@@ -15,6 +17,7 @@ public class Configuration {
     private final boolean hardware;
     private final Map<Integer, PortType> portTypes;
     private final Collection<JobConfiguration> jobConfigurations;
+    private final Date started;
 
     @JsonCreator
     public Configuration(@JsonProperty("id") String id,
@@ -31,6 +34,7 @@ public class Configuration {
         this.hardware = hardware;
         this.portTypes = portTypes;
         this.jobConfigurations = jobConfigurations;
+        this.started = new Date();
     }
 
     public String getId() {
@@ -59,6 +63,11 @@ public class Configuration {
 
     public Collection<JobConfiguration> getJobConfigurations() {
         return jobConfigurations;
+    }
+
+    @JsonIgnore
+    public Date getStarted() {
+        return started;
     }
 
 }

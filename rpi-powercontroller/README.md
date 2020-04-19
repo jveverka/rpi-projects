@@ -1,6 +1,7 @@
 # RPi Power Controller
 
 ## REST Endpoints
+* [Complete Postman collection](docs/RPi-powercontroller-postman.json)
 * __GET__ ``/system/info``
 * __GET__ ``/system/measurements``
 * __GET__ ``/system/state``
