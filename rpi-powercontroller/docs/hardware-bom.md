@@ -10,5 +10,5 @@ This is detailed HW equipment Bill of Material for RPi Power Controller.
   ![HTU21D](hardware-HTU21D.jpg)
   
 ## Example Assembly
-This assembly uses only two output power ports __(Port 0, Port 1)__ and only one __(Key 0)__.  
+This assembly uses only two output power ports __(Port 0, Port 1)__ and only one input key __(Key 0)__.  
 ![hw01](hardware-image-01.svg)
