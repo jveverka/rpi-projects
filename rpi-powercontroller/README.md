@@ -40,7 +40,7 @@ Job definitions are also part of this file.
   __GET__ ``/system/measurements``
 * Get post states (ON | OFF) and port types (INPUT | OUTPUT)  
   __GET__ ``/system/state``
-* Set port state  
+* Set OUTPUT port state (ON=true | OFF=false) 
   __PUT__ ``/system/port``  
   ``
   { "port": 0, "state": true }
