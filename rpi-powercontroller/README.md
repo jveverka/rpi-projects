@@ -3,7 +3,7 @@ This project describes how to build AC power switching device controlled remotel
 The device is based on [RaspberryPI](https://www.raspberrypi.org/) and compatible hardware peripherals.
 
 __Key features__:
-* __4 AC power ports__ - controller remotely via HTTP / REST (ON | OFF).
+* __4 AC power ports__ - controlled remotely via HTTP / REST (ON | OFF).
 * __sensor data__ - measures temperature, relative humidity and atmospheric pressure.
 * __task execution__ - execute one-at-a-time tasks based on pre-defined job (switching sequence) 
 * __simple security__ - client-id / client-secret, basic access authentication.
@@ -40,7 +40,7 @@ Job definitions are also part of this file.
   __GET__ ``/system/measurements``
 * Get post states (ON | OFF) and port types (INPUT | OUTPUT)  
   __GET__ ``/system/state``
-* Set OUTPUT port state (ON=true | OFF=false) 
+* Set OUTPUT port state (ON=true | OFF=false)  
   __PUT__ ``/system/port``  
   ``
   { "port": 0, "state": true }
@@ -54,7 +54,7 @@ Job definitions are also part of this file.
   ``
   { "id": "job-001" }
   ``
-* Cancel task execution.  
+* Cancel task execution by task-id.  
   __PUT__ ``/system/tasks/cancel``  
   ``
   { "id": "task-001" }
@@ -74,7 +74,7 @@ RPi Power Controller is designed to be build and tested on PC. In this case
 * [OpenJDK 8 or 11](https://adoptopenjdk.net/).
 * [Gradle 6.0](https://gradle.org/install/) or later.
 ```
-# build
+# build and test
 gradle clean build test installDist distZip
 
 # start RPi Power Controller in simulated mode
