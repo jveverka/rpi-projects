@@ -31,6 +31,9 @@ Detailed [hardware bill of material](docs/hardware-bom.md).
 __rpi-powercontroller__ requires external [JSON configuration](src/main/resources/configuration.json) file in order to load initial configuration. 
 Please check [configuration manual](docs/rpi-powercontroller-configuration.md) for details.
 
+### Jobs, Tasks and Actions
+__rpi-powercontroller__ is capable of running autonomous tasks. Please check [documentation](docs/jobs-tasks-and-actions.md) for details.
+
 ### REST APIs and Endpoints
 * [Complete Postman collection](docs/rpi-powercontroller.postman_collection.json)
 * Get system information like device id, uptime, ...  
