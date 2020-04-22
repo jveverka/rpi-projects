@@ -19,6 +19,7 @@ public class Configuration {
     private final Collection<JobConfiguration> jobConfigurations;
     private final Date started;
     private final Map<String, String> credentials;
+    private final Collection<String> executeJobsOnStart;
 
     @JsonCreator
     public Configuration(@JsonProperty("id") String id,
@@ -28,7 +29,8 @@ public class Configuration {
                          @JsonProperty("hardware") boolean hardware,
                          @JsonProperty("portTypes") Map<Integer, PortType> portTypes,
                          @JsonProperty("jobConfigurations") Collection<JobConfiguration> jobConfigurations,
-                         @JsonProperty("credentials") Map<String, String> credentials) {
+                         @JsonProperty("credentials") Map<String, String> credentials,
+                         @JsonProperty("executeJobsOnStart") Collection<String> executeJobsOnStart) {
         this.id = id;
         this.name = name;
         this.host = host;
@@ -38,6 +40,7 @@ public class Configuration {
         this.jobConfigurations = jobConfigurations;
         this.started = new Date();
         this.credentials = credentials;
+        this.executeJobsOnStart = executeJobsOnStart;
     }
 
     public String getId() {
@@ -75,6 +78,10 @@ public class Configuration {
 
     public Map<String, String> getCredentials() {
         return credentials;
+    }
+
+    public Collection<String> getExecuteJobsOnStart() {
+        return executeJobsOnStart;
     }
 
 }

@@ -18,6 +18,9 @@
     "client-001": "ex4ooNgexoo2aeSho7del8caiPh8iegi",
     "client-002": "EejeekeeShilooMeoG8sieng2deVu2qu"
   },
+  "executeJobsOnStart": [
+    "switch-off-all-ports"
+  ],
   "jobConfigurations": [
     {
       "id": "switch-off-all-ports",

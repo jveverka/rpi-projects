@@ -6,6 +6,7 @@ import io.undertow.Undertow;
 import io.undertow.server.handlers.BlockingHandler;
 import io.undertow.server.handlers.PathHandler;
 import itx.rpi.powercontroller.config.Configuration;
+import itx.rpi.powercontroller.dto.JobId;
 import itx.rpi.powercontroller.handlers.CancelTaskHandler;
 import itx.rpi.powercontroller.handlers.JobInfoHandler;
 import itx.rpi.powercontroller.handlers.MeasurementsHandler;
@@ -42,6 +43,11 @@ public class PowerControllerApp {
         SystemInfoService systemInfoService = new SystemInfoServiceImpl(configuration);
         RPiService rPiService = RPiServiceFactory.createService(configuration, portListener);
         TaskManagerService taskManagerService = TaskManagerFactory.createTaskManagerService(configuration, rPiService);
+
+        configuration.getExecuteJobsOnStart().forEach(jobId -> {
+            LOG.info("Starting \"jobId={}\" job on start.", jobId);
+            taskManagerService.submitTask(JobId.from(jobId));
+        });
 
         PathHandler handler = Handlers.path()
                 .addPrefixPath("/system/info", new SystemInfoHandler(mapper, aaService, systemInfoService))
