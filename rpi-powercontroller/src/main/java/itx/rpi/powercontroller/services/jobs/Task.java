@@ -68,8 +68,8 @@ public class Task implements Runnable {
 
     public void shutdown() {
         this.stopped = true;
-        if (executedAction != null) {
-            executedAction.stop();
+        for (Action action : actions) {
+            action.stop();
         }
     }
 

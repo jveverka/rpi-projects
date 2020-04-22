@@ -18,4 +18,6 @@ public interface TaskManagerService extends AutoCloseable {
 
     boolean cancelTask(TaskId taskId);
 
+    void kilAllTasks();
+
 }

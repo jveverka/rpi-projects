@@ -17,8 +17,8 @@ public final class TaskManagerFactory {
     private TaskManagerFactory() {
     }
 
-    public static TaskManagerService createTaskManagerService(Configuration configuration, RPiService rPiService) {
-        LOG.info("creating task manager");
+    public static TaskManagerService createTaskManagerService(Configuration configuration, Job killAllTasksJob, RPiService rPiService) {
+        LOG.info("Creating task manager");
         Collection<Job> jobs = new ArrayList<>();
         Collection<JobConfiguration> jobConfigurations = configuration.getJobConfigurations();
         jobConfigurations.forEach(jc -> {
@@ -26,7 +26,7 @@ public final class TaskManagerFactory {
             Job job = new Job(jc.getId(), jc.getName(), jc.getActions());
             jobs.add(job);
         });
-        return new TaskManagerServiceImpl(jobs, rPiService);
+        return new TaskManagerServiceImpl(jobs, killAllTasksJob, rPiService);
     }
 
 }

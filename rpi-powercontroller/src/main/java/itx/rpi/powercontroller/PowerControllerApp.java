@@ -25,6 +25,7 @@ import itx.rpi.powercontroller.services.impl.AAServiceImpl;
 import itx.rpi.powercontroller.services.impl.PortListenerImpl;
 import itx.rpi.powercontroller.services.impl.RPiServiceFactory;
 import itx.rpi.powercontroller.services.impl.SystemInfoServiceImpl;
+import itx.rpi.powercontroller.services.jobs.Job;
 import itx.rpi.powercontroller.services.jobs.TaskManagerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 
 public class PowerControllerApp {
 
@@ -42,7 +44,8 @@ public class PowerControllerApp {
         PortListener portListener = new PortListenerImpl();
         SystemInfoService systemInfoService = new SystemInfoServiceImpl(configuration);
         RPiService rPiService = RPiServiceFactory.createService(configuration, portListener);
-        TaskManagerService taskManagerService = TaskManagerFactory.createTaskManagerService(configuration, rPiService);
+        Job killAllTasksJob = new Job("kill-all-tasks", "Kill all executed tasks and cancel all waiting tasks.", Collections.emptyList());
+        TaskManagerService taskManagerService = TaskManagerFactory.createTaskManagerService(configuration, killAllTasksJob, rPiService);
 
         configuration.getExecuteJobsOnStart().forEach(jobId -> {
             LOG.info("Starting \"jobId={}\" job on start.", jobId);

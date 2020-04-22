@@ -45,9 +45,46 @@
       ]
     },
     {
-      "id": "switching-job-001",
-      "name": "Switching port with timer job.",
+      "id": "switching-job-000",
+      "name": "Switching port with short timer job.",
       "actions" : [
+        {
+          "typeId": "itx.rpi.powercontroller.config.actions.ActionPortHighConfig",
+          "port": 0
+        },
+        {
+          "typeId": "itx.rpi.powercontroller.config.actions.ActionWaitConfig",
+          "delay": 10,
+          "timeUnit": "SECONDS"
+        },
+        {
+          "typeId": "itx.rpi.powercontroller.config.actions.ActionPortLowConfig",
+          "port": 0
+        }
+      ]
+    },
+    {
+      "id": "switching-job-001",
+      "name": "Switching port with long timer job.",
+      "actions" : [
+        {
+          "typeId": "itx.rpi.powercontroller.config.actions.ActionPortHighConfig",
+          "port": 0
+        },
+        {
+          "typeId": "itx.rpi.powercontroller.config.actions.ActionWaitConfig",
+          "delay": 30,
+          "timeUnit": "SECONDS"
+        },
+        {
+          "typeId": "itx.rpi.powercontroller.config.actions.ActionPortLowConfig",
+          "port": 0
+        },
+        {
+          "typeId": "itx.rpi.powercontroller.config.actions.ActionWaitConfig",
+          "delay": 3,
+          "timeUnit": "SECONDS"
+        },
         {
           "typeId": "itx.rpi.powercontroller.config.actions.ActionPortHighConfig",
           "port": 0
@@ -63,7 +100,7 @@
         },
         {
           "typeId": "itx.rpi.powercontroller.config.actions.ActionWaitConfig",
-          "delay": 5,
+          "delay": 2,
           "timeUnit": "SECONDS"
         },
         {
@@ -72,8 +109,8 @@
         },
         {
           "typeId": "itx.rpi.powercontroller.config.actions.ActionWaitConfig",
-          "delay": 20,
-          "timeUnit": "SECONDS"
+          "delay": 4,
+          "timeUnit": "MINUTES"
         },
         {
           "typeId": "itx.rpi.powercontroller.config.actions.ActionPortLowConfig",
