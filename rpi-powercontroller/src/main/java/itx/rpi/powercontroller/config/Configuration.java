@@ -3,6 +3,7 @@ package itx.rpi.powercontroller.config;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import itx.rpi.powercontroller.services.jobs.KeyEvent;
 
 import java.util.Collection;
 import java.util.Date;
@@ -20,6 +21,8 @@ public class Configuration {
     private final Date started;
     private final Map<String, String> credentials;
     private final Collection<String> executeJobsOnStart;
+    private final Map<Integer, KeyEvent> keyEvents;
+    private final String killAllTasksJobId;
 
     @JsonCreator
     public Configuration(@JsonProperty("id") String id,
@@ -30,7 +33,9 @@ public class Configuration {
                          @JsonProperty("portTypes") Map<Integer, PortType> portTypes,
                          @JsonProperty("jobConfigurations") Collection<JobConfiguration> jobConfigurations,
                          @JsonProperty("credentials") Map<String, String> credentials,
-                         @JsonProperty("executeJobsOnStart") Collection<String> executeJobsOnStart) {
+                         @JsonProperty("executeJobsOnStart") Collection<String> executeJobsOnStart,
+                         @JsonProperty("keyEvents") Map<Integer, KeyEvent> keyEvents,
+                         @JsonProperty("killAllTasksJobId") String killAllTasksJobId) {
         this.id = id;
         this.name = name;
         this.host = host;
@@ -41,6 +46,8 @@ public class Configuration {
         this.started = new Date();
         this.credentials = credentials;
         this.executeJobsOnStart = executeJobsOnStart;
+        this.keyEvents = keyEvents;
+        this.killAllTasksJobId = killAllTasksJobId;
     }
 
     public String getId() {
@@ -82,6 +89,14 @@ public class Configuration {
 
     public Collection<String> getExecuteJobsOnStart() {
         return executeJobsOnStart;
+    }
+
+    public Map<Integer, KeyEvent> getKeyEvents() {
+        return keyEvents;
+    }
+
+    public String getKillAllTasksJobId() {
+        return killAllTasksJobId;
     }
 
 }

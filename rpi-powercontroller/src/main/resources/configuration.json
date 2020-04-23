@@ -18,9 +18,20 @@
     "client-001": "ex4ooNgexoo2aeSho7del8caiPh8iegi",
     "client-002": "EejeekeeShilooMeoG8sieng2deVu2qu"
   },
+  "keyEvents": {
+    "4": {
+      "toggleOnJob": "toggle-on-job-001",
+      "toggleOffJob": "toggle-off-job-001"
+    },
+    "5": {
+      "toggleOnJob": "kill-all-tasks",
+      "toggleOffJob": "kill-all-tasks"
+    }
+  },
   "executeJobsOnStart": [
     "switch-off-all-ports"
   ],
+  "killAllTasksJobId": "switch-off-all-ports",
   "jobConfigurations": [
     {
       "id": "switch-off-all-ports",
@@ -112,6 +123,26 @@
           "delay": 4,
           "timeUnit": "MINUTES"
         },
+        {
+          "typeId": "itx.rpi.powercontroller.config.actions.ActionPortLowConfig",
+          "port": 0
+        }
+      ]
+    },
+    {
+      "id": "toggle-on-job-001",
+      "name": "Turn ON port 01.",
+      "actions" : [
+        {
+          "typeId": "itx.rpi.powercontroller.config.actions.ActionPortHighConfig",
+          "port": 0
+        }
+      ]
+    },
+    {
+      "id": "toggle-off-job-001",
+      "name": "Turn OFF port 01.",
+      "actions" : [
         {
           "typeId": "itx.rpi.powercontroller.config.actions.ActionPortLowConfig",
           "port": 0

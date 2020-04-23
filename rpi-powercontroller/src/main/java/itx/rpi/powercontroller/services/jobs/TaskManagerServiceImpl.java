@@ -32,15 +32,15 @@ public class TaskManagerServiceImpl implements TaskManagerService {
     private static final Logger LOG = LoggerFactory.getLogger(TaskManagerServiceImpl.class);
 
     private final RPiService rPiService;
-    private final Job killAllTasksJob;
+    private final String killAllTasksId;
     private final Map<JobId, Job> jobs;
     private final Map<TaskId, Task> tasks;
 
     private ExecutorService executorService;
 
-    public TaskManagerServiceImpl(Collection<Job> jobs, Job killAllTasksJob, RPiService rPiService) {
+    public TaskManagerServiceImpl(Collection<Job> jobs, String killAllTasksId, RPiService rPiService) {
         this.rPiService = rPiService;
-        this.killAllTasksJob = killAllTasksJob;
+        this.killAllTasksId = killAllTasksId;
         this.jobs = new HashMap<>();
         jobs.forEach(j -> this.jobs.put(JobId.from(j.getId()), j));
         this.executorService = Executors.newSingleThreadExecutor();
@@ -49,34 +49,33 @@ public class TaskManagerServiceImpl implements TaskManagerService {
 
     @Override
     public synchronized Collection<Job> getJobs() {
-        Collection<Job> result = new ArrayList<>();
-        result.add(killAllTasksJob);
-        result.addAll(jobs.values());
-        return result;
+        return jobs.values();
     }
 
     @Override
     public synchronized Optional<TaskId> submitTask(JobId jobId) {
-        if (killAllTasksJob.getId().equals(jobId.getId())) {
-            TaskId taskId = TaskId.from(UUID.randomUUID().toString());
-            try {
-                LOG.info("killing all tasks ...");
-                kilAllTasks();
-                this.executorService.shutdown();
-                this.executorService.awaitTermination(1, TimeUnit.MINUTES);
-            } catch (InterruptedException e) {
-                LOG.error("InterruptedException: ", e);
-            } finally {
-                this.executorService = Executors.newSingleThreadExecutor();
-            }
-            return Optional.of(taskId);
-        }
         Job job = jobs.get(jobId);
         if (job != null) {
             TaskId taskId = TaskId.from(UUID.randomUUID().toString());
-            Task task = new Task(taskId, job.getId(), job.getName(), createActions(job.getActions()));
-            tasks.put(taskId, task);
-            executorService.submit(task);
+            if (killAllTasksId.equals(job.getId())) {
+                try {
+                    LOG.info("killing all tasks ...");
+                    kilAllTasks();
+                    this.executorService.shutdown();
+                    this.executorService.awaitTermination(1, TimeUnit.MINUTES);
+                    Task task = new Task(taskId, job.getId(), job.getName(), createActions(job.getActions()));
+                    tasks.put(taskId, task);
+                    task.run();
+                } catch (InterruptedException e) {
+                    LOG.error("InterruptedException: ", e);
+                } finally {
+                    this.executorService = Executors.newSingleThreadExecutor();
+                }
+            } else {
+                Task task = new Task(taskId, job.getId(), job.getName(), createActions(job.getActions()));
+                tasks.put(taskId, task);
+                executorService.submit(task);
+            }
             return Optional.of(taskId);
         }
         return Optional.empty();

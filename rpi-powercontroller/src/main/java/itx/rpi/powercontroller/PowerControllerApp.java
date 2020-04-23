@@ -41,11 +41,11 @@ public class PowerControllerApp {
 
     public static Services initialize(ObjectMapper mapper, Configuration configuration) {
         AAService aaService = new AAServiceImpl(configuration.getCredentials());
-        PortListener portListener = new PortListenerImpl();
+        PortListener portListener = new PortListenerImpl(configuration.getKeyEvents());
         SystemInfoService systemInfoService = new SystemInfoServiceImpl(configuration);
         RPiService rPiService = RPiServiceFactory.createService(configuration, portListener);
-        Job killAllTasksJob = new Job("kill-all-tasks", "Kill all executed tasks and cancel all waiting tasks.", Collections.emptyList());
-        TaskManagerService taskManagerService = TaskManagerFactory.createTaskManagerService(configuration, killAllTasksJob, rPiService);
+        TaskManagerService taskManagerService = TaskManagerFactory.createTaskManagerService(configuration, rPiService);
+        portListener.setTaskManagerService(taskManagerService);
 
         configuration.getExecuteJobsOnStart().forEach(jobId -> {
             LOG.info("Starting \"jobId={}\" job on start.", jobId);
@@ -68,7 +68,7 @@ public class PowerControllerApp {
                 .setHandler(handler)
                 .build();
 
-        return new Services(rPiService, server, taskManagerService);
+        return new Services(rPiService, server, taskManagerService, portListener);
     }
 
     public static void main(String[] args) throws IOException {
@@ -109,11 +109,13 @@ public class PowerControllerApp {
         private final RPiService rPiService;
         private final Undertow server;
         private final TaskManagerService taskManagerService;
+        private final PortListener portListener;
 
-        public Services(RPiService rPiService, Undertow server, TaskManagerService taskManagerService) {
+        public Services(RPiService rPiService, Undertow server, TaskManagerService taskManagerService, PortListener portListener) {
             this.rPiService = rPiService;
             this.server = server;
             this.taskManagerService = taskManagerService;
+            this.portListener = portListener;
         }
 
         public RPiService getRPiService() {
@@ -126,6 +128,10 @@ public class PowerControllerApp {
 
         public TaskManagerService getTaskManagerService() {
             return taskManagerService;
+        }
+
+        public PortListener getPortListener() {
+            return portListener;
         }
 
         public void shutdown() throws Exception {
