@@ -1,16 +1,20 @@
 package itx.rpi.powercontroller.tests;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import itx.rpi.powercontroller.PowerControllerApp;
 import itx.rpi.powercontroller.config.Configuration;
 import itx.rpi.powercontroller.dto.JobInfo;
 import itx.rpi.powercontroller.dto.Measurements;
+import itx.rpi.powercontroller.dto.SetPortRequest;
 import itx.rpi.powercontroller.dto.SystemInfo;
 import itx.rpi.powercontroller.dto.SystemState;
 import itx.rpi.powercontroller.handlers.HandlerUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.conn.HttpHostConnectException;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.junit.jupiter.api.AfterAll;
@@ -24,10 +28,12 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -60,7 +66,7 @@ public class PowerControllerTests {
         for (int i=0; i<10; i++) {
             try {
                 LOG.info("Waiting for server: ");
-                Thread.sleep(1000);
+                Thread.sleep(500);
                 HttpGet get = new HttpGet(BASE_URL + "/system/info");
                 httpClient.execute(get);
                 break;
@@ -109,11 +115,7 @@ public class PowerControllerTests {
     @Test
     @Order(3)
     public void testSystemState() throws IOException {
-        HttpGet get = new HttpGet(BASE_URL + "/system/state");
-        get.addHeader("Authorization", HandlerUtils.createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
-        CloseableHttpResponse response = httpClient.execute(get);
-        assertEquals(200, response.getStatusLine().getStatusCode());
-        SystemState systemState = mapper.readValue(response.getEntity().getContent(), SystemState.class);
+        SystemState systemState = getSystemState();
         assertNotNull(systemState);
         assertNotNull(systemState.getTimeStamp());
         assertNotNull(systemState.getPortTypes());
@@ -132,12 +134,43 @@ public class PowerControllerTests {
         assertTrue(jobs.length > 0);
     }
 
+    @Test
+    @Order(5)
+    public void testPort0OnAndOff() throws IOException {
+        Integer portId = 0;
+        assertTrue(setPortState(portId, true));
+        SystemState systemState = getSystemState();
+        assertTrue(systemState.getPorts().get(portId));
+        assertTrue(setPortState(portId, false));
+        systemState = getSystemState();
+        assertFalse(systemState.getPorts().get(portId));
+    }
+
     @AfterAll
     public static void shutdown() throws Exception {
         httpClient.close();
         services.getServer().stop();
         services.shutdown();
         executorService.shutdown();
+    }
+
+    private SystemState getSystemState() throws IOException {
+        HttpGet get = new HttpGet(BASE_URL + "/system/state");
+        get.addHeader("Authorization", HandlerUtils.createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
+        CloseableHttpResponse response = httpClient.execute(get);
+        assertEquals(200, response.getStatusLine().getStatusCode());
+        return mapper.readValue(response.getEntity().getContent(), SystemState.class);
+    }
+
+    private boolean setPortState(Integer port, Boolean state) throws IOException {
+        HttpPut put = new HttpPut(BASE_URL + "/system/port");
+        SetPortRequest  request = new SetPortRequest(port, state);
+        put.addHeader("Authorization", HandlerUtils.createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
+        StringEntity stringEntity = new StringEntity(mapper.writeValueAsString(request));
+        stringEntity.setContentType("application/json");
+        put.setEntity(stringEntity);
+        CloseableHttpResponse response = httpClient.execute(put);
+        return 200 == response.getStatusLine().getStatusCode();
     }
 
 }
