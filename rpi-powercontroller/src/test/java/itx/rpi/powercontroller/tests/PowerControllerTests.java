@@ -3,6 +3,7 @@ package itx.rpi.powercontroller.tests;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import itx.rpi.powercontroller.PowerControllerApp;
 import itx.rpi.powercontroller.config.Configuration;
+import itx.rpi.powercontroller.dto.JobInfo;
 import itx.rpi.powercontroller.dto.Measurements;
 import itx.rpi.powercontroller.dto.SystemInfo;
 import itx.rpi.powercontroller.dto.SystemState;
@@ -29,6 +30,7 @@ import java.util.concurrent.Executors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class PowerControllerTests {
@@ -116,6 +118,18 @@ public class PowerControllerTests {
         assertNotNull(systemState.getTimeStamp());
         assertNotNull(systemState.getPortTypes());
         assertNotNull(systemState.getPorts());
+    }
+
+    @Test
+    @Order(4)
+    public void testJobs() throws IOException {
+        HttpGet get = new HttpGet(BASE_URL + "/system/jobs");
+        get.addHeader("Authorization", HandlerUtils.createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
+        CloseableHttpResponse response = httpClient.execute(get);
+        assertEquals(200, response.getStatusLine().getStatusCode());
+        JobInfo[] jobs = mapper.readValue(response.getEntity().getContent(), JobInfo[].class);
+        assertNotNull(jobs);
+        assertTrue(jobs.length > 0);
     }
 
     @AfterAll

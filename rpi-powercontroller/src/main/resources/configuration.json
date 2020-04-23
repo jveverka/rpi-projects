@@ -24,6 +24,14 @@
       "toggleOffJob": "toggle-off-job-001"
     },
     "5": {
+      "toggleOnJob": "toggle-on-job-002",
+      "toggleOffJob": "toggle-off-job-002"
+    },
+    "6": {
+      "toggleOnJob": "kill-all-tasks",
+      "toggleOffJob": "kill-all-tasks"
+    },
+    "7": {
       "toggleOnJob": "kill-all-tasks",
       "toggleOffJob": "kill-all-tasks"
     }
@@ -135,7 +143,7 @@
       "actions" : [
         {
           "typeId": "itx.rpi.powercontroller.config.actions.ActionPortHighConfig",
-          "port": 0
+          "port": 1
         }
       ]
     },
@@ -145,7 +153,32 @@
       "actions" : [
         {
           "typeId": "itx.rpi.powercontroller.config.actions.ActionPortLowConfig",
-          "port": 0
+          "port": 1
+        }
+      ]
+    },
+    {
+      "id": "toggle-on-job-002",
+      "name": "Turn ON port 02 and wait.",
+      "actions" : [
+        {
+          "typeId": "itx.rpi.powercontroller.config.actions.ActionPortHighConfig",
+          "port": 2
+        },
+        {
+          "typeId": "itx.rpi.powercontroller.config.actions.ActionWaitConfig",
+          "delay": 2,
+          "timeUnit": "MINUTES"
+        }
+      ]
+    },
+    {
+      "id": "toggle-off-job-002",
+      "name": "Turn OFF port 02.",
+      "actions" : [
+        {
+          "typeId": "itx.rpi.powercontroller.config.actions.ActionPortLowConfig",
+          "port": 2
         }
       ]
     }
