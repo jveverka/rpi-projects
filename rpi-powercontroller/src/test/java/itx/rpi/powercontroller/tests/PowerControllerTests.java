@@ -1,9 +1,9 @@
 package itx.rpi.powercontroller.tests;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import itx.rpi.powercontroller.PowerControllerApp;
 import itx.rpi.powercontroller.config.Configuration;
+import itx.rpi.powercontroller.dto.JobId;
 import itx.rpi.powercontroller.dto.JobInfo;
 import itx.rpi.powercontroller.dto.Measurements;
 import itx.rpi.powercontroller.dto.SetPortRequest;
@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -52,6 +51,7 @@ public class PowerControllerTests {
     private static ObjectMapper mapper;
     private static Configuration configuration;
     private static String clientSecret;
+    private static JobId killAllJobId;
 
     @BeforeAll
     public static void init() throws IOException {
@@ -144,6 +144,17 @@ public class PowerControllerTests {
         assertTrue(setPortState(portId, false));
         systemState = getSystemState();
         assertFalse(systemState.getPorts().get(portId));
+    }
+
+    @Test
+    @Order(6)
+    public void testKillAllJobId() throws IOException {
+        HttpGet get = new HttpGet(BASE_URL + "/system/jobs/killalljobid");
+        get.addHeader("Authorization", HandlerUtils.createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
+        CloseableHttpResponse response = httpClient.execute(get);
+        assertEquals(200, response.getStatusLine().getStatusCode());
+        killAllJobId = mapper.readValue(response.getEntity().getContent(), JobId.class);
+        assertNotNull(killAllJobId);
     }
 
     @AfterAll

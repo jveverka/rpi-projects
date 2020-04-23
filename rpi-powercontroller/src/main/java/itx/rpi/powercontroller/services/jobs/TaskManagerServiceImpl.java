@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -26,21 +27,22 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class TaskManagerServiceImpl implements TaskManagerService {
 
     private static final Logger LOG = LoggerFactory.getLogger(TaskManagerServiceImpl.class);
 
     private final RPiService rPiService;
-    private final String killAllTasksId;
+    private final String killAllTasksJobId;
     private final Map<JobId, Job> jobs;
     private final Map<TaskId, Task> tasks;
 
     private ExecutorService executorService;
 
-    public TaskManagerServiceImpl(Collection<Job> jobs, String killAllTasksId, RPiService rPiService) {
+    public TaskManagerServiceImpl(Collection<Job> jobs, String killAllTasksJobId, RPiService rPiService) {
         this.rPiService = rPiService;
-        this.killAllTasksId = killAllTasksId;
+        this.killAllTasksJobId = killAllTasksJobId;
         this.jobs = new HashMap<>();
         jobs.forEach(j -> this.jobs.put(JobId.from(j.getId()), j));
         this.executorService = Executors.newSingleThreadExecutor();
@@ -57,7 +59,7 @@ public class TaskManagerServiceImpl implements TaskManagerService {
         Job job = jobs.get(jobId);
         if (job != null) {
             TaskId taskId = TaskId.from(UUID.randomUUID().toString());
-            if (killAllTasksId.equals(job.getId())) {
+            if (killAllTasksJobId.equals(job.getId())) {
                 try {
                     LOG.info("killing all tasks ...");
                     kilAllTasks();
@@ -82,6 +84,14 @@ public class TaskManagerServiceImpl implements TaskManagerService {
     }
 
     @Override
+    public Optional<JobId> getKillAllTasksJobId() {
+        if (killAllTasksJobId != null) {
+            return Optional.of(JobId.from(killAllTasksJobId));
+        }
+        return Optional.empty();
+    }
+
+    @Override
     public synchronized Collection<TaskInfo> getTasks() {
         Collection<TaskInfo> taskInfos = new ArrayList<>();
         for (Task task : tasks.values()) {
@@ -93,7 +103,7 @@ public class TaskManagerServiceImpl implements TaskManagerService {
             TaskInfo taskInfo = new TaskInfo(task.getId().getId(), task.getJobId(), task.getJobName(), task.getStatus(), actionTaskInfos, task.getStarted(), task.getDuration());
             taskInfos.add(taskInfo);
         }
-        return taskInfos;
+        return taskInfos.stream().sorted(Comparator.comparingLong(t -> t.getStarted().getTime())).collect(Collectors.toList());
     }
 
     @Override

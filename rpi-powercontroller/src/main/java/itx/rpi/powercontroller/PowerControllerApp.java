@@ -10,6 +10,7 @@ import itx.rpi.powercontroller.dto.JobId;
 import itx.rpi.powercontroller.handlers.CancelAllTasksHandler;
 import itx.rpi.powercontroller.handlers.CancelTaskHandler;
 import itx.rpi.powercontroller.handlers.JobInfoHandler;
+import itx.rpi.powercontroller.handlers.JobKillAllIdHandler;
 import itx.rpi.powercontroller.handlers.MeasurementsHandler;
 import itx.rpi.powercontroller.handlers.PortStateHandler;
 import itx.rpi.powercontroller.handlers.SubmitTaskHandler;
@@ -57,6 +58,7 @@ public class PowerControllerApp {
                 .addPrefixPath("/system/state", new SystemStateHandler(mapper, aaService, rPiService))
                 .addPrefixPath("/system/port", new BlockingHandler(new PortStateHandler(mapper, aaService, rPiService)))
                 .addPrefixPath("/system/jobs", new JobInfoHandler(mapper, aaService, taskManagerService))
+                .addPrefixPath("/system/jobs/killalljobid", new JobKillAllIdHandler(mapper, aaService, taskManagerService))
                 .addPrefixPath("/system/tasks", new TasksInfoHandler(mapper, aaService, taskManagerService))
                 .addPrefixPath("/system/tasks/submit", new BlockingHandler(new SubmitTaskHandler(mapper, aaService, taskManagerService)))
                 .addPrefixPath("/system/tasks/cancel", new BlockingHandler(new CancelTaskHandler(mapper, aaService, taskManagerService)))

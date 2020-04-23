@@ -49,6 +49,9 @@ __rpi-powercontroller__ is capable of running autonomous tasks. Please check [do
   ``
 * Get available pre-configured jobs.  
   __GET__ ``/system/jobs``
+  
+* Get id of killAll tasks job.  
+  __GET__ ``/system/jobs/killalljobid``
 * Get task queue (waiting, in-progress, finished) tasks.  
   __GET__ ``/system/tasks``
 * Submit job to task execution - returns task-id of submitted job.  
