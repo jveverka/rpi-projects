@@ -61,6 +61,9 @@ __rpi-powercontroller__ is capable of running autonomous tasks. Please check [do
   ``
   { "id": "task-001" }
   ``
+* Stop all running tasks and execute selected 'killAllTaskId'.  
+  __PUT__ ``/system/tasks/cancel/all``   
+  
 #### REST Security  
 All REST endpoint require [HTTP basic authorization](https://en.wikipedia.org/wiki/Basic_access_authentication) header to be used, valid __client-id / client-secret__.
 Check configuration section.

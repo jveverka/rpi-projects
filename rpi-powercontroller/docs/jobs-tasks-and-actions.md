@@ -19,8 +19,11 @@ TBD
 #### Cancel Submitted Task
 TBD
 
-#### Default Jobs
-* __kill-all-tasks__ - this task currently executed task as well as all tasks waiting in the execution queue.  
+#### Kill Them All
+* __killAllTasksJobId__ - selected job may be triggered on killAllTasks event. 
+  This event stops currently executed task as well as all tasks waiting in 
+  the execution queue. Once all tasks are stopped or cancelled, an instance of 
+  killAllTasksJobId is executed in same thread.  
 
 #### Default Actions
 * __action-port-high__ - turns ON selected port.

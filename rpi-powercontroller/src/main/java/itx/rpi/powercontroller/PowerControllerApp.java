@@ -7,6 +7,7 @@ import io.undertow.server.handlers.BlockingHandler;
 import io.undertow.server.handlers.PathHandler;
 import itx.rpi.powercontroller.config.Configuration;
 import itx.rpi.powercontroller.dto.JobId;
+import itx.rpi.powercontroller.handlers.CancelAllTasksHandler;
 import itx.rpi.powercontroller.handlers.CancelTaskHandler;
 import itx.rpi.powercontroller.handlers.JobInfoHandler;
 import itx.rpi.powercontroller.handlers.MeasurementsHandler;
@@ -25,7 +26,6 @@ import itx.rpi.powercontroller.services.impl.AAServiceImpl;
 import itx.rpi.powercontroller.services.impl.PortListenerImpl;
 import itx.rpi.powercontroller.services.impl.RPiServiceFactory;
 import itx.rpi.powercontroller.services.impl.SystemInfoServiceImpl;
-import itx.rpi.powercontroller.services.jobs.Job;
 import itx.rpi.powercontroller.services.jobs.TaskManagerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
 
 public class PowerControllerApp {
 
@@ -60,7 +59,8 @@ public class PowerControllerApp {
                 .addPrefixPath("/system/jobs", new JobInfoHandler(mapper, aaService, taskManagerService))
                 .addPrefixPath("/system/tasks", new TasksInfoHandler(mapper, aaService, taskManagerService))
                 .addPrefixPath("/system/tasks/submit", new BlockingHandler(new SubmitTaskHandler(mapper, aaService, taskManagerService)))
-                .addPrefixPath("/system/tasks/cancel", new BlockingHandler(new CancelTaskHandler(mapper, aaService, taskManagerService)));
+                .addPrefixPath("/system/tasks/cancel", new BlockingHandler(new CancelTaskHandler(mapper, aaService, taskManagerService)))
+                .addPrefixPath("/system/tasks/cancel/all", new BlockingHandler(new CancelAllTasksHandler(mapper, aaService, taskManagerService)));
 
 
         Undertow server = Undertow.builder()
