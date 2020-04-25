@@ -51,6 +51,9 @@ public class Task implements Runnable {
 
     @Override
     public void run() {
+        if (!ExecutionStatus.WAITING.equals(status)) {
+            return;
+        }
         try {
             this.stopped = false;
             this.started = new Date();
@@ -74,6 +77,9 @@ public class Task implements Runnable {
 
     public void shutdown() {
         this.stopped = true;
+        if (ExecutionStatus.WAITING.equals(status)) {
+            this.status = ExecutionStatus.CANCELLED;
+        }
         for (Action action : actions) {
             action.stop();
         }

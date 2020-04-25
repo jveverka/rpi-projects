@@ -5,6 +5,7 @@ import itx.rpi.powercontroller.config.actions.ActionPortHighConfig;
 import itx.rpi.powercontroller.config.actions.ActionPortLowConfig;
 import itx.rpi.powercontroller.config.actions.ActionWaitConfig;
 import itx.rpi.powercontroller.dto.ActionTaskInfo;
+import itx.rpi.powercontroller.dto.CancelledTaskInfo;
 import itx.rpi.powercontroller.dto.JobId;
 import itx.rpi.powercontroller.dto.TaskId;
 import itx.rpi.powercontroller.dto.TaskInfo;
@@ -109,13 +110,14 @@ public class TaskManagerServiceImpl implements TaskManagerService {
     }
 
     @Override
-    public synchronized boolean cancelTask(TaskId taskId) {
+    public synchronized Optional<CancelledTaskInfo> cancelTask(TaskId taskId) {
         Task task = tasks.get(taskId);
         if (task != null) {
+            CancelledTaskInfo cancelledTaskInfo = new CancelledTaskInfo(task.getId().getId(), task.getStatus());
             task.shutdown();
-            return true;
+            return Optional.of(cancelledTaskInfo);
         }
-        return false;
+        return Optional.empty();
     }
 
     @Override

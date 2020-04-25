@@ -4,11 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
+import itx.rpi.powercontroller.dto.CancelledTaskInfo;
 import itx.rpi.powercontroller.dto.TaskId;
 import itx.rpi.powercontroller.services.AAService;
 import itx.rpi.powercontroller.services.TaskManagerService;
 
 import java.io.InputStream;
+import java.util.Optional;
 
 public class CancelTaskHandler implements HttpHandler {
 
@@ -33,9 +35,10 @@ public class CancelTaskHandler implements HttpHandler {
             exchange.startBlocking();
             InputStream is = exchange.getInputStream();
             TaskId taskId = mapper.readValue(is, TaskId.class);
-            boolean result = taskManagerService.cancelTask(taskId);
-            if (result) {
+            Optional<CancelledTaskInfo> result = taskManagerService.cancelTask(taskId);
+            if (result.isPresent()) {
                 exchange.setStatusCode(HandlerUtils.OK);
+                exchange.getResponseSender().send(mapper.writeValueAsString(result.get()));
             } else {
                 exchange.setStatusCode(HandlerUtils.NOT_FOUND);
             }
