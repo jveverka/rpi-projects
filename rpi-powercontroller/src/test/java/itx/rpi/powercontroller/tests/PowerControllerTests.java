@@ -9,7 +9,10 @@ import itx.rpi.powercontroller.dto.Measurements;
 import itx.rpi.powercontroller.dto.SetPortRequest;
 import itx.rpi.powercontroller.dto.SystemInfo;
 import itx.rpi.powercontroller.dto.SystemState;
+import itx.rpi.powercontroller.dto.TaskId;
+import itx.rpi.powercontroller.dto.TaskInfo;
 import itx.rpi.powercontroller.handlers.HandlerUtils;
+import itx.rpi.powercontroller.services.jobs.ExecutionStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
@@ -28,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -157,6 +161,65 @@ public class PowerControllerTests {
         assertNotNull(killAllJobId);
     }
 
+    @Test
+    @Order(7)
+    public void getTasksTest() throws IOException {
+        TaskInfo[] taskInfos = getTasks();
+        assertNotNull(taskInfos);
+        assertTrue(taskInfos.length == 1);
+    }
+
+    @Test
+    @Order(8)
+    public void tasksSubmitAndCancelTest() throws IOException, InterruptedException {
+        Optional<TaskId> taskId = submitTask(JobId.from("toggle-on-job-002"));
+        assertTrue(taskId.isPresent());
+        Optional<TaskInfo> taskInfo = filterById(getTasks(), taskId.get());
+        assertTrue(taskInfo.isPresent());
+        assertEquals(ExecutionStatus.IN_PROGRESS, taskInfo.get().getStatus());
+        assertTrue(cancelTask(taskId.get()));
+        Thread.sleep(200);
+        taskInfo = filterById(getTasks(), taskId.get());
+        assertEquals(ExecutionStatus.ABORTED, taskInfo.get().getStatus());
+    }
+
+    @Test
+    @Order(9)
+    public void tasksSubmitAndFinishTest() throws IOException, InterruptedException {
+        Optional<TaskId> taskId = submitTask(JobId.from("toggle-on-job-001"));
+        assertTrue(taskId.isPresent());
+        Optional<TaskInfo> taskInfo = filterById(getTasks(), taskId.get());
+        assertTrue(taskInfo.isPresent());
+        Thread.sleep(20);
+        taskInfo = filterById(getTasks(), taskId.get());
+        assertEquals(ExecutionStatus.FINISHED, taskInfo.get().getStatus());
+    }
+
+    @Test
+    @Order(10)
+    public void tasksSubmitManyAndCancelAll() throws IOException, InterruptedException {
+        Optional<TaskId> taskId = submitTask(JobId.from("toggle-on-job-002"));
+        assertTrue(taskId.isPresent());
+        taskId = submitTask(JobId.from("toggle-on-job-002"));
+        assertTrue(taskId.isPresent());
+        taskId = submitTask(JobId.from("toggle-on-job-002"));
+        assertTrue(taskId.isPresent());
+
+        int inProgressCounter = filterByStatus(getTasks(), ExecutionStatus.IN_PROGRESS);
+        assertEquals(1, inProgressCounter);
+
+        int waitingCounter = filterByStatus(getTasks(), ExecutionStatus.WAITING);
+        assertEquals(2, waitingCounter);
+
+        boolean cancelled = cancelAllTasks();
+        assertTrue(cancelled);
+
+        Thread.sleep(200);
+
+        int abortedCounter = filterByStatus(getTasks(), ExecutionStatus.ABORTED);
+        assertEquals(2, abortedCounter);
+    }
+
     @AfterAll
     public static void shutdown() throws Exception {
         httpClient.close();
@@ -182,6 +245,73 @@ public class PowerControllerTests {
         put.setEntity(stringEntity);
         CloseableHttpResponse response = httpClient.execute(put);
         return 200 == response.getStatusLine().getStatusCode();
+    }
+
+    private TaskInfo[] getTasks() throws IOException {
+        HttpGet get = new HttpGet(BASE_URL + "/system/tasks");
+        get.addHeader("Authorization", HandlerUtils.createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
+        CloseableHttpResponse response = httpClient.execute(get);
+        assertEquals(200, response.getStatusLine().getStatusCode());
+        return mapper.readValue(response.getEntity().getContent(), TaskInfo[].class);
+    }
+
+    private Optional<TaskId> submitTask(JobId id) throws IOException {
+        HttpPut put = new HttpPut(BASE_URL + "/system/tasks/submit");
+        put.addHeader("Authorization", HandlerUtils.createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
+        StringEntity stringEntity = new StringEntity(mapper.writeValueAsString(id));
+        stringEntity.setContentType("application/json");
+        put.setEntity(stringEntity);
+        CloseableHttpResponse response = httpClient.execute(put);
+        if (response.getStatusLine().getStatusCode() == 200) {
+            TaskId taskId = mapper.readValue(response.getEntity().getContent(), TaskId.class);
+            return Optional.of(taskId);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    private boolean cancelTask(TaskId id) throws IOException {
+        HttpPut put = new HttpPut(BASE_URL + "/system/tasks/cancel");
+        put.addHeader("Authorization", HandlerUtils.createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
+        StringEntity stringEntity = new StringEntity(mapper.writeValueAsString(id));
+        stringEntity.setContentType("application/json");
+        put.setEntity(stringEntity);
+        CloseableHttpResponse response = httpClient.execute(put);
+        if (response.getStatusLine().getStatusCode() == 200) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean cancelAllTasks() throws IOException {
+        HttpPut put = new HttpPut(BASE_URL + "/system/tasks/cancel/all");
+        put.addHeader("Authorization", HandlerUtils.createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
+        CloseableHttpResponse response = httpClient.execute(put);
+        if (response.getStatusLine().getStatusCode() == 200) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private Optional<TaskInfo> filterById(TaskInfo[] taskInfos, TaskId id) {
+        for (TaskInfo taskInfo: taskInfos) {
+            if (id.getId().equals(taskInfo.getId())) {
+                return Optional.of(taskInfo);
+            }
+        }
+        return Optional.empty();
+    }
+
+    private int filterByStatus(TaskInfo[] taskInfos, ExecutionStatus executionStatus) {
+        int counter = 0;
+        for (TaskInfo taskInfo: taskInfos) {
+            if (executionStatus.equals(taskInfo.getStatus())) {
+                counter++;
+            }
+        }
+        return counter;
     }
 
 }

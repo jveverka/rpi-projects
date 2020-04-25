@@ -14,6 +14,7 @@ public class TaskInfo {
     private final String jobName;
     private final ExecutionStatus status;
     private final Collection<ActionTaskInfo> actions;
+    private final Date submitted;
     private final Date started;
     private final Long duration;
 
@@ -23,6 +24,7 @@ public class TaskInfo {
                     @JsonProperty("jobName") String jobName,
                     @JsonProperty("status") ExecutionStatus status,
                     @JsonProperty("actions") Collection<ActionTaskInfo> actions,
+                    @JsonProperty("submitted") Date submitted,
                     @JsonProperty("started") Date started,
                     @JsonProperty("duration") Long duration) {
         this.id = id;
@@ -30,6 +32,7 @@ public class TaskInfo {
         this.jobName = jobName;
         this.status = status;
         this.actions = actions;
+        this.submitted = submitted;
         this.started = started;
         this.duration = duration;
     }
@@ -54,6 +57,10 @@ public class TaskInfo {
         return actions;
     }
 
+    public Date getSubmitted() {
+        return submitted;
+    }
+
     public Date getStarted() {
         return started;
     }
@@ -61,4 +68,5 @@ public class TaskInfo {
     public Long getDuration() {
         return duration;
     }
+
 }

@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -65,7 +66,7 @@ public class TaskManagerServiceImpl implements TaskManagerService {
                     kilAllTasks();
                     this.executorService.shutdown();
                     this.executorService.awaitTermination(1, TimeUnit.MINUTES);
-                    Task task = new Task(taskId, job.getId(), job.getName(), createActions(job.getActions()));
+                    Task task = new Task(taskId, job.getId(), job.getName(), createActions(job.getActions()), new Date());
                     tasks.put(taskId, task);
                     task.run();
                 } catch (InterruptedException e) {
@@ -74,7 +75,7 @@ public class TaskManagerServiceImpl implements TaskManagerService {
                     this.executorService = Executors.newSingleThreadExecutor();
                 }
             } else {
-                Task task = new Task(taskId, job.getId(), job.getName(), createActions(job.getActions()));
+                Task task = new Task(taskId, job.getId(), job.getName(), createActions(job.getActions()), new Date());
                 tasks.put(taskId, task);
                 executorService.submit(task);
             }
@@ -100,10 +101,11 @@ public class TaskManagerServiceImpl implements TaskManagerService {
                 ActionTaskInfo actionTaskInfo = new ActionTaskInfo(action.getType(),  action.getDescription(), action.getStatus());
                 actionTaskInfos.add(actionTaskInfo);
             }
-            TaskInfo taskInfo = new TaskInfo(task.getId().getId(), task.getJobId(), task.getJobName(), task.getStatus(), actionTaskInfos, task.getStarted(), task.getDuration());
+            TaskInfo taskInfo = new TaskInfo(task.getId().getId(), task.getJobId(), task.getJobName(), task.getStatus(), actionTaskInfos,
+                    task.getSubmitted(), task.getStarted(), task.getDuration());
             taskInfos.add(taskInfo);
         }
-        return taskInfos.stream().sorted(Comparator.comparingLong(t -> t.getStarted().getTime())).collect(Collectors.toList());
+        return taskInfos.stream().sorted(Comparator.comparingLong(t -> t.getSubmitted().getTime())).collect(Collectors.toList());
     }
 
     @Override

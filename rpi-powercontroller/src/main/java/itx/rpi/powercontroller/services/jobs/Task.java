@@ -11,6 +11,7 @@ public class Task implements Runnable {
     private final String jobId;
     private final String jobName;
     private final Collection<Action> actions;
+    private final Date submitted;
 
     private ExecutionStatus status;
     private boolean stopped;
@@ -18,13 +19,14 @@ public class Task implements Runnable {
     private Date started;
     private Long duration;
 
-    public Task(TaskId id, String jobId, String jobName, Collection<Action> actions) {
+    public Task(TaskId id, String jobId, String jobName, Collection<Action> actions, Date submitted) {
         this.id = id;
         this.jobId = jobId;
         this.jobName = jobName;
         this.status = ExecutionStatus.WAITING;
         this.actions = actions;
         this.stopped = false;
+        this.submitted = submitted;
     }
 
     public TaskId getId() {
@@ -41,6 +43,10 @@ public class Task implements Runnable {
 
     public ExecutionStatus getStatus() {
         return status;
+    }
+
+    public Date getSubmitted() {
+        return submitted;
     }
 
     @Override
