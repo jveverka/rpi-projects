@@ -15,7 +15,6 @@ public class DummyActionFail extends ActionParent {
         return "Dummy action which always fails.";
     }
 
-
     @Override
     protected void taskBody() throws Exception {
         throw new UnsupportedOperationException("");

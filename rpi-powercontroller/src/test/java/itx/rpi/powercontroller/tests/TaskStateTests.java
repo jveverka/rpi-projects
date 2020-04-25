@@ -113,6 +113,7 @@ public class TaskStateTests {
         actions.add(new DummyActionOK(0L, TimeUnit.SECONDS));
         actions.add(new DummyActionOK(10L, TimeUnit.SECONDS));
         actions.add(new DummyActionOK(10L, TimeUnit.SECONDS));
+        actions.add(new DummyActionOK(10L, TimeUnit.SECONDS));
         Task task = new Task(TaskId.from("task-001"), "job-001", "", actions, new Date(), taskEventListener);
         taskEventListener.waitForWaiting(3L, TimeUnit.SECONDS);
         assertEquals(ExecutionStatus.WAITING, task.getStatus());
@@ -125,6 +126,7 @@ public class TaskStateTests {
         assertEquals(ExecutionStatus.FINISHED, actions.get(0).getStatus());
         assertEquals(ExecutionStatus.ABORTED, actions.get(1).getStatus());
         assertEquals(ExecutionStatus.CANCELLED, actions.get(2).getStatus());
+        assertEquals(ExecutionStatus.CANCELLED, actions.get(3).getStatus());
     }
 
     @AfterAll
