@@ -14,6 +14,7 @@ public class SystemInfo {
     private final boolean hardware;
     private final Date started;
     private final long uptime;
+    private final String uptimeDays;
 
     @JsonCreator
     public SystemInfo(@JsonProperty("id") String id,
@@ -22,7 +23,8 @@ public class SystemInfo {
                       @JsonProperty("version") String version,
                       @JsonProperty("hardware") boolean hardware,
                       @JsonProperty("started") Date started,
-                      @JsonProperty("uptime") long uptime) {
+                      @JsonProperty("uptime") long uptime,
+                      @JsonProperty("uptimeDays") String uptimeDays) {
         this.id = id;
         this.type = type;
         this.name = name;
@@ -30,6 +32,7 @@ public class SystemInfo {
         this.hardware = hardware;
         this.started = started;
         this.uptime = uptime;
+        this.uptimeDays = uptimeDays;
     }
 
     public String getId() {
@@ -58,5 +61,9 @@ public class SystemInfo {
 
     public long getUptime() {
         return uptime;
+    }
+
+    public String getUptimeDays() {
+        return uptimeDays;
     }
 }

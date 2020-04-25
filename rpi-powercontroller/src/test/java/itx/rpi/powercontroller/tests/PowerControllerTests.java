@@ -97,6 +97,8 @@ public class PowerControllerTests {
         assertNotNull(systemInfo.getName());
         assertNotNull(systemInfo.getType());
         assertNotNull(systemInfo.getStarted());
+        assertNotNull(systemInfo.getUptime());
+        assertNotNull(systemInfo.getUptimeDays());
     }
 
     @Test
