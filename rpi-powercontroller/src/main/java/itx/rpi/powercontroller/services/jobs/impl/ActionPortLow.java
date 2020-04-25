@@ -33,7 +33,7 @@ public class ActionPortLow implements Action {
     }
 
     @Override
-    public void execute() {
+    public void execute() throws Exception {
         if (!ExecutionStatus.WAITING.equals(executionStatus)) {
             return;
         }
@@ -42,6 +42,7 @@ public class ActionPortLow implements Action {
             rPiService.setPortState(port, false);
         } catch (Exception e) {
             this.executionStatus = ExecutionStatus.FAILED;
+            throw e;
         }
         this.executionStatus = ExecutionStatus.FINISHED;
     }

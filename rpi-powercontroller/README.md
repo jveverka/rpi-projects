@@ -5,12 +5,9 @@ The device is based on [RaspberryPI](https://www.raspberrypi.org/) and compatibl
 __Key features__:
 * __4 AC power ports__ - controlled remotely via HTTP / REST (ON | OFF).
 * __sensor data__ - measures temperature, relative humidity and atmospheric pressure.
-* __task execution__ - execute one-at-a-time tasks based on pre-defined job (switching sequence) 
+* __task execution__ - [execute one-at-a-time tasks](docs/jobs-tasks-and-actions.md) based on pre-defined job (switching sequence) 
 * __simple security__ - client-id / client-secret, basic access authentication.
-
-WIP features:
 * __4 keys to trigger jobs__ - trigger pre-defined jobs using 4 hardware keys / buttons.
-* __scheduled jobs__ - task scheduling based on pre-defined job sequences.
 
 ## Hardware Architecture
 ![hw-arch](docs/rpi-powercontroller-hardware-architecture.svg)

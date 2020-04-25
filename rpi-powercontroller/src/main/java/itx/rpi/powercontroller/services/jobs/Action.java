@@ -8,7 +8,7 @@ public interface Action {
 
     ExecutionStatus getStatus();
 
-    void execute();
+    void execute() throws Exception;
 
     void stop();
 

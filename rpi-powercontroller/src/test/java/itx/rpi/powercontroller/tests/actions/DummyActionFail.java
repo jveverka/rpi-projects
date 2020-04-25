@@ -3,19 +3,13 @@ package itx.rpi.powercontroller.tests.actions;
 import itx.rpi.powercontroller.services.jobs.Action;
 import itx.rpi.powercontroller.services.jobs.ExecutionStatus;
 
-import java.util.concurrent.TimeUnit;
 
 public class DummyActionFail implements Action {
 
-    private final Long delay;
-    private final TimeUnit timeUnit;
-
     private ExecutionStatus status;
 
-    public DummyActionFail(Long delay, TimeUnit timeUnit) {
+    public DummyActionFail() {
         this.status = ExecutionStatus.WAITING;
-        this.delay = delay;
-        this.timeUnit = timeUnit;
     }
 
     @Override
@@ -34,15 +28,13 @@ public class DummyActionFail implements Action {
     }
 
     @Override
-    public void execute() {
+    public void execute() throws Exception {
         this.status = ExecutionStatus.IN_PROGRESS;
         try {
-            if (delay > 0) {
-                Thread.sleep(timeUnit.toMillis(delay));
-            }
             throw new UnsupportedOperationException("Dummy action exception.");
         } catch (Exception e) {
             this.status = ExecutionStatus.FAILED;
+            throw e;
         }
     }
 

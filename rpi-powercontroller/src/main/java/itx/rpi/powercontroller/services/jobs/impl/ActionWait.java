@@ -36,7 +36,7 @@ public class ActionWait implements Action {
     }
 
     @Override
-    public void execute() {
+    public void execute() throws Exception {
         if (!ExecutionStatus.WAITING.equals(executionStatus)) {
             return;
         }
@@ -61,6 +61,7 @@ public class ActionWait implements Action {
             this.executionStatus = ExecutionStatus.FINISHED;
         } catch (Exception e) {
             this.executionStatus = ExecutionStatus.FAILED;
+            throw e;
         }
     }
 
