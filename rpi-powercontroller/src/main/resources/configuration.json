@@ -20,18 +20,22 @@
   },
   "keyEvents": {
     "4": {
+      "toggle": true,
       "toggleOnJob": "toggle-on-job-001",
       "toggleOffJob": "toggle-off-job-001"
     },
     "5": {
+      "toggle": true,
       "toggleOnJob": "toggle-on-job-002",
       "toggleOffJob": "toggle-off-job-002"
     },
     "6": {
-      "toggleOnJob": "switch-off-all-ports",
+      "toggle": false,
+      "toggleOnJob": "toggle-on-job-001",
       "toggleOffJob": "switch-off-all-ports"
     },
     "7": {
+      "toggle": true,
       "toggleOnJob": "toggle-on-job-001",
       "toggleOffJob": "switch-off-all-ports"
     }

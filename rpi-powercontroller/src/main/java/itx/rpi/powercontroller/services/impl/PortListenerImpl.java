@@ -34,24 +34,19 @@ public class PortListenerImpl implements PortListener {
     @Override
     public synchronized void onStateChange(Integer port, Boolean state) {
         LOG.info("onStateChange port={}, state={}", port, state);
-        if (state == true) {
+        KeyEvent keyEvent = keyEvents.get(port);
+        if (keyEvent == null) {
+            LOG.error("no KeyEvent registered on port {}", port);
             return;
         }
-        KeyEvent keyEvent = keyEvents.get(port);
-        if (keyEvent != null && taskManagerService != null) {
+        if (keyEvent.getToggle() && state == false) {
+            LOG.info("KeyEvent toggle={}, only state=false triggers action, action skipped.", keyEvent.getToggle());
+            return;
+        }
+        if (taskManagerService != null) {
             TaskId taskId = tasks.remove(port);
-            if (taskId != null) {
-                LOG.info("on toggle off task {}", taskId);
-                taskManagerService.cancelTask(taskId);
-                JobId offJobId = JobId.from(keyEvent.getToggleOffJob());
-                Optional<TaskId> offTaskId = taskManagerService.submitTask(offJobId);
-                if (offTaskId.isPresent()) {
-                    LOG.info("on toggle off task {}, job {} submitted.", offTaskId.get(), offJobId.getId());
-                } else {
-                    LOG.error("toggle off, job not submitted.");
-                }
-            } else {
-                LOG.info("on toggle on task");
+            if (taskId == null) {
+                LOG.info("On toggle ON task");
                 JobId onJobId = JobId.from(keyEvent.getToggleOnJob());
                 Optional<TaskId> onTaskId = taskManagerService.submitTask(onJobId);
                 if (onTaskId.isPresent()) {
@@ -59,6 +54,16 @@ public class PortListenerImpl implements PortListener {
                     LOG.info("on toggle on task {}, job {} submitted.", onTaskId.get(), onJobId.getId());
                 } else {
                     LOG.error("toggle on, job not submitted.");
+                }
+            } else {
+                LOG.info("On toggle OFF task {}", taskId);
+                taskManagerService.cancelTask(taskId);
+                JobId offJobId = JobId.from(keyEvent.getToggleOffJob());
+                Optional<TaskId> offTaskId = taskManagerService.submitTask(offJobId);
+                if (offTaskId.isPresent()) {
+                    LOG.info("on toggle off task {}, job {} submitted.", offTaskId.get(), offJobId.getId());
+                } else {
+                    LOG.error("toggle off, job not submitted.");
                 }
             }
         }

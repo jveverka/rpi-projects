@@ -223,7 +223,7 @@ public class PowerControllerTests {
 
     @Test
     @Order(11)
-    public void taskTestKeyEvents() throws IOException, InterruptedException {
+    public void taskTestKeyEventsToggle() throws IOException, InterruptedException {
         PortListener portListener = services.getPortListener();
         portListener.onStateChange(4, true);
         portListener.onStateChange(4, false);
@@ -239,7 +239,7 @@ public class PowerControllerTests {
 
     @Test
     @Order(12)
-    public void taskTestKeyEventsKillAll() throws IOException, InterruptedException {
+    public void taskTestKeyEventsToggleKillAll() throws IOException, InterruptedException {
         PortListener portListener = services.getPortListener();
         portListener.onStateChange(7, true);
         portListener.onStateChange(7, false);
@@ -248,6 +248,20 @@ public class PowerControllerTests {
         assertTrue(state.getPorts().get(1));
         portListener.onStateChange(7, true);
         portListener.onStateChange(7, false);
+        Thread.sleep(100);
+        state = getSystemState();
+        assertFalse(state.getPorts().get(1));
+    }
+
+    @Test
+    @Order(13)
+    public void taskTestKeyEvents() throws IOException, InterruptedException {
+        PortListener portListener = services.getPortListener();
+        portListener.onStateChange(6, true);
+        Thread.sleep(100);
+        SystemState state = getSystemState();
+        assertTrue(state.getPorts().get(1));
+        portListener.onStateChange(6, false);
         Thread.sleep(100);
         state = getSystemState();
         assertFalse(state.getPorts().get(1));
