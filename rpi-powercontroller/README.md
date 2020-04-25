@@ -7,7 +7,7 @@ __Key features__:
 * __sensor data__ - measures temperature, relative humidity and atmospheric pressure.
 * __task execution__ - [execute one-at-a-time tasks](docs/jobs-tasks-and-actions.md) based on pre-defined job (switching sequence) 
 * __simple security__ - client-id / client-secret, basic access authentication.
-* __4 keys to trigger jobs__ - trigger pre-defined jobs using 4 hardware keys / buttons.
+* __4 keys to trigger jobs__ - [trigger pre-defined jobs](docs/key-events.md) using 4 hardware keys / buttons.
 
 ## Hardware Architecture
 ![hw-arch](docs/rpi-powercontroller-hardware-architecture.svg)
@@ -30,6 +30,10 @@ Please check [configuration manual](docs/rpi-powercontroller-configuration.md) f
 
 ### Jobs, Tasks and Actions
 __rpi-powercontroller__ is capable of running autonomous tasks. Please check [documentation](docs/jobs-tasks-and-actions.md) for details.
+
+### Key Events
+If quipped with keys / buttons __rpi-powercontroller__ can be configured to submit a job on key press.
+Please check [documentation](docs/key-events.md) for details.
 
 ### REST APIs and Endpoints
 * [Complete Postman collection](docs/rpi-powercontroller.postman_collection.json)

@@ -1,4 +1,4 @@
-package itx.rpi.powercontroller.services.jobs;
+package itx.rpi.powercontroller.config;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

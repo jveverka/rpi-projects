@@ -12,6 +12,7 @@ import itx.rpi.powercontroller.dto.SystemState;
 import itx.rpi.powercontroller.dto.TaskId;
 import itx.rpi.powercontroller.dto.TaskInfo;
 import itx.rpi.powercontroller.handlers.HandlerUtils;
+import itx.rpi.powercontroller.services.PortListener;
 import itx.rpi.powercontroller.services.jobs.ExecutionStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -218,6 +219,38 @@ public class PowerControllerTests {
 
         int abortedCounter = filterByStatus(getTasks(), ExecutionStatus.ABORTED);
         assertEquals(2, abortedCounter);
+    }
+
+    @Test
+    @Order(11)
+    public void taskTestKeyEvents() throws IOException, InterruptedException {
+        PortListener portListener = services.getPortListener();
+        portListener.onStateChange(4, true);
+        portListener.onStateChange(4, false);
+        Thread.sleep(100);
+        SystemState state = getSystemState();
+        assertTrue(state.getPorts().get(1));
+        portListener.onStateChange(4, true);
+        portListener.onStateChange(4, false);
+        Thread.sleep(100);
+        state = getSystemState();
+        assertFalse(state.getPorts().get(1));
+    }
+
+    @Test
+    @Order(12)
+    public void taskTestKeyEventsKillAll() throws IOException, InterruptedException {
+        PortListener portListener = services.getPortListener();
+        portListener.onStateChange(7, true);
+        portListener.onStateChange(7, false);
+        Thread.sleep(100);
+        SystemState state = getSystemState();
+        assertTrue(state.getPorts().get(1));
+        portListener.onStateChange(7, true);
+        portListener.onStateChange(7, false);
+        Thread.sleep(100);
+        state = getSystemState();
+        assertFalse(state.getPorts().get(1));
     }
 
     @AfterAll

@@ -3,7 +3,6 @@ package itx.rpi.powercontroller.config;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import itx.rpi.powercontroller.services.jobs.KeyEvent;
 
 import java.util.Collection;
 import java.util.Date;

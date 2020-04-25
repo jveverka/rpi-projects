@@ -28,12 +28,12 @@
       "toggleOffJob": "toggle-off-job-002"
     },
     "6": {
-      "toggleOnJob": "kill-all-tasks",
-      "toggleOffJob": "kill-all-tasks"
+      "toggleOnJob": "switch-off-all-ports",
+      "toggleOffJob": "switch-off-all-ports"
     },
     "7": {
-      "toggleOnJob": "kill-all-tasks",
-      "toggleOffJob": "kill-all-tasks"
+      "toggleOnJob": "toggle-on-job-001",
+      "toggleOffJob": "switch-off-all-ports"
     }
   },
   "executeJobsOnStart": [
