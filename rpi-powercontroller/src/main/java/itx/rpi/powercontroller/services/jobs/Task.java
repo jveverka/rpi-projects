@@ -112,7 +112,7 @@ public class Task implements Runnable {
         if (!isTerminalExecutionState()) {
             this.stopped = true;
             for (Action action : actions) {
-                action.stop();
+                action.shutdown();
             }
         }
     }

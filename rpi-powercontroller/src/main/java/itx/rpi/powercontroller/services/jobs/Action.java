@@ -10,6 +10,6 @@ public interface Action {
 
     void execute() throws Exception;
 
-    void stop();
+    void shutdown();
 
 }

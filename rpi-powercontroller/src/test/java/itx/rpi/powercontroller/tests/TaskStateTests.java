@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -103,6 +104,27 @@ public class TaskStateTests {
                 ExecutionStatus.WAITING,
                 ExecutionStatus.IN_PROGRESS,
                 ExecutionStatus.FAILED));
+    }
+
+    @Test
+    public void testCancelInProgressComplexTask() throws InterruptedException {
+        TaskEventListenerImpl taskEventListener = new TaskEventListenerImpl();
+        List<Action> actions = new ArrayList<>();
+        actions.add(new DummyActionOK(0L, TimeUnit.SECONDS));
+        actions.add(new DummyActionOK(10L, TimeUnit.SECONDS));
+        actions.add(new DummyActionOK(10L, TimeUnit.SECONDS));
+        Task task = new Task(TaskId.from("task-001"), "job-001", "", actions, new Date(), taskEventListener);
+        taskEventListener.waitForWaiting(3L, TimeUnit.SECONDS);
+        assertEquals(ExecutionStatus.WAITING, task.getStatus());
+        executorService.submit(task);
+        taskEventListener.waitForInProgress(3L, TimeUnit.SECONDS);
+        assertEquals(ExecutionStatus.IN_PROGRESS, task.getStatus());
+        task.shutdown();
+        taskEventListener.waitForAborted(3L, TimeUnit.SECONDS);
+        assertEquals(ExecutionStatus.ABORTED, task.getStatus());
+        assertEquals(ExecutionStatus.FINISHED, actions.get(0).getStatus());
+        assertEquals(ExecutionStatus.ABORTED, actions.get(1).getStatus());
+        assertEquals(ExecutionStatus.CANCELLED, actions.get(2).getStatus());
     }
 
     @AfterAll

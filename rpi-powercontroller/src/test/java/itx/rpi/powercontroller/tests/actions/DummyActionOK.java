@@ -1,23 +1,17 @@
 package itx.rpi.powercontroller.tests.actions;
 
-import itx.rpi.powercontroller.services.jobs.Action;
-import itx.rpi.powercontroller.services.jobs.ExecutionStatus;
+import itx.rpi.powercontroller.services.jobs.ActionParent;
 
 import java.util.concurrent.TimeUnit;
 
-public class DummyActionOK implements Action {
+public class DummyActionOK extends ActionParent {
 
     private final Long delay;
     private final TimeUnit timeUnit;
 
-    private ExecutionStatus status;
-    private boolean stopped;
-
     public DummyActionOK(Long delay, TimeUnit timeUnit) {
-        this.status = ExecutionStatus.WAITING;
         this.delay = delay;
         this.timeUnit = timeUnit;
-        this.stopped = false;
     }
 
     @Override
@@ -31,33 +25,16 @@ public class DummyActionOK implements Action {
     }
 
     @Override
-    public ExecutionStatus getStatus() {
-        return status;
-    }
-
-    @Override
-    public void execute() throws Exception {
-        this.status = ExecutionStatus.IN_PROGRESS;
-        try {
-            if (delay > 0) {
-                int delayMs = (int)timeUnit.toMillis(delay);
-                for (int i=0; i<delayMs; i++) {
-                    Thread.sleep(1);
-                    if (stopped) {
-                        break;
-                    }
+    protected void taskBody() throws Exception {
+        if (delay > 0) {
+            int delayMs = (int)timeUnit.toMillis(delay);
+            for (int i=0; i<delayMs; i++) {
+                Thread.sleep(1);
+                if (isStopped()) {
+                    break;
                 }
             }
-        } catch (Exception e) {
-            this.status = ExecutionStatus.FAILED;
         }
-        this.status = ExecutionStatus.FINISHED;
-    }
-
-    @Override
-    public void stop() {
-        this.stopped = true;
-        this.status = ExecutionStatus.CANCELLED;
     }
 
 }

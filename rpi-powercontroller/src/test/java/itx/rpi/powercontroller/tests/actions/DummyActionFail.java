@@ -1,16 +1,9 @@
 package itx.rpi.powercontroller.tests.actions;
 
-import itx.rpi.powercontroller.services.jobs.Action;
-import itx.rpi.powercontroller.services.jobs.ExecutionStatus;
+import itx.rpi.powercontroller.services.jobs.ActionParent;
 
 
-public class DummyActionFail implements Action {
-
-    private ExecutionStatus status;
-
-    public DummyActionFail() {
-        this.status = ExecutionStatus.WAITING;
-    }
+public class DummyActionFail extends ActionParent {
 
     @Override
     public String getType() {
@@ -22,25 +15,10 @@ public class DummyActionFail implements Action {
         return "Dummy action which always fails.";
     }
 
-    @Override
-    public ExecutionStatus getStatus() {
-        return status;
-    }
 
     @Override
-    public void execute() throws Exception {
-        this.status = ExecutionStatus.IN_PROGRESS;
-        try {
-            throw new UnsupportedOperationException("Dummy action exception.");
-        } catch (Exception e) {
-            this.status = ExecutionStatus.FAILED;
-            throw e;
-        }
-    }
-
-    @Override
-    public void stop() {
-        this.status = ExecutionStatus.CANCELLED;
+    protected void taskBody() throws Exception {
+        throw new UnsupportedOperationException("");
     }
 
 }
