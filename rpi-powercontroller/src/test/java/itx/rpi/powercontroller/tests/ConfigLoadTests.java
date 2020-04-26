@@ -14,7 +14,7 @@ public class ConfigLoadTests {
     @Test
     public void configLoadTest() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        InputStream is = ConfigLoadTests.class.getResourceAsStream("/configuration.json");
+        InputStream is = ConfigLoadTests.class.getResourceAsStream("/rpi-configuration.json");
         Configuration configuration = mapper.readValue(is, Configuration.class);
         assertNotNull(configuration);
     }

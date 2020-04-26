@@ -88,7 +88,7 @@ public class PowerControllerApp {
             }
         } else {
             LOG.info("Using default configuration.");
-            InputStream is = PowerControllerApp.class.getResourceAsStream("/configuration.json");
+            InputStream is = PowerControllerApp.class.getResourceAsStream("/rpi-configuration.json");
             configuration = mapper.readValue(is, Configuration.class);
         }
         LOG.info("#CONFIG: id={}", configuration.getId());

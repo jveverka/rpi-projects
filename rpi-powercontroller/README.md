@@ -25,7 +25,7 @@ Detailed [hardware bill of material](docs/hardware-bom.md).
 * No frameworks, plain java.
 
 ### Configuration
-__rpi-powercontroller__ requires external [JSON configuration](src/main/resources/configuration.json) file in order to load initial configuration. 
+__rpi-powercontroller__ requires external [JSON configuration](src/main/resources/rpi-configuration.json) file in order to load initial configuration. 
 Please check [configuration manual](docs/rpi-powercontroller-configuration.md) for details.
 
 ### Jobs, Tasks and Actions
@@ -104,18 +104,19 @@ gradle clean build test installDist distZip
    i2cdetect -y 1
    ```
 5. Install java, JRE 8 is enough.
-   * Raspberry PI zero [32bit Oracle JRE 8 for ARM](https://www.oracle.com/java/technologies/javase-jdk8-downloads.html)
-   * Raspberry 3 or later ``apt install default-jdk``
+   * RaspberryPI zero [32bit Oracle JRE 8 for ARM](https://www.oracle.com/java/technologies/javase-jdk8-downloads.html)
+   * RaspberryPI 2, 3 or later ``sudo apt install default-jdk``
 6. Create installation directory on target RPi device.
    ```
-   mkdir -p /opt/rpi-powercontroller
+   sudo mkdir -p /opt/rpi-powercontroller
+   sudo chown pi:pi /opt/rpi-powercontroller
    ```   
 7. Build distribution zip and copy the zip and init scripts to target RPi device.
    ```
    gradle clean build test installDist distZip
    scp build/distributions/rpi-powercontroller-1.0.0.zip pi@<ip-address>:/opt/rpi-powercontroller/
    scp -r scripts/* pi@<ip-address>:/opt/rpi-powercontroller/
-   scp src/main/resources/configuration.json pi@<ip-address>:/opt/rpi-powercontroller/
+   scp src/main/resources/rpi-configuration.json pi@<ip-address>:/opt/rpi-powercontroller/
    ```
 8. Finish installation on target RPi device.
    ```
@@ -127,6 +128,7 @@ gradle clean build test installDist distZip
    sudo chown root:root /etc/systemd/system/rpi-powercontroller.service
    sudo systemctl daemon-reload
    sudo systemctl enable rpi-powercontroller
+   touch /opt/rpi-powercontroller/rpi-powercontroller.log
    ```
    Edit JSON configuration file as required, follow configuration manual. 
 9. Start, stop, get status of rpi-powercontroller service.

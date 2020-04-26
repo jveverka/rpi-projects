@@ -63,7 +63,7 @@ public class PowerControllerTests {
         httpClient = HttpClients.createDefault();
         executorService = Executors.newSingleThreadExecutor();
         mapper = new ObjectMapper();
-        InputStream is = PowerControllerApp.class.getResourceAsStream("/configuration.json");
+        InputStream is = PowerControllerApp.class.getResourceAsStream("/rpi-configuration.json");
         configuration = mapper.readValue(is, Configuration.class);
         clientSecret = configuration.getCredentials().get(CLIENT_ID);
         services = PowerControllerApp.initialize(mapper, configuration);
