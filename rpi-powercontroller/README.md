@@ -105,7 +105,7 @@ gradle clean build test installDist distZip
    ```
 5. Install java, JRE 8 is enough.
    * RaspberryPI zero [32bit Oracle JRE 8 for ARM](https://www.oracle.com/java/technologies/javase-jdk8-downloads.html)
-   * RaspberryPI 2, 3 or later ``sudo apt install default-jdk``
+   * RaspberryPI 2, 3 or later ``sudo apt install openjdk-8-jdk``
 6. Create installation directory on target RPi device.
    ```
    sudo mkdir -p /opt/rpi-powercontroller
