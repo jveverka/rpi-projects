@@ -40,7 +40,7 @@
 			"response": []
 		},
 		{
-			"name": "Set Port State",
+			"name": "SET Port State",
 			"request": {
 				"auth": {
 					"type": "basic",
@@ -151,7 +151,7 @@
 			"response": []
 		},
 		{
-			"name": "Get State of Task Queue",
+			"name": "GET State of Task Queue",
 			"request": {
 				"auth": {
 					"type": "basic",
@@ -301,6 +301,78 @@
 					"path": [
 						"system",
 						"measurements"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET KillAllTasks JobId",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "client-001",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{servername}}:8080/system/jobs/killalljobid",
+					"host": [
+						"{{servername}}"
+					],
+					"port": "8080",
+					"path": [
+						"system",
+						"jobs",
+						"killalljobid"
+					]
+				},
+				"description": "GET KillAllTasks JobId"
+			},
+			"response": []
+		},
+		{
+			"name": "Kill All tasks and execute Kill All JobId",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "client-001",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "{{servername}}:8080/system/tasks/cancel/all",
+					"host": [
+						"{{servername}}"
+					],
+					"port": "8080",
+					"path": [
+						"system",
+						"tasks",
+						"cancel",
+						"all"
 					]
 				}
 			},
