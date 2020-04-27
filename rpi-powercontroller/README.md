@@ -33,7 +33,7 @@ __rpi-powercontroller__ is capable of running autonomous tasks. Please check [do
 
 ### Key Events
 If quipped with keys / buttons __rpi-powercontroller__ can be configured to submit a job on key press.
-Please check [documentation](docs/key-events.md) for details.
+Please check [documentation](docs/key-event-processing.md) for details.
 
 ### REST APIs and Endpoints
 * [Complete Postman collection](docs/rpi-powercontroller.postman_collection.json)
