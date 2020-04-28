@@ -5,10 +5,12 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
 import io.undertow.util.HttpString;
+import itx.rpi.powercontroller.dto.TaskFilter;
 import itx.rpi.powercontroller.dto.TaskInfo;
 import itx.rpi.powercontroller.services.AAService;
 import itx.rpi.powercontroller.services.TaskManagerService;
 
+import java.io.InputStream;
 import java.util.Collection;
 
 public class TasksInfoHandler implements HttpHandler {
@@ -32,6 +34,14 @@ public class TasksInfoHandler implements HttpHandler {
         HttpString requestMethod = exchange.getRequestMethod();
         if (HandlerUtils.METHOD_GET.equals(requestMethod.toString())) {
             Collection<TaskInfo> tasks = taskManagerService.getTasks();
+            exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, HandlerUtils.JSON_TYPE);
+            exchange.setStatusCode(HandlerUtils.OK);
+            exchange.getResponseSender().send(mapper.writeValueAsString(tasks));
+        } else if (HandlerUtils.METHOD_PUT.equals(requestMethod.toString())) {
+            exchange.startBlocking();
+            InputStream is = exchange.getInputStream();
+            TaskFilter taskFilter = mapper.readValue(is, TaskFilter.class);
+            Collection<TaskInfo> tasks = taskManagerService.getTasks(taskFilter);
             exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, HandlerUtils.JSON_TYPE);
             exchange.setStatusCode(HandlerUtils.OK);
             exchange.getResponseSender().send(mapper.writeValueAsString(tasks));

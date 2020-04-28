@@ -2,6 +2,7 @@ package itx.rpi.powercontroller.services;
 
 import itx.rpi.powercontroller.dto.CancelledTaskInfo;
 import itx.rpi.powercontroller.dto.JobId;
+import itx.rpi.powercontroller.dto.TaskFilter;
 import itx.rpi.powercontroller.dto.TaskId;
 import itx.rpi.powercontroller.dto.TaskInfo;
 import itx.rpi.powercontroller.services.jobs.Job;
@@ -18,6 +19,8 @@ public interface TaskManagerService extends AutoCloseable {
     Optional<JobId> getKillAllTasksJobId();
 
     Collection<TaskInfo> getTasks();
+
+    Collection<TaskInfo> getTasks(TaskFilter taskFilter);
 
     Optional<CancelledTaskInfo> cancelTask(TaskId taskId);
 

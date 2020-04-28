@@ -55,6 +55,11 @@ Please check [documentation](docs/key-event-processing.md) for details.
   __GET__ ``/system/jobs/killalljobid``
 * Get task queue (waiting, in-progress, finished) tasks.  
   __GET__ ``/system/tasks``
+* Get filtered task queue (waiting, in-progress, finished) tasks.  
+  __PUT__ ``/system/tasks``
+  ``
+  { "statuses": [ "WAITING", "IN_PROGRESS" ] } 
+  ``
 * Submit job to task execution - returns task-id of submitted job.  
   __PUT__ ``/system/tasks/submit``  
   ``

@@ -7,6 +7,7 @@ import itx.rpi.powercontroller.config.actions.ActionWaitConfig;
 import itx.rpi.powercontroller.dto.ActionTaskInfo;
 import itx.rpi.powercontroller.dto.CancelledTaskInfo;
 import itx.rpi.powercontroller.dto.JobId;
+import itx.rpi.powercontroller.dto.TaskFilter;
 import itx.rpi.powercontroller.dto.TaskId;
 import itx.rpi.powercontroller.dto.TaskInfo;
 import itx.rpi.powercontroller.services.RPiService;
@@ -19,9 +20,11 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -95,7 +98,12 @@ public class TaskManagerServiceImpl implements TaskManagerService {
 
     @Override
     public synchronized Collection<TaskInfo> getTasks() {
-        Collection<TaskInfo> taskInfos = new ArrayList<>();
+        return getTasks(new TaskFilter(Collections.emptyList()));
+    }
+
+    @Override
+    public synchronized Collection<TaskInfo> getTasks(TaskFilter taskFilter) {
+        Collection<TaskInfo> result = new ArrayList<>();
         for (Task task : tasks.values()) {
             Collection<ActionTaskInfo> actionTaskInfos  = new ArrayList<>();
             for(Action action: task.getActions()) {
@@ -104,9 +112,13 @@ public class TaskManagerServiceImpl implements TaskManagerService {
             }
             TaskInfo taskInfo = new TaskInfo(task.getId().getId(), task.getJobId(), task.getJobName(), task.getStatus(), actionTaskInfos,
                     task.getSubmitted(), task.getStarted(), task.getDuration());
-            taskInfos.add(taskInfo);
+            result.add(taskInfo);
         }
-        return taskInfos.stream().sorted(Comparator.comparingLong(t -> t.getSubmitted().getTime())).collect(Collectors.toList());
+        if (taskFilter.getStatuses() != null && taskFilter.getStatuses().size() > 0) {
+            List<ExecutionStatus> acceptedStatuses = taskFilter.getStatuses();
+            result = result.stream().filter(t -> acceptedStatuses.contains(t.getStatus())).collect(Collectors.toList());
+        }
+        return result.stream().sorted(Comparator.comparingLong(t -> t.getSubmitted().getTime())).collect(Collectors.toList());
     }
 
     @Override

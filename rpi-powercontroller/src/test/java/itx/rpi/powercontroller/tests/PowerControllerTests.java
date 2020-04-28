@@ -9,6 +9,7 @@ import itx.rpi.powercontroller.dto.Measurements;
 import itx.rpi.powercontroller.dto.SetPortRequest;
 import itx.rpi.powercontroller.dto.SystemInfo;
 import itx.rpi.powercontroller.dto.SystemState;
+import itx.rpi.powercontroller.dto.TaskFilter;
 import itx.rpi.powercontroller.dto.TaskId;
 import itx.rpi.powercontroller.dto.TaskInfo;
 import itx.rpi.powercontroller.handlers.HandlerUtils;
@@ -32,6 +33,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -269,6 +273,23 @@ public class PowerControllerTests {
         assertFalse(state.getPorts().get(1));
     }
 
+    @Test
+    @Order(14)
+    public void getFilteredTasks() throws IOException {
+        List<ExecutionStatus> statuses = Arrays.asList(ExecutionStatus.FINISHED);
+        TaskInfo[] filteredList = getTasks(new TaskFilter(statuses));
+        assertEquals(8, filteredList.length);
+        statuses = Arrays.asList(ExecutionStatus.FINISHED, ExecutionStatus.ABORTED);
+        filteredList = getTasks(new TaskFilter(statuses));
+        assertEquals(10, filteredList.length);
+        statuses= Arrays.asList(ExecutionStatus.FINISHED, ExecutionStatus.ABORTED, ExecutionStatus.CANCELLED);
+        filteredList = getTasks(new TaskFilter(statuses));
+        assertEquals(12, filteredList.length);
+        statuses = Arrays.asList();
+        filteredList = getTasks(new TaskFilter(statuses));
+        assertEquals(12, filteredList.length);
+    }
+
     @AfterAll
     public static void shutdown() throws Exception {
         httpClient.close();
@@ -300,6 +321,17 @@ public class PowerControllerTests {
         HttpGet get = new HttpGet(BASE_URL + "/system/tasks");
         get.addHeader("Authorization", HandlerUtils.createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
         CloseableHttpResponse response = httpClient.execute(get);
+        assertEquals(200, response.getStatusLine().getStatusCode());
+        return mapper.readValue(response.getEntity().getContent(), TaskInfo[].class);
+    }
+
+    private TaskInfo[] getTasks(TaskFilter filter) throws IOException {
+        HttpPut put = new HttpPut(BASE_URL + "/system/tasks");
+        put.addHeader("Authorization", HandlerUtils.createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
+        StringEntity stringEntity = new StringEntity(mapper.writeValueAsString(filter));
+        stringEntity.setContentType("application/json");
+        put.setEntity(stringEntity);
+        CloseableHttpResponse response = httpClient.execute(put);
         assertEquals(200, response.getStatusLine().getStatusCode());
         return mapper.readValue(response.getEntity().getContent(), TaskInfo[].class);
     }
