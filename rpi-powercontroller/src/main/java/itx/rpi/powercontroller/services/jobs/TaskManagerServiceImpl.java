@@ -89,7 +89,7 @@ public class TaskManagerServiceImpl implements TaskManagerService {
     }
 
     @Override
-    public Optional<JobId> getKillAllTasksJobId() {
+    public synchronized Optional<JobId> getKillAllTasksJobId() {
         if (killAllTasksJobId != null) {
             return Optional.of(JobId.from(killAllTasksJobId));
         }
