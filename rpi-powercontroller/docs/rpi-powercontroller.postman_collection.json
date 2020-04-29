@@ -151,7 +151,7 @@
 			"response": []
 		},
 		{
-			"name": "GET State of Task Queue",
+			"name": "GET State of Task Queue - Unfiltered",
 			"request": {
 				"auth": {
 					"type": "basic",
@@ -170,6 +170,49 @@
 				},
 				"method": "GET",
 				"header": [],
+				"url": {
+					"raw": "{{servername}}:8080/system/tasks",
+					"host": [
+						"{{servername}}"
+					],
+					"port": "8080",
+					"path": [
+						"system",
+						"tasks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET State of Task Queue - Filltered",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "client-001",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"statuses\": [ \"WAITING\" ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
 					"raw": "{{servername}}:8080/system/tasks",
 					"host": [

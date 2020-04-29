@@ -75,6 +75,7 @@ public class TaskManagerServiceImpl implements TaskManagerService {
                     task.run();
                 } catch (InterruptedException e) {
                     LOG.error("InterruptedException: ", e);
+                    Thread.currentThread().interrupt();
                 } finally {
                     this.executorService = Executors.newSingleThreadExecutor();
                 }
@@ -114,7 +115,7 @@ public class TaskManagerServiceImpl implements TaskManagerService {
                     task.getSubmitted(), task.getStarted(), task.getDuration());
             result.add(taskInfo);
         }
-        if (taskFilter.getStatuses() != null && taskFilter.getStatuses().size() > 0) {
+        if (taskFilter.getStatuses() != null && !taskFilter.getStatuses().isEmpty()) {
             List<ExecutionStatus> acceptedStatuses = taskFilter.getStatuses();
             result = result.stream().filter(t -> acceptedStatuses.contains(t.getStatus())).collect(Collectors.toList());
         }
@@ -167,12 +168,20 @@ public class TaskManagerServiceImpl implements TaskManagerService {
     @Override
     public synchronized void kilAllTasks() {
         for (Task task : tasks.values()) {
-            task.shutdown();
+            try {
+                task.shutdown();
+                task.await(1, TimeUnit.MINUTES);
+                LOG.info("closed taskId={} jobId={} {}", task.getId(), task.getJobId(), task.getStatus());
+            } catch (InterruptedException e) {
+                LOG.error("Task closing error: ", e);
+                Thread.currentThread().interrupt();
+            }
         }
     }
 
     @Override
     public synchronized void close() throws Exception {
+        kilAllTasks();
         this.executorService.shutdown();
     }
 

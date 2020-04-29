@@ -56,7 +56,7 @@ Please check [documentation](docs/key-event-processing.md) for details.
 * Get task queue (waiting, in-progress, finished) tasks.  
   __GET__ ``/system/tasks``
 * Get filtered task queue (waiting, in-progress, finished) tasks.  
-  __PUT__ ``/system/tasks``
+  __GET__ ``/system/tasks``
   ``
   { "statuses": [ "WAITING", "IN_PROGRESS" ] } 
   ``

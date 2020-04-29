@@ -224,7 +224,7 @@ public class PowerControllerTests {
         Thread.sleep(200);
 
         int abortedCounter = filterByStatus(getTasks(), ExecutionStatus.ABORTED);
-        assertEquals(2, abortedCounter);
+        assertEquals(3, abortedCounter);
     }
 
     @Test
@@ -281,7 +281,7 @@ public class PowerControllerTests {
         assertEquals(8, filteredList.length);
         statuses = Arrays.asList(ExecutionStatus.FINISHED, ExecutionStatus.ABORTED);
         filteredList = getTasks(new TaskFilter(statuses));
-        assertEquals(10, filteredList.length);
+        assertEquals(11, filteredList.length);
         statuses= Arrays.asList(ExecutionStatus.FINISHED, ExecutionStatus.ABORTED, ExecutionStatus.CANCELLED);
         filteredList = getTasks(new TaskFilter(statuses));
         assertEquals(12, filteredList.length);
