@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 public class Task implements Runnable {
 
@@ -18,6 +20,7 @@ public class Task implements Runnable {
     private final String jobName;
     private final Collection<Action> actions;
     private final Date submitted;
+    private final CountDownLatch cl;
 
     private ExecutionStatus status;
     private boolean stopped;
@@ -33,6 +36,7 @@ public class Task implements Runnable {
         this.stopped = false;
         this.submitted = submitted;
         this.taskEventListener = (id1, state) -> LOG.info("onTaskStateChange id={} {}", id1.getId(), state);
+        this.cl = new CountDownLatch(1);
     }
 
     public Task(TaskId id, String jobId, String jobName, Collection<Action> actions, Date submitted,
@@ -46,6 +50,7 @@ public class Task implements Runnable {
         this.submitted = submitted;
         this.taskEventListener = taskEventListener;
         taskEventListener.onTaskStateChange(id, ExecutionStatus.WAITING);
+        this.cl = new CountDownLatch(1);
     }
 
     public TaskId getId() {
@@ -117,9 +122,16 @@ public class Task implements Runnable {
         }
     }
 
+    public void await(long timeout, TimeUnit duration) throws InterruptedException {
+        cl.await(timeout, duration);
+    }
+
     private void setExecutionStatus(ExecutionStatus executionStatus) {
         this.status = executionStatus;
         this.taskEventListener.onTaskStateChange(id, executionStatus);
+        if (isTerminalExecutionState()) {
+            cl.countDown();
+        }
     }
 
     private boolean isTerminalExecutionState() {

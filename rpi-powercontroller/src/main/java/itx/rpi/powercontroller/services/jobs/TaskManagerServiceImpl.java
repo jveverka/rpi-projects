@@ -125,12 +125,43 @@ public class TaskManagerServiceImpl implements TaskManagerService {
     public synchronized Optional<CancelledTaskInfo> cancelTask(TaskId taskId) {
         Task task = tasks.get(taskId);
         if (task != null) {
-            CancelledTaskInfo cancelledTaskInfo = new CancelledTaskInfo(
-                    task.getId().getId(), task.getJobId(), task.getStatus());
-            task.shutdown();
-            return Optional.of(cancelledTaskInfo);
+            try {
+                ExecutionStatus statusBefore = task.getStatus();
+                task.shutdown();
+                task.await(1, TimeUnit.MINUTES);
+                CancelledTaskInfo cancelledTaskInfo = new CancelledTaskInfo(
+                        task.getId().getId(), task.getJobId(), statusBefore, task.getStatus()
+                );
+                return Optional.of(cancelledTaskInfo);
+            } catch (Exception e) {
+                LOG.error("Cancel Task Exception", e);
+            }
         }
         return Optional.empty();
+    }
+
+    @Override
+    public synchronized Collection<CancelledTaskInfo> cancelTasks(JobId jobId) {
+        List<CancelledTaskInfo> result = new ArrayList<>();
+        List<Task> filtered = tasks.values().stream()
+                .filter(t -> t.getJobId().equals(jobId.getId())).collect(Collectors.toList());
+        for (Task task: filtered) {
+            try {
+                ExecutionStatus statusBefore = task.getStatus();
+                if (ExecutionStatus.WAITING.equals(statusBefore)
+                        || ExecutionStatus.IN_PROGRESS.equals(statusBefore)) {
+                    task.shutdown();
+                    task.await(1, TimeUnit.MINUTES);
+                    CancelledTaskInfo cancelledTaskInfo = new CancelledTaskInfo(
+                            task.getId().getId(), task.getJobId(), statusBefore, task.getStatus()
+                    );
+                    result.add(cancelledTaskInfo);
+                }
+            } catch (Exception e) {
+                LOG.error("Cancel Task Exception", e);
+            }
+        }
+        return result;
     }
 
     @Override

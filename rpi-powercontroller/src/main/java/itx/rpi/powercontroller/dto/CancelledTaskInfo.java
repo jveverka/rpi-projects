@@ -8,15 +8,18 @@ public class CancelledTaskInfo {
 
     private final String id;
     private final String jobId;
-    private final ExecutionStatus status;
+    private final ExecutionStatus statusBefore;
+    private final ExecutionStatus statusAfter;
 
     @JsonCreator
     public CancelledTaskInfo(@JsonProperty("id") String id,
                              @JsonProperty("jobId") String jobId,
-                             @JsonProperty("status") ExecutionStatus status) {
+                             @JsonProperty("statusBefore") ExecutionStatus statusBefore,
+                             @JsonProperty("statusAfter") ExecutionStatus statusAfter) {
         this.id = id;
         this.jobId = jobId;
-        this.status = status;
+        this.statusBefore = statusBefore;
+        this.statusAfter = statusAfter;
     }
 
     public String getId() {
@@ -27,8 +30,12 @@ public class CancelledTaskInfo {
         return jobId;
     }
 
-    public ExecutionStatus getStatus() {
-        return status;
+    public ExecutionStatus getStatusBefore() {
+        return statusBefore;
+    }
+
+    public ExecutionStatus getStatusAfter() {
+        return statusAfter;
     }
 
 }

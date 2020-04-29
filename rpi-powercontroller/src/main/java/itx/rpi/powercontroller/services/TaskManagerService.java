@@ -24,6 +24,8 @@ public interface TaskManagerService extends AutoCloseable {
 
     Optional<CancelledTaskInfo> cancelTask(TaskId taskId);
 
+    Collection<CancelledTaskInfo> cancelTasks(JobId jobId);
+
     void kilAllTasks();
 
 }
