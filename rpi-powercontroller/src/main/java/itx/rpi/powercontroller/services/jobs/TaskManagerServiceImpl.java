@@ -70,7 +70,7 @@ public class TaskManagerServiceImpl implements TaskManagerService {
                     kilAllTasks();
                     this.executorService.shutdown();
                     this.executorService.awaitTermination(1, TimeUnit.MINUTES);
-                    Task task = new Task(taskId, job.getId(), job.getName(), createActions(job.getActions()), new Date());
+                    TaskImpl task = new TaskImpl(taskId, job.getId(), job.getName(), createActions(job.getActions()), new Date());
                     tasks.put(taskId, task);
                     task.run();
                 } catch (InterruptedException e) {
@@ -79,7 +79,7 @@ public class TaskManagerServiceImpl implements TaskManagerService {
                     this.executorService = Executors.newSingleThreadExecutor();
                 }
             } else {
-                Task task = new Task(taskId, job.getId(), job.getName(), createActions(job.getActions()), new Date());
+                TaskImpl task = new TaskImpl(taskId, job.getId(), job.getName(), createActions(job.getActions()), new Date());
                 tasks.put(taskId, task);
                 executorService.submit(task);
             }
