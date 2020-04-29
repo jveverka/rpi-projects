@@ -125,7 +125,8 @@ public class TaskManagerServiceImpl implements TaskManagerService {
     public synchronized Optional<CancelledTaskInfo> cancelTask(TaskId taskId) {
         Task task = tasks.get(taskId);
         if (task != null) {
-            CancelledTaskInfo cancelledTaskInfo = new CancelledTaskInfo(task.getId().getId(), task.getStatus());
+            CancelledTaskInfo cancelledTaskInfo = new CancelledTaskInfo(
+                    task.getId().getId(), task.getJobId(), task.getStatus());
             task.shutdown();
             return Optional.of(cancelledTaskInfo);
         }
