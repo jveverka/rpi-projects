@@ -1,5 +1,6 @@
 package itx.rpi.powercontroller.services.jobs;
 
+import itx.rpi.powercontroller.dto.JobId;
 import itx.rpi.powercontroller.dto.TaskId;
 
 import java.util.Collection;
@@ -10,7 +11,7 @@ public interface Task {
 
     TaskId getId();
 
-    String getJobId();
+    JobId getJobId();
 
     String getJobName();
 

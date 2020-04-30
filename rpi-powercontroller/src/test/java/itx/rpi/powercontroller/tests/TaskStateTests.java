@@ -1,5 +1,6 @@
 package itx.rpi.powercontroller.tests;
 
+import itx.rpi.powercontroller.dto.JobId;
 import itx.rpi.powercontroller.dto.TaskId;
 import itx.rpi.powercontroller.services.jobs.Action;
 import itx.rpi.powercontroller.services.jobs.ExecutionStatus;
@@ -36,7 +37,7 @@ public class TaskStateTests {
     @Test
     public void testNormalTaskExecutionFlow() throws InterruptedException {
         TaskEventListenerImpl taskEventListener = new TaskEventListenerImpl();
-        TaskImpl task = new TaskImpl(TaskId.from("task-001"), "job-001", "", Collections.emptyList(), new Date(), taskEventListener);
+        TaskImpl task = new TaskImpl(TaskId.from("task-001"), JobId.from("job-001"), "", Collections.emptyList(), new Date(), taskEventListener);
         taskEventListener.waitForWaiting(3L, TimeUnit.SECONDS);
         assertEquals(ExecutionStatus.WAITING, task.getStatus());
         task.run();
@@ -53,7 +54,7 @@ public class TaskStateTests {
     @Test
     public void testCancelWaitingTask() throws InterruptedException {
         TaskEventListenerImpl taskEventListener = new TaskEventListenerImpl();
-        TaskImpl task = new TaskImpl(TaskId.from("task-001"), "job-001", "", Collections.emptyList(), new Date(), taskEventListener);
+        TaskImpl task = new TaskImpl(TaskId.from("task-001"), JobId.from("job-001"), "", Collections.emptyList(), new Date(), taskEventListener);
         taskEventListener.waitForWaiting(3L, TimeUnit.SECONDS);
         assertEquals(ExecutionStatus.WAITING, task.getStatus());
         task.shutdown();
@@ -73,7 +74,7 @@ public class TaskStateTests {
         TaskEventListenerImpl taskEventListener = new TaskEventListenerImpl();
         Collection<Action> actions = new ArrayList<>();
         actions.add(new DummyActionOK(10L, TimeUnit.SECONDS));
-        TaskImpl task = new TaskImpl(TaskId.from("task-001"), "job-001", "", actions, new Date(), taskEventListener);
+        TaskImpl task = new TaskImpl(TaskId.from("task-001"), JobId.from("job-001"), "", actions, new Date(), taskEventListener);
         taskEventListener.waitForWaiting(3L, TimeUnit.SECONDS);
         assertEquals(ExecutionStatus.WAITING, task.getStatus());
         executorService.submit(task);
@@ -93,7 +94,7 @@ public class TaskStateTests {
         TaskEventListenerImpl taskEventListener = new TaskEventListenerImpl();
         Collection<Action> actions = new ArrayList<>();
         actions.add(new DummyActionFail());
-        TaskImpl task = new TaskImpl(TaskId.from("task-001"), "job-001", "", actions, new Date(), taskEventListener);
+        TaskImpl task = new TaskImpl(TaskId.from("task-001"), JobId.from("job-001"), "", actions, new Date(), taskEventListener);
         taskEventListener.waitForWaiting(3L, TimeUnit.SECONDS);
         assertEquals(ExecutionStatus.WAITING, task.getStatus());
         task.run();
@@ -115,7 +116,7 @@ public class TaskStateTests {
         actions.add(new DummyActionOK(10L, TimeUnit.SECONDS));
         actions.add(new DummyActionOK(10L, TimeUnit.SECONDS));
         actions.add(new DummyActionOK(10L, TimeUnit.SECONDS));
-        TaskImpl task = new TaskImpl(TaskId.from("task-001"), "job-001", "", actions, new Date(), taskEventListener);
+        TaskImpl task = new TaskImpl(TaskId.from("task-001"), JobId.from("job-001"), "", actions, new Date(), taskEventListener);
         taskEventListener.waitForWaiting(3L, TimeUnit.SECONDS);
         assertEquals(ExecutionStatus.WAITING, task.getStatus());
         executorService.submit(task);

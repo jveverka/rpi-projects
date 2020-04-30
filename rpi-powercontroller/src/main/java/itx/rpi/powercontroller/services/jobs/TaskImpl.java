@@ -1,5 +1,6 @@
 package itx.rpi.powercontroller.services.jobs;
 
+import itx.rpi.powercontroller.dto.JobId;
 import itx.rpi.powercontroller.dto.TaskId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +17,7 @@ public class TaskImpl implements Task, Runnable {
     private final TaskEventListener taskEventListener;
 
     private final TaskId id;
-    private final String jobId;
+    private final JobId jobId;
     private final String jobName;
     private final Collection<Action> actions;
     private final Date submitted;
@@ -27,7 +28,7 @@ public class TaskImpl implements Task, Runnable {
     private Date started;
     private Long duration;
 
-    public TaskImpl(TaskId id, String jobId, String jobName, Collection<Action> actions, Date submitted) {
+    public TaskImpl(TaskId id, JobId jobId, String jobName, Collection<Action> actions, Date submitted) {
         this.id = id;
         this.jobId = jobId;
         this.jobName = jobName;
@@ -39,7 +40,7 @@ public class TaskImpl implements Task, Runnable {
         this.cl = new CountDownLatch(1);
     }
 
-    public TaskImpl(TaskId id, String jobId, String jobName, Collection<Action> actions, Date submitted,
+    public TaskImpl(TaskId id, JobId jobId, String jobName, Collection<Action> actions, Date submitted,
                 TaskEventListener taskEventListener) {
         this.id = id;
         this.jobId = jobId;
@@ -59,7 +60,7 @@ public class TaskImpl implements Task, Runnable {
     }
 
     @Override
-    public String getJobId() {
+    public JobId getJobId() {
         return jobId;
     }
 
