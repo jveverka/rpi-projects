@@ -384,6 +384,20 @@ public class PowerControllerTests {
         }
     }
 
+    private boolean waitForTask(TaskId id) throws IOException {
+        HttpPut put = new HttpPut(BASE_URL + "/system/tasks/wait");
+        put.addHeader("Authorization", HandlerUtils.createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
+        StringEntity stringEntity = new StringEntity(mapper.writeValueAsString(id));
+        stringEntity.setContentType("application/json");
+        put.setEntity(stringEntity);
+        CloseableHttpResponse response = httpClient.execute(put);
+        if (response.getStatusLine().getStatusCode() == 200) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     private boolean cleanTaskQueue() throws IOException {
         HttpPut put = new HttpPut(BASE_URL + "/system/tasks/clean");
         put.addHeader("Authorization", HandlerUtils.createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));

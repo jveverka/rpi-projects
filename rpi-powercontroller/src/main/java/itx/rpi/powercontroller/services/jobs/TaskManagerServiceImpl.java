@@ -90,6 +90,19 @@ public class TaskManagerServiceImpl implements TaskManagerService {
     }
 
     @Override
+    public void waitFor(TaskId taskId) {
+        Task task = tasks.get(taskId);
+        if (task != null) {
+            try {
+                task.await(10, TimeUnit.DAYS);
+            } catch (InterruptedException e) {
+                LOG.error("Task waiting error: ", e);
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    @Override
     public synchronized Optional<JobId> getKillAllTasksJobId() {
         if (killAllTasksJobId != null) {
             return Optional.of(JobId.from(killAllTasksJobId));

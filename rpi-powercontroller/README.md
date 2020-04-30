@@ -74,6 +74,12 @@ Please check [documentation](docs/key-event-processing.md) for details.
   __PUT__ ``/system/tasks/cancel/all``   
 * Clean task queue, remove all tasks in terminal state.  
   __PUT__ ``/system/tasks/clean``
+* Wait for task execution to finish or task to be cancelled.  
+  __PUT__ ``/system/tasks/wait``  
+  ``
+  { "id": "task-001" }
+  ``
+
   
 #### REST Security  
 All REST endpoint require [HTTP basic authorization](https://en.wikipedia.org/wiki/Basic_access_authentication) header to be used, valid __client-id / client-secret__.
