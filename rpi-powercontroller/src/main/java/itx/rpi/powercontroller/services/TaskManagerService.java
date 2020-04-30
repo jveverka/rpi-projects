@@ -28,4 +28,6 @@ public interface TaskManagerService extends AutoCloseable {
 
     void kilAllTasks();
 
+    void cleanTaskQueue();
+
 }

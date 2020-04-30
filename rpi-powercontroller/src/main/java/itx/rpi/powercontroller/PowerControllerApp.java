@@ -9,6 +9,7 @@ import itx.rpi.powercontroller.config.Configuration;
 import itx.rpi.powercontroller.dto.JobId;
 import itx.rpi.powercontroller.handlers.CancelAllTasksHandler;
 import itx.rpi.powercontroller.handlers.CancelTaskHandler;
+import itx.rpi.powercontroller.handlers.CleanTaskQueueHandler;
 import itx.rpi.powercontroller.handlers.JobInfoHandler;
 import itx.rpi.powercontroller.handlers.JobKillAllIdHandler;
 import itx.rpi.powercontroller.handlers.MeasurementsHandler;
@@ -62,7 +63,8 @@ public class PowerControllerApp {
                 .addPrefixPath("/system/tasks", new BlockingHandler(new TasksInfoHandler(mapper, aaService, taskManagerService)))
                 .addPrefixPath("/system/tasks/submit", new BlockingHandler(new SubmitTaskHandler(mapper, aaService, taskManagerService)))
                 .addPrefixPath("/system/tasks/cancel", new BlockingHandler(new CancelTaskHandler(mapper, aaService, taskManagerService)))
-                .addPrefixPath("/system/tasks/cancel/all", new BlockingHandler(new CancelAllTasksHandler(mapper, aaService, taskManagerService)));
+                .addPrefixPath("/system/tasks/cancel/all", new BlockingHandler(new CancelAllTasksHandler(aaService, taskManagerService)))
+                .addPrefixPath("/system/tasks/clean",  new CleanTaskQueueHandler(aaService, taskManagerService));
 
 
         Undertow server = Undertow.builder()

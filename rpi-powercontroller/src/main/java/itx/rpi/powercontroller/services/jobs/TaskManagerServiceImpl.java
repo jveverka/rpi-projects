@@ -180,6 +180,17 @@ public class TaskManagerServiceImpl implements TaskManagerService {
     }
 
     @Override
+    public synchronized void cleanTaskQueue() {
+        for (TaskId taskId: tasks.keySet()) {
+            Task task = tasks.get(taskId);
+            if (!(ExecutionStatus.WAITING.equals(task.getStatus())
+                    || ExecutionStatus.IN_PROGRESS.equals(task.getStatus()))) {
+                tasks.remove(taskId);
+            }
+        }
+    }
+
+    @Override
     public synchronized void close() throws Exception {
         kilAllTasks();
         this.executorService.shutdown();

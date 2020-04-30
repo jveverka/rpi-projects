@@ -6,13 +6,12 @@ import io.undertow.util.HttpString;
 import itx.rpi.powercontroller.services.AAService;
 import itx.rpi.powercontroller.services.TaskManagerService;
 
-
-public class CancelAllTasksHandler implements HttpHandler {
+public class CleanTaskQueueHandler implements HttpHandler {
 
     private final AAService aaService;
     private final TaskManagerService taskManagerService;
 
-    public CancelAllTasksHandler(AAService aaService, TaskManagerService taskManagerService) {
+    public CleanTaskQueueHandler(AAService aaService, TaskManagerService taskManagerService) {
         this.aaService = aaService;
         this.taskManagerService = taskManagerService;
     }
@@ -25,10 +24,11 @@ public class CancelAllTasksHandler implements HttpHandler {
         }
         HttpString requestMethod = exchange.getRequestMethod();
         if (HandlerUtils.METHOD_PUT.equals(requestMethod.toString())) {
-            taskManagerService.kilAllTasks();
+            taskManagerService.cleanTaskQueue();
             exchange.setStatusCode(HandlerUtils.OK);
         } else {
             exchange.setStatusCode(HandlerUtils.METHOD_NOT_ALLOWED);
         }
     }
+
 }
