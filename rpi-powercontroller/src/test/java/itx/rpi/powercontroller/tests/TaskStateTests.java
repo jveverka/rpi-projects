@@ -122,6 +122,7 @@ public class TaskStateTests {
         taskEventListener.waitForInProgress(3L, TimeUnit.SECONDS);
         assertEquals(ExecutionStatus.IN_PROGRESS, task.getStatus());
         actions.get(0).awaitForTermination(2L,  TimeUnit.SECONDS);
+        actions.get(1).awaitForStarted(2L,  TimeUnit.SECONDS);
         task.shutdown();
         taskEventListener.waitForAborted(3L, TimeUnit.SECONDS);
         assertEquals(ExecutionStatus.ABORTED, task.getStatus());
