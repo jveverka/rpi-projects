@@ -173,7 +173,7 @@ public class TaskManagerServiceImpl implements TaskManagerService {
     public synchronized Collection<CancelledTaskInfo> cancelTasks(JobId jobId) {
         List<CancelledTaskInfo> result = new ArrayList<>();
         List<Task> filtered = tasks.values().stream()
-                .filter(t -> t.getJobId().equals(jobId.getId())).collect(Collectors.toList());
+                .filter(t -> t.getJobId().getId().equals(jobId.getId())).collect(Collectors.toList());
         for (Task task: filtered) {
             try {
                 ExecutionStatus statusBefore = task.getStatus();

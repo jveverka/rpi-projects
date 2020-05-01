@@ -284,7 +284,7 @@ public class PowerControllerTests {
 
     @Test
     @Order(12)
-    public void taskTestKeyEventsToggle() throws IOException {
+    public void taskTestKeyEventsToggleFastJob() throws IOException {
         PortListener portListener = services.getPortListener();
         StateChangeContext stateChangeContext = portListener.onStateChange(4, true);
         assertFalse(stateChangeContext.getOffTaskId().isPresent());
@@ -292,8 +292,7 @@ public class PowerControllerTests {
         TaskId taskOnId = stateChangeContext.getOnTaskId().get();
 
         stateChangeContext = portListener.onStateChange(4, false);
-        assertFalse(stateChangeContext.getOffTaskId().isPresent());
-        assertFalse(stateChangeContext.getOnTaskId().isPresent());
+        assertTrue(stateChangeContext.isEmpty());
 
         boolean termination = waitForTaskTermination(taskOnId);
         assertTrue(termination);
@@ -307,8 +306,7 @@ public class PowerControllerTests {
         taskOnId = stateChangeContext.getOnTaskId().get();
 
         stateChangeContext = portListener.onStateChange(4, false);
-        assertFalse(stateChangeContext.getOffTaskId().isPresent());
-        assertFalse(stateChangeContext.getOnTaskId().isPresent());
+        assertTrue(stateChangeContext.isEmpty());
 
         termination = waitForTaskTermination(taskOnId);
         assertTrue(termination);
@@ -320,37 +318,41 @@ public class PowerControllerTests {
         assertTrue(result);
     }
 
-    /**
     @Test
     @Order(13)
-    public void taskTestKeyEventsToggleKillAll() throws IOException, InterruptedException {
+    public void taskTestKeyEventsToggleSlowJob() throws IOException, InterruptedException {
         PortListener portListener = services.getPortListener();
-        portListener.onStateChange(7, true);
-        portListener.onStateChange(7, false);
-        Thread.sleep(100);
-        SystemState state = getSystemState();
-        assertTrue(state.getPorts().get(1));
-        portListener.onStateChange(7, true);
-        portListener.onStateChange(7, false);
-        Thread.sleep(100);
-        state = getSystemState();
-        assertFalse(state.getPorts().get(1));
-    }
+        StateChangeContext stateChangeContext = portListener.onStateChange(5, true);
+        assertFalse(stateChangeContext.getOffTaskId().isPresent());
+        assertTrue(stateChangeContext.getOnTaskId().isPresent());
+        TaskId taskOnId = stateChangeContext.getOnTaskId().get();
 
-    @Test
-    @Order(14)
-    public void taskTestKeyEvents() throws IOException, InterruptedException {
-        PortListener portListener = services.getPortListener();
-        portListener.onStateChange(6, true);
-        Thread.sleep(100);
-        SystemState state = getSystemState();
-        assertTrue(state.getPorts().get(1));
-        portListener.onStateChange(6, false);
-        Thread.sleep(100);
-        state = getSystemState();
-        assertFalse(state.getPorts().get(1));
+        stateChangeContext = portListener.onStateChange(5, false);
+        assertTrue(stateChangeContext.isEmpty());
+
+        boolean started = waitForTaskStarted(taskOnId);
+        assertTrue(started);
+        Optional<TaskInfo> taskInfo = filterById(getTasks(), taskOnId);
+        assertTrue(taskInfo.isPresent());
+        assertEquals(ExecutionStatus.IN_PROGRESS, taskInfo.get().getStatus());
+
+        stateChangeContext = portListener.onStateChange(5, true);
+        assertTrue(stateChangeContext.getOffTaskId().isPresent());
+        assertFalse(stateChangeContext.getOnTaskId().isPresent());
+        TaskId taskOffId = stateChangeContext.getOffTaskId().get();
+
+        stateChangeContext = portListener.onStateChange(5, false);
+        assertTrue(stateChangeContext.isEmpty());
+
+        boolean termination = waitForTaskTermination(taskOffId);
+        assertTrue(termination);
+        taskInfo = filterById(getTasks(), taskOffId);
+        assertTrue(taskInfo.isPresent());
+        assertEquals(ExecutionStatus.FINISHED, taskInfo.get().getStatus());
+
+        boolean result = cleanTaskQueue();
+        assertTrue(result);
     }
-     */
 
     @AfterAll
     public static void shutdown() throws Exception {
