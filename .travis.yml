@@ -2,4 +2,4 @@ dist: bionic
 language: java
 jdk:
   - openjdk11
-script: gradle clean build test
+script: gradle --info clean build test
