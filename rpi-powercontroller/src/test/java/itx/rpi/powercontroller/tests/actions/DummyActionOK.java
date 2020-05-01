@@ -9,7 +9,8 @@ public class DummyActionOK extends ActionParent {
     private final Long delay;
     private final TimeUnit timeUnit;
 
-    public DummyActionOK(Long delay, TimeUnit timeUnit) {
+    public DummyActionOK(Integer ordinal, Long delay, TimeUnit timeUnit) {
+        super(ordinal);
         this.delay = delay;
         this.timeUnit = timeUnit;
     }

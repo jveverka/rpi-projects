@@ -9,7 +9,8 @@ public class ActionWait extends ActionParent {
     private final Long delay;
     private final TimeUnit timeUnit;
 
-    public ActionWait(Long delay, TimeUnit timeUnit) {
+    public ActionWait(Integer ordinal, Long delay, TimeUnit timeUnit) {
+        super(ordinal);
         this.delay = delay;
         this.timeUnit = timeUnit;
     }

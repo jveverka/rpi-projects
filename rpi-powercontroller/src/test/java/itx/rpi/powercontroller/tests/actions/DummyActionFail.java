@@ -5,6 +5,10 @@ import itx.rpi.powercontroller.services.jobs.ActionParent;
 
 public class DummyActionFail extends ActionParent {
 
+    public DummyActionFail(Integer ordinal) {
+        super(ordinal);
+    }
+
     @Override
     public String getType() {
         return "DummyActionFail";

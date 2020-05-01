@@ -226,24 +226,26 @@ public class TaskManagerServiceImpl implements TaskManagerService {
 
     private Collection<Action> createActions(Collection<ActionConfiguration> configs) {
         Collection<Action> actions = new ArrayList<>();
-        configs.forEach(c->{
-            LOG.info("creating actionType={}", c.getType());
-            if (ActionPortHighConfig.class.equals(c.getType())) {
-                ActionPortHighConfig config = (ActionPortHighConfig)c;
-                ActionPortHigh action = new ActionPortHigh(config.getPort(), rPiService);
+        Integer ordinal  = 0;
+        for (ActionConfiguration ac: configs) {
+            LOG.info("creating actionType={}", ac.getType());
+            if (ActionPortHighConfig.class.equals(ac.getType())) {
+                ActionPortHighConfig config = (ActionPortHighConfig)ac;
+                ActionPortHigh action = new ActionPortHigh(ordinal, config.getPort(), rPiService);
                 actions.add(action);
-            } else if (ActionPortLowConfig.class.equals(c.getType())) {
-                ActionPortLowConfig config = (ActionPortLowConfig)c;
-                ActionPortLow action = new ActionPortLow(config.getPort(), rPiService);
+            } else if (ActionPortLowConfig.class.equals(ac.getType())) {
+                ActionPortLowConfig config = (ActionPortLowConfig)ac;
+                ActionPortLow action = new ActionPortLow(ordinal, config.getPort(), rPiService);
                 actions.add(action);
-            } else if (ActionWaitConfig.class.equals(c.getType())) {
-                ActionWaitConfig config = (ActionWaitConfig)c;
-                ActionWait action = new ActionWait(config.getDelay(), config.getTimeUnitType());
+            } else if (ActionWaitConfig.class.equals(ac.getType())) {
+                ActionWaitConfig config = (ActionWaitConfig)ac;
+                ActionWait action = new ActionWait(ordinal, config.getDelay(), config.getTimeUnitType());
                 actions.add(action);
             } else {
-                throw new UnsupportedOperationException("Unsupported Action Configuration Type: " + c.getType());
+                throw new UnsupportedOperationException("Unsupported Action Configuration Type: " + ac.getType());
             }
-        });
+            ordinal = ordinal  + 1;
+        }
         return actions;
     }
 

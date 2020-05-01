@@ -8,7 +8,8 @@ public class ActionPortHigh extends ActionParent {
     private final Integer port;
     private final RPiService rPiService;
 
-    public ActionPortHigh(Integer port, RPiService rPiService) {
+    public ActionPortHigh(Integer ordinal, Integer port, RPiService rPiService) {
+        super(ordinal);
         this.port = port;
         this.rPiService = rPiService;
     }

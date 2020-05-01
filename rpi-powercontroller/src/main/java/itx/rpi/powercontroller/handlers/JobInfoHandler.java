@@ -39,9 +39,12 @@ public class JobInfoHandler implements HttpHandler {
             Collection<JobInfo> jobInfos = new ArrayList<>();
             for (Job job: taskManagerService.getJobs()) {
                 Collection<ActionInfo> actionInfos = new ArrayList<>();
+                Integer ordinal = 0;
                 for (ActionConfiguration actionConfiguration: job.getActions()) {
-                    ActionInfo actionInfo = new ActionInfo(actionConfiguration.getType().getTypeName(), actionConfiguration.getDescription());
+                    ActionInfo actionInfo = new ActionInfo(ordinal,
+                            actionConfiguration.getType().getTypeName(), actionConfiguration.getDescription());
                     actionInfos.add(actionInfo);
+                    ordinal = ordinal  + 1;
                 }
                 JobInfo jobInfo = new JobInfo(job.getId(), job.getName(), actionInfos);
                 jobInfos.add(jobInfo);
