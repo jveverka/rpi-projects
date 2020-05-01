@@ -209,11 +209,11 @@ public class TaskManagerServiceImpl implements TaskManagerService {
 
     @Override
     public synchronized void cleanTaskQueue() {
-        for (TaskId taskId: tasks.keySet()) {
-            Task task = tasks.get(taskId);
+        for (Map.Entry<TaskId, Task> taskEntry: tasks.entrySet()) {
+            Task task = taskEntry.getValue();
             if (!(ExecutionStatus.WAITING.equals(task.getStatus())
                     || ExecutionStatus.IN_PROGRESS.equals(task.getStatus()))) {
-                tasks.remove(taskId);
+                tasks.remove(taskEntry.getKey());
             }
         }
     }

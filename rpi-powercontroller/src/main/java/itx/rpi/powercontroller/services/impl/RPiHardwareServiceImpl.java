@@ -70,9 +70,9 @@ public class RPiHardwareServiceImpl implements RPiService {
     @Override
     public SystemState getSystemState() {
         Map<Integer, Boolean> result = new HashMap<>();
-        ports.forEach((k,v) -> {
-            result.put(k, v.isHigh());
-        });
+        ports.forEach((k,v) ->
+            result.put(k, v.isHigh())
+        );
         return new SystemState(new Date(), result, portTypes);
     }
 
