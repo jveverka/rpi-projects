@@ -66,7 +66,7 @@ public class PowerControllerApp {
                 .addPrefixPath("/system/tasks/cancel", new BlockingHandler(new CancelTaskHandler(mapper, aaService, taskManagerService)))
                 .addPrefixPath("/system/tasks/cancel/all", new BlockingHandler(new CancelAllTasksHandler(aaService, taskManagerService)))
                 .addPrefixPath("/system/tasks/clean",  new CleanTaskQueueHandler(aaService, taskManagerService))
-                .addPrefixPath("/system/tasks/wait", new WaitForTaskHandler(mapper, aaService, taskManagerService));
+                .addPrefixPath("/system/tasks/wait", new BlockingHandler(new WaitForTaskHandler(mapper, aaService, taskManagerService)));
 
 
         Undertow server = Undertow.builder()

@@ -171,19 +171,24 @@ public class PowerControllerTests {
 
     @Test
     @Order(7)
-    public void getAllTasksTest() throws IOException {
+    public void getAllTasks() throws IOException {
         TaskInfo[] taskInfos = getTasks();
         assertNotNull(taskInfos);
         assertEquals(1, taskInfos.length);
         assertEquals(ExecutionStatus.FINISHED, taskInfos[0].getStatus());
-        boolean result = cleanTaskQueue();
-        assertTrue(result);
-        taskInfos = getTasks();
-        assertEquals(0, taskInfos.length);
     }
 
     @Test
     @Order(8)
+    public void cleanTaskQueueTest() throws IOException {
+        boolean result = cleanTaskQueue();
+        assertTrue(result);
+        TaskInfo[] taskInfos = getTasks();
+        assertEquals(0, taskInfos.length);
+    }
+
+    @Test
+    @Order(9)
     public void tasksSubmitAndCancelTest() throws IOException, InterruptedException {
         Optional<TaskId> taskId = submitTask(JobId.from("toggle-on-job-002"));
         assertTrue(taskId.isPresent());
@@ -191,13 +196,14 @@ public class PowerControllerTests {
         assertTrue(taskInfo.isPresent());
         assertEquals(ExecutionStatus.IN_PROGRESS, taskInfo.get().getStatus());
         assertTrue(cancelTask(taskId.get()));
-        Thread.sleep(200);
+        boolean waitResult = waitForTask(taskId.get());
+        assertTrue(waitResult);
         taskInfo = filterById(getTasks(), taskId.get());
         assertEquals(ExecutionStatus.ABORTED, taskInfo.get().getStatus());
     }
 
     @Test
-    @Order(9)
+    @Order(10)
     public void tasksSubmitAndFinishTest() throws IOException, InterruptedException {
         Optional<TaskId> taskId = submitTask(JobId.from("toggle-on-job-001"));
         assertTrue(taskId.isPresent());
@@ -210,7 +216,7 @@ public class PowerControllerTests {
 
     @Test
     @Disabled("fix concurrency issues")
-    @Order(10)
+    @Order(11)
     public void tasksSubmitManyAndCancelAll() throws IOException, InterruptedException {
         Optional<TaskId> taskId = submitTask(JobId.from("toggle-on-job-002"));
         assertTrue(taskId.isPresent());
@@ -235,7 +241,7 @@ public class PowerControllerTests {
     }
 
     @Test
-    @Order(11)
+    @Order(12)
     public void taskTestKeyEventsToggle() throws IOException, InterruptedException {
         PortListener portListener = services.getPortListener();
         portListener.onStateChange(4, true);
@@ -251,7 +257,7 @@ public class PowerControllerTests {
     }
 
     @Test
-    @Order(12)
+    @Order(13)
     public void taskTestKeyEventsToggleKillAll() throws IOException, InterruptedException {
         PortListener portListener = services.getPortListener();
         portListener.onStateChange(7, true);
@@ -267,7 +273,7 @@ public class PowerControllerTests {
     }
 
     @Test
-    @Order(13)
+    @Order(14)
     public void taskTestKeyEvents() throws IOException, InterruptedException {
         PortListener portListener = services.getPortListener();
         portListener.onStateChange(6, true);
@@ -282,7 +288,7 @@ public class PowerControllerTests {
 
     @Test
     @Disabled("fix concurrency issues")
-    @Order(14)
+    @Order(15)
     public void getFilteredTasks() throws IOException {
         List<ExecutionStatus> statuses = Arrays.asList(ExecutionStatus.FINISHED);
         TaskInfo[] filteredList = getTasks(new TaskFilter(statuses));
