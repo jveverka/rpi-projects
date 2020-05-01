@@ -121,16 +121,14 @@ public class TaskStateTests {
         executorService.submit(task);
         taskEventListener.waitForInProgress(3L, TimeUnit.SECONDS);
         assertEquals(ExecutionStatus.IN_PROGRESS, task.getStatus());
+        actions.get(0).awaitForTermination(2L,  TimeUnit.SECONDS);
         task.shutdown();
         taskEventListener.waitForAborted(3L, TimeUnit.SECONDS);
-        //TODO: fix concurrency issues with Actions
-        /**
         assertEquals(ExecutionStatus.ABORTED, task.getStatus());
         assertEquals(ExecutionStatus.FINISHED, actions.get(0).getStatus());
         assertEquals(ExecutionStatus.ABORTED, actions.get(1).getStatus());
         assertEquals(ExecutionStatus.CANCELLED, actions.get(2).getStatus());
         assertEquals(ExecutionStatus.CANCELLED, actions.get(3).getStatus());
-        */
     }
 
     @AfterAll
