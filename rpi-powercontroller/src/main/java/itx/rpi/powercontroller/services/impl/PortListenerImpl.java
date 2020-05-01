@@ -32,18 +32,14 @@ public class PortListenerImpl implements PortListener {
     }
 
     @Override
-    public synchronized void onStateChange(Integer port, Boolean state) {
+    public synchronized StateChangeContext onStateChange(Integer port, Boolean state) {
         LOG.info("onStateChange port={}, state={}", port, state);
         KeyEvent keyEvent = keyEvents.get(port);
         if (keyEvent == null) {
             LOG.error("no KeyEvent registered on port {}", port);
-            return;
-        }
-        if (keyEvent.getToggle() && state == false) {
+        } else if (keyEvent.getToggle() && state == false) {
             LOG.info("KeyEvent toggle={}, only state=false triggers action, action skipped.", keyEvent.getToggle());
-            return;
-        }
-        if (taskManagerService != null) {
+        } else if (taskManagerService != null) {
             TaskId taskId = tasks.remove(port);
             if (taskId == null) {
                 LOG.info("On toggle ON task");
@@ -67,6 +63,7 @@ public class PortListenerImpl implements PortListener {
                 }
             }
         }
+        return new StateChangeContext();
     }
 
 }

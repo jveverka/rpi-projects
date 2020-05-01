@@ -1,11 +1,13 @@
 package itx.rpi.powercontroller.services;
 
+import itx.rpi.powercontroller.services.impl.StateChangeContext;
+
 import java.util.EventListener;
 
 public interface PortListener extends EventListener {
 
     void setTaskManagerService(TaskManagerService taskManagerService);
 
-    void onStateChange(Integer port, Boolean state);
+    StateChangeContext onStateChange(Integer port, Boolean state);
 
 }
