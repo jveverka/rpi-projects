@@ -75,7 +75,12 @@ Please check [documentation](docs/key-event-processing.md) for details.
 * Clean task queue, remove all tasks in terminal state.  
   __PUT__ ``/system/tasks/clean``
 * Wait for task execution to finish or task to be cancelled.  
-  __PUT__ ``/system/tasks/wait``  
+  __PUT__ ``/system/tasks/wait/termination``  
+  ``
+  { "id": "task-001" }
+  ``
+* Wait for task execution to be started.  
+  __PUT__ ``/system/tasks/wait/started``  
   ``
   { "id": "task-001" }
   ``

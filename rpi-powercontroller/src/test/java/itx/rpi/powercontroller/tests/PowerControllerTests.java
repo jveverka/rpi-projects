@@ -24,7 +24,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -35,7 +34,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
@@ -192,12 +190,16 @@ public class PowerControllerTests {
     public void tasksSubmitAndCancelTest() throws IOException, InterruptedException {
         Optional<TaskId> taskId = submitTask(JobId.from("toggle-on-job-002"));
         assertTrue(taskId.isPresent());
+
+        boolean waitResult = waitForTaskStarted(taskId.get());
+        assertTrue(waitResult);
+
         Optional<TaskInfo> taskInfo = filterById(getTasks(), taskId.get());
         assertTrue(taskInfo.isPresent());
         assertEquals(ExecutionStatus.IN_PROGRESS, taskInfo.get().getStatus());
         assertTrue(cancelTask(taskId.get()));
 
-        boolean waitResult = waitForTask(taskId.get());
+        waitResult = waitForTaskTermination(taskId.get());
         assertTrue(waitResult);
 
         taskInfo = filterById(getTasks(), taskId.get());
@@ -215,7 +217,7 @@ public class PowerControllerTests {
         Optional<TaskInfo> taskInfo = filterById(getTasks(), taskId.get());
         assertTrue(taskInfo.isPresent());
 
-        boolean waitResult = waitForTask(taskId.get());
+        boolean waitResult = waitForTaskTermination(taskId.get());
         assertTrue(waitResult);
 
         taskInfo = filterById(getTasks(), taskId.get());
@@ -226,7 +228,6 @@ public class PowerControllerTests {
     }
 
     @Test
-    //@Disabled("fix concurrency issues")
     @Order(11)
     public void tasksSubmitManyAndCancelAll() throws IOException, InterruptedException {
         TaskInfo[] taskInfos = getTasks();
@@ -239,6 +240,8 @@ public class PowerControllerTests {
         Optional<TaskId> taskId03 = submitTask(JobId.from("toggle-on-job-002"));
         assertTrue(taskId03.isPresent());
 
+        boolean waitResult = waitForTaskStarted(taskId01.get());
+        assertTrue(waitResult);
         taskInfos = getTasks();
         assertEquals(3, taskInfos.length);
 
@@ -251,7 +254,7 @@ public class PowerControllerTests {
         boolean cancelled = cancelAllTasks();
         assertTrue(cancelled);
 
-        boolean waitResult = waitForTask(taskId03.get());
+        waitResult = waitForTaskTermination(taskId03.get());
         assertTrue(waitResult);
         taskInfos = getTasks();
         assertEquals(3, taskInfos.length);
@@ -261,6 +264,18 @@ public class PowerControllerTests {
 
         int cancelledCounter = filterByStatus(taskInfos, ExecutionStatus.CANCELLED);
         assertEquals(2, cancelledCounter);
+
+        List<ExecutionStatus> statuses = Arrays.asList(ExecutionStatus.FINISHED);
+        TaskInfo[] filteredList = getTasks(new TaskFilter(statuses));
+        assertEquals(0, filteredList.length);
+
+        statuses = Arrays.asList(ExecutionStatus.FINISHED, ExecutionStatus.ABORTED);
+        filteredList = getTasks(new TaskFilter(statuses));
+        assertEquals(1, filteredList.length);
+
+        statuses = Arrays.asList(ExecutionStatus.FINISHED, ExecutionStatus.ABORTED, ExecutionStatus.CANCELLED);
+        filteredList = getTasks(new TaskFilter(statuses));
+        assertEquals(3, filteredList.length);
 
         boolean result = cleanTaskQueue();
         assertTrue(result);
@@ -310,24 +325,6 @@ public class PowerControllerTests {
         Thread.sleep(100);
         state = getSystemState();
         assertFalse(state.getPorts().get(1));
-    }
-
-    @Test
-    @Disabled("fix concurrency issues")
-    @Order(15)
-    public void getFilteredTasks() throws IOException {
-        List<ExecutionStatus> statuses = Arrays.asList(ExecutionStatus.FINISHED);
-        TaskInfo[] filteredList = getTasks(new TaskFilter(statuses));
-        assertEquals(7, filteredList.length);
-        statuses = Arrays.asList(ExecutionStatus.FINISHED, ExecutionStatus.ABORTED);
-        filteredList = getTasks(new TaskFilter(statuses));
-        assertEquals(9, filteredList.length);
-        statuses= Arrays.asList(ExecutionStatus.FINISHED, ExecutionStatus.ABORTED, ExecutionStatus.CANCELLED);
-        filteredList = getTasks(new TaskFilter(statuses));
-        assertEquals(11, filteredList.length);
-        statuses = Arrays.asList();
-        filteredList = getTasks(new TaskFilter(statuses));
-        assertEquals(11, filteredList.length);
     }
 
     @AfterAll
@@ -416,8 +413,22 @@ public class PowerControllerTests {
         }
     }
 
-    private boolean waitForTask(TaskId id) throws IOException {
-        HttpPut put = new HttpPut(BASE_URL + "/system/tasks/wait");
+    private boolean waitForTaskStarted(TaskId id) throws IOException {
+        HttpPut put = new HttpPut(BASE_URL + "/system/tasks/wait/started");
+        put.addHeader("Authorization", HandlerUtils.createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
+        StringEntity stringEntity = new StringEntity(mapper.writeValueAsString(id));
+        stringEntity.setContentType("application/json");
+        put.setEntity(stringEntity);
+        CloseableHttpResponse response = httpClient.execute(put);
+        if (response.getStatusLine().getStatusCode() == 200) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean waitForTaskTermination(TaskId id) throws IOException {
+        HttpPut put = new HttpPut(BASE_URL + "/system/tasks/wait/termination");
         put.addHeader("Authorization", HandlerUtils.createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
         StringEntity stringEntity = new StringEntity(mapper.writeValueAsString(id));
         stringEntity.setContentType("application/json");

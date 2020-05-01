@@ -27,6 +27,8 @@ public interface Task {
 
     void shutdown();
 
-    boolean await(long timeout, TimeUnit duration) throws InterruptedException;
+    boolean awaitForStarted(long timeout, TimeUnit duration) throws InterruptedException;
+
+    boolean awaitForTermination(long timeout, TimeUnit duration) throws InterruptedException;
 
 }

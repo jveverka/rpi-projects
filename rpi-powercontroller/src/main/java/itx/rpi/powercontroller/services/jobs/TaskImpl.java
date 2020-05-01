@@ -21,7 +21,8 @@ public class TaskImpl implements Task, Runnable {
     private final String jobName;
     private final Collection<Action> actions;
     private final Date submitted;
-    private final CountDownLatch cl;
+    private final CountDownLatch clTermination;
+    private final CountDownLatch clStarted;
 
     private ExecutionStatus status;
     private boolean stopped;
@@ -37,7 +38,8 @@ public class TaskImpl implements Task, Runnable {
         this.stopped = false;
         this.submitted = submitted;
         this.taskEventListener = (id1, state) -> LOG.info("onTaskStateChange id={} {}", id1.getId(), state);
-        this.cl = new CountDownLatch(1);
+        this.clTermination = new CountDownLatch(1);
+        this.clStarted = new CountDownLatch(1);
     }
 
     public TaskImpl(TaskId id, JobId jobId, String jobName, Collection<Action> actions, Date submitted,
@@ -51,7 +53,8 @@ public class TaskImpl implements Task, Runnable {
         this.submitted = submitted;
         this.taskEventListener = taskEventListener;
         taskEventListener.onTaskStateChange(id, this.status);
-        this.cl = new CountDownLatch(1);
+        this.clTermination = new CountDownLatch(1);
+        this.clStarted = new CountDownLatch(1);
     }
 
     @Override
@@ -126,17 +129,23 @@ public class TaskImpl implements Task, Runnable {
     }
 
     @Override
-    public boolean await(long timeout, TimeUnit duration) throws InterruptedException {
-        return cl.await(timeout, duration);
+    public boolean awaitForStarted(long timeout, TimeUnit duration) throws InterruptedException {
+        return clStarted.await(timeout, duration);
+    }
+
+    @Override
+    public boolean awaitForTermination(long timeout, TimeUnit duration) throws InterruptedException {
+        return clTermination.await(timeout, duration);
     }
 
     private synchronized void setExecutionStatus(ExecutionStatus targetStatus) {
         boolean stateChanged = false;
-        if (ExecutionStatus.WAITING.equals(status) && ExecutionStatus.CANCELLED.equals(targetStatus)) {
-            this.status = ExecutionStatus.CANCELLED;
-            stateChanged = true;
-        } else if (ExecutionStatus.WAITING.equals(status) && ExecutionStatus.IN_PROGRESS.equals(targetStatus)) {
+        if (ExecutionStatus.WAITING.equals(status) && ExecutionStatus.IN_PROGRESS.equals(targetStatus)) {
             this.status = ExecutionStatus.IN_PROGRESS;
+            stateChanged = true;
+            clStarted.countDown();
+        } else if (ExecutionStatus.WAITING.equals(status) && ExecutionStatus.CANCELLED.equals(targetStatus)) {
+            this.status = ExecutionStatus.CANCELLED;
             stateChanged = true;
         } else if (ExecutionStatus.IN_PROGRESS.equals(status) && ExecutionStatus.FAILED.equals(targetStatus)) {
             this.status = ExecutionStatus.FAILED;
@@ -158,7 +167,7 @@ public class TaskImpl implements Task, Runnable {
             for (Action action : actions) {
                 action.shutdown();
             }
-            cl.countDown();
+            clTermination.countDown();
         }
         if (stateChanged) {
             this.taskEventListener.onTaskStateChange(id, targetStatus);

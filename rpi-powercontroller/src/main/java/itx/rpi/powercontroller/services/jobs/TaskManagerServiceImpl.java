@@ -90,16 +90,31 @@ public class TaskManagerServiceImpl implements TaskManagerService {
     }
 
     @Override
-    public void waitFor(TaskId taskId) {
+    public boolean waitForStarted(TaskId taskId) {
         Task task = tasks.get(taskId);
         if (task != null) {
             try {
-                task.await(10, TimeUnit.DAYS);
+                return task.awaitForStarted(10, TimeUnit.DAYS);
             } catch (InterruptedException e) {
                 LOG.error("Task waiting error: ", e);
                 Thread.currentThread().interrupt();
             }
         }
+        return false;
+    }
+
+    @Override
+    public boolean waitForTermination(TaskId taskId) {
+        Task task = tasks.get(taskId);
+        if (task != null) {
+            try {
+                return task.awaitForTermination(10, TimeUnit.DAYS);
+            } catch (InterruptedException e) {
+                LOG.error("Task waiting error: ", e);
+                Thread.currentThread().interrupt();
+            }
+        }
+        return false;
     }
 
     @Override
@@ -142,7 +157,7 @@ public class TaskManagerServiceImpl implements TaskManagerService {
             try {
                 ExecutionStatus statusBefore = task.getStatus();
                 task.shutdown();
-                task.await(1, TimeUnit.MINUTES);
+                task.awaitForTermination(1, TimeUnit.MINUTES);
                 CancelledTaskInfo cancelledTaskInfo = new CancelledTaskInfo(
                         task.getId().getId(), task.getJobId().getId(), statusBefore, task.getStatus()
                 );
@@ -165,7 +180,7 @@ public class TaskManagerServiceImpl implements TaskManagerService {
                 if (ExecutionStatus.WAITING.equals(statusBefore)
                         || ExecutionStatus.IN_PROGRESS.equals(statusBefore)) {
                     task.shutdown();
-                    task.await(1, TimeUnit.MINUTES);
+                    task.awaitForTermination(1, TimeUnit.MINUTES);
                     CancelledTaskInfo cancelledTaskInfo = new CancelledTaskInfo(
                             task.getId().getId(), task.getJobId().getId(), statusBefore, task.getStatus()
                     );
@@ -183,7 +198,7 @@ public class TaskManagerServiceImpl implements TaskManagerService {
         for (Task task : tasks.values()) {
             try {
                 task.shutdown();
-                task.await(1, TimeUnit.MINUTES);
+                task.awaitForTermination(1, TimeUnit.MINUTES);
                 LOG.info("closed taskId={} jobId={} {}", task.getId(), task.getJobId(), task.getStatus());
             } catch (InterruptedException e) {
                 LOG.error("Task closing error: ", e);

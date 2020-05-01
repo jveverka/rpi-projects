@@ -16,7 +16,9 @@ public interface TaskManagerService extends AutoCloseable {
 
     Optional<TaskId> submitTask(JobId jobId);
 
-    void waitFor(TaskId taskId);
+    boolean waitForStarted(TaskId taskId);
+
+    boolean waitForTermination(TaskId taskId);
 
     Optional<JobId> getKillAllTasksJobId();
 

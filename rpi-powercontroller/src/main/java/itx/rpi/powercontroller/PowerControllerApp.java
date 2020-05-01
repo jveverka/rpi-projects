@@ -18,7 +18,8 @@ import itx.rpi.powercontroller.handlers.SubmitTaskHandler;
 import itx.rpi.powercontroller.handlers.SystemInfoHandler;
 import itx.rpi.powercontroller.handlers.SystemStateHandler;
 import itx.rpi.powercontroller.handlers.TasksInfoHandler;
-import itx.rpi.powercontroller.handlers.WaitForTaskHandler;
+import itx.rpi.powercontroller.handlers.WaitForTaskStartedHandler;
+import itx.rpi.powercontroller.handlers.WaitForTaskTerminationHandler;
 import itx.rpi.powercontroller.services.AAService;
 import itx.rpi.powercontroller.services.PortListener;
 import itx.rpi.powercontroller.services.RPiService;
@@ -66,7 +67,8 @@ public class PowerControllerApp {
                 .addPrefixPath("/system/tasks/cancel", new BlockingHandler(new CancelTaskHandler(mapper, aaService, taskManagerService)))
                 .addPrefixPath("/system/tasks/cancel/all", new BlockingHandler(new CancelAllTasksHandler(aaService, taskManagerService)))
                 .addPrefixPath("/system/tasks/clean",  new CleanTaskQueueHandler(aaService, taskManagerService))
-                .addPrefixPath("/system/tasks/wait", new BlockingHandler(new WaitForTaskHandler(mapper, aaService, taskManagerService)));
+                .addPrefixPath("/system/tasks/wait/termination", new BlockingHandler(new WaitForTaskTerminationHandler(mapper, aaService, taskManagerService)))
+                .addPrefixPath("/system/tasks/wait/started", new BlockingHandler(new WaitForTaskStartedHandler(mapper, aaService, taskManagerService)));
 
 
         Undertow server = Undertow.builder()
