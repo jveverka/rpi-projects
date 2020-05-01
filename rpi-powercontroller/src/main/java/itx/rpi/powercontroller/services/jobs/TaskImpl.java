@@ -50,7 +50,7 @@ public class TaskImpl implements Task, Runnable {
         this.stopped = false;
         this.submitted = submitted;
         this.taskEventListener = taskEventListener;
-        taskEventListener.onTaskStateChange(id, ExecutionStatus.WAITING);
+        taskEventListener.onTaskStateChange(id, this.status);
         this.cl = new CountDownLatch(1);
     }
 
@@ -106,29 +106,22 @@ public class TaskImpl implements Task, Runnable {
             for (Action action : actions) {
                 action.execute();
                 if (stopped) {
-                    this.duration = new Date().getTime() - this.started.getTime();
                     setExecutionStatus(ExecutionStatus.ABORTED);
                     return;
                 }
             }
-            this.duration = new Date().getTime() - this.started.getTime();
             setExecutionStatus(ExecutionStatus.FINISHED);
         } catch (Exception e) {
-            this.duration = new Date().getTime() - this.started.getTime();
             setExecutionStatus(ExecutionStatus.FAILED);
         }
     }
 
     @Override
-    public void shutdown() {
+    public synchronized void shutdown() {
         if (ExecutionStatus.WAITING.equals(status)) {
             setExecutionStatus(ExecutionStatus.CANCELLED);
-        }
-        if (!isTerminalExecutionState()) {
-            this.stopped = true;
-            for (Action action : actions) {
-                action.shutdown();
-            }
+        } else {
+            setExecutionStatus(ExecutionStatus.ABORTED);
         }
     }
 
@@ -137,11 +130,38 @@ public class TaskImpl implements Task, Runnable {
         return cl.await(timeout, duration);
     }
 
-    private void setExecutionStatus(ExecutionStatus executionStatus) {
-        this.status = executionStatus;
-        this.taskEventListener.onTaskStateChange(id, executionStatus);
-        if (isTerminalExecutionState()) {
+    private synchronized void setExecutionStatus(ExecutionStatus targetStatus) {
+        boolean stateChanged = false;
+        if (ExecutionStatus.WAITING.equals(status) && ExecutionStatus.CANCELLED.equals(targetStatus)) {
+            this.status = ExecutionStatus.CANCELLED;
+            stateChanged = true;
+        } else if (ExecutionStatus.WAITING.equals(status) && ExecutionStatus.IN_PROGRESS.equals(targetStatus)) {
+            this.status = ExecutionStatus.IN_PROGRESS;
+            stateChanged = true;
+        } else if (ExecutionStatus.IN_PROGRESS.equals(status) && ExecutionStatus.FAILED.equals(targetStatus)) {
+            this.status = ExecutionStatus.FAILED;
+            stateChanged = true;
+        } else if (ExecutionStatus.IN_PROGRESS.equals(status) && ExecutionStatus.FINISHED.equals(targetStatus)) {
+            this.status = ExecutionStatus.FINISHED;
+            stateChanged = true;
+        } else if (ExecutionStatus.IN_PROGRESS.equals(status) && ExecutionStatus.ABORTED.equals(targetStatus)) {
+            this.status = ExecutionStatus.ABORTED;
+            stateChanged = true;
+        }
+        if (stateChanged && isTerminalExecutionState()) {
+            this.stopped = true;
+            if (this.started != null) {
+                this.duration = new Date().getTime() - this.started.getTime();
+            } else {
+                this.duration = 0L;
+            }
+            for (Action action : actions) {
+                action.shutdown();
+            }
             cl.countDown();
+        }
+        if (stateChanged) {
+            this.taskEventListener.onTaskStateChange(id, targetStatus);
         }
     }
 

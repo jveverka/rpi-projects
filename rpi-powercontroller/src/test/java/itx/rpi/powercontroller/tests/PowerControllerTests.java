@@ -226,7 +226,7 @@ public class PowerControllerTests {
     }
 
     @Test
-    @Disabled("fix concurrency issues")
+    //@Disabled("fix concurrency issues")
     @Order(11)
     public void tasksSubmitManyAndCancelAll() throws IOException, InterruptedException {
         TaskInfo[] taskInfos = getTasks();
@@ -257,10 +257,10 @@ public class PowerControllerTests {
         assertEquals(3, taskInfos.length);
 
         int abortedCounter = filterByStatus(taskInfos, ExecutionStatus.ABORTED);
-        assertEquals(2, abortedCounter);
+        assertEquals(1, abortedCounter);
 
         int cancelledCounter = filterByStatus(taskInfos, ExecutionStatus.CANCELLED);
-        assertEquals(1, cancelledCounter);
+        assertEquals(2, cancelledCounter);
 
         boolean result = cleanTaskQueue();
         assertTrue(result);
