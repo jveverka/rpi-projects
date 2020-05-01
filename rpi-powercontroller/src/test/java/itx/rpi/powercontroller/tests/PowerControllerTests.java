@@ -196,10 +196,15 @@ public class PowerControllerTests {
         assertTrue(taskInfo.isPresent());
         assertEquals(ExecutionStatus.IN_PROGRESS, taskInfo.get().getStatus());
         assertTrue(cancelTask(taskId.get()));
+
         boolean waitResult = waitForTask(taskId.get());
         assertTrue(waitResult);
+
         taskInfo = filterById(getTasks(), taskId.get());
         assertEquals(ExecutionStatus.ABORTED, taskInfo.get().getStatus());
+
+        boolean result = cleanTaskQueue();
+        assertTrue(result);
     }
 
     @Test
@@ -209,35 +214,56 @@ public class PowerControllerTests {
         assertTrue(taskId.isPresent());
         Optional<TaskInfo> taskInfo = filterById(getTasks(), taskId.get());
         assertTrue(taskInfo.isPresent());
-        Thread.sleep(20);
+
+        boolean waitResult = waitForTask(taskId.get());
+        assertTrue(waitResult);
+
         taskInfo = filterById(getTasks(), taskId.get());
         assertEquals(ExecutionStatus.FINISHED, taskInfo.get().getStatus());
+
+        boolean result = cleanTaskQueue();
+        assertTrue(result);
     }
 
     @Test
     @Disabled("fix concurrency issues")
     @Order(11)
     public void tasksSubmitManyAndCancelAll() throws IOException, InterruptedException {
-        Optional<TaskId> taskId = submitTask(JobId.from("toggle-on-job-002"));
-        assertTrue(taskId.isPresent());
-        taskId = submitTask(JobId.from("toggle-on-job-002"));
-        assertTrue(taskId.isPresent());
-        taskId = submitTask(JobId.from("toggle-on-job-002"));
-        assertTrue(taskId.isPresent());
+        TaskInfo[] taskInfos = getTasks();
+        assertEquals(0, taskInfos.length);
 
-        int inProgressCounter = filterByStatus(getTasks(), ExecutionStatus.IN_PROGRESS);
+        Optional<TaskId> taskId01 = submitTask(JobId.from("toggle-on-job-002"));
+        assertTrue(taskId01.isPresent());
+        Optional<TaskId> taskId02 = submitTask(JobId.from("toggle-on-job-002"));
+        assertTrue(taskId02.isPresent());
+        Optional<TaskId> taskId03 = submitTask(JobId.from("toggle-on-job-002"));
+        assertTrue(taskId03.isPresent());
+
+        taskInfos = getTasks();
+        assertEquals(3, taskInfos.length);
+
+        int inProgressCounter = filterByStatus(taskInfos, ExecutionStatus.IN_PROGRESS);
         assertEquals(1, inProgressCounter);
 
-        int waitingCounter = filterByStatus(getTasks(), ExecutionStatus.WAITING);
+        int waitingCounter = filterByStatus(taskInfos, ExecutionStatus.WAITING);
         assertEquals(2, waitingCounter);
 
         boolean cancelled = cancelAllTasks();
         assertTrue(cancelled);
 
-        Thread.sleep(200);
+        boolean waitResult = waitForTask(taskId03.get());
+        assertTrue(waitResult);
+        taskInfos = getTasks();
+        assertEquals(3, taskInfos.length);
 
-        int abortedCounter = filterByStatus(getTasks(), ExecutionStatus.ABORTED);
-        assertEquals(4, abortedCounter);
+        int abortedCounter = filterByStatus(taskInfos, ExecutionStatus.ABORTED);
+        assertEquals(2, abortedCounter);
+
+        int cancelledCounter = filterByStatus(taskInfos, ExecutionStatus.CANCELLED);
+        assertEquals(1, cancelledCounter);
+
+        boolean result = cleanTaskQueue();
+        assertTrue(result);
     }
 
     @Test
