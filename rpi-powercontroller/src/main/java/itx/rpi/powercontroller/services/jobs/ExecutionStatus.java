@@ -7,6 +7,11 @@ public enum ExecutionStatus {
     FINISHED,
     ABORTED,
     FAILED,
-    CANCELLED
+    CANCELLED;
+
+    public static boolean isTerminalExecutionState(ExecutionStatus status) {
+        return ExecutionStatus.ABORTED.equals(status) || ExecutionStatus.CANCELLED.equals(status) ||
+                ExecutionStatus.FAILED.equals(status) ||  ExecutionStatus.FINISHED.equals(status);
+    }
 
 }

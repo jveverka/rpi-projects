@@ -92,7 +92,7 @@ public class TaskStateTests {
     public void testFailedTaskExecutionFlow() throws InterruptedException {
         TaskEventListenerImpl taskEventListener = new TaskEventListenerImpl();
         Collection<Action> actions = new ArrayList<>();
-        actions.add(new DummyActionFail(0));
+        actions.add(new DummyActionFail(0, 0L, TimeUnit.SECONDS));
         TaskImpl task = new TaskImpl(TaskId.from("task-001"), JobId.from("job-001"), "", actions, new Date(), taskEventListener);
         taskEventListener.waitForWaiting(3L, TimeUnit.SECONDS);
         assertEquals(ExecutionStatus.WAITING, task.getStatus());

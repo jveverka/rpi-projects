@@ -40,6 +40,7 @@ public class TaskImpl implements Task, Runnable {
         this.taskEventListener = (id1, state) -> LOG.info("onTaskStateChange id={} {}", id1.getId(), state);
         this.clTermination = new CountDownLatch(1);
         this.clStarted = new CountDownLatch(1);
+        this.taskEventListener.onTaskStateChange(id, this.status);
     }
 
     public TaskImpl(TaskId id, JobId jobId, String jobName, Collection<Action> actions, Date submitted,
@@ -52,9 +53,9 @@ public class TaskImpl implements Task, Runnable {
         this.stopped = false;
         this.submitted = submitted;
         this.taskEventListener = taskEventListener;
-        taskEventListener.onTaskStateChange(id, this.status);
         this.clTermination = new CountDownLatch(1);
         this.clStarted = new CountDownLatch(1);
+        this.taskEventListener.onTaskStateChange(id, this.status);
     }
 
     @Override
@@ -157,7 +158,7 @@ public class TaskImpl implements Task, Runnable {
             this.status = ExecutionStatus.ABORTED;
             stateChanged = true;
         }
-        if (stateChanged && isTerminalExecutionState()) {
+        if (stateChanged && ExecutionStatus.isTerminalExecutionState(status)) {
             this.stopped = true;
             if (this.started != null) {
                 this.duration = new Date().getTime() - this.started.getTime();
@@ -172,11 +173,6 @@ public class TaskImpl implements Task, Runnable {
         if (stateChanged) {
             this.taskEventListener.onTaskStateChange(id, targetStatus);
         }
-    }
-
-    private boolean isTerminalExecutionState() {
-        return ExecutionStatus.ABORTED.equals(status) || ExecutionStatus.CANCELLED.equals(status) ||
-                ExecutionStatus.FAILED.equals(status) ||  ExecutionStatus.FINISHED.equals(status);
     }
 
 }
