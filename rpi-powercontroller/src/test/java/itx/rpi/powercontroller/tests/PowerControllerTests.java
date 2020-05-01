@@ -14,6 +14,7 @@ import itx.rpi.powercontroller.dto.TaskId;
 import itx.rpi.powercontroller.dto.TaskInfo;
 import itx.rpi.powercontroller.handlers.HandlerUtils;
 import itx.rpi.powercontroller.services.PortListener;
+import itx.rpi.powercontroller.services.impl.StateChangeContext;
 import itx.rpi.powercontroller.services.jobs.ExecutionStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -283,20 +284,43 @@ public class PowerControllerTests {
 
     @Test
     @Order(12)
-    public void taskTestKeyEventsToggle() throws IOException, InterruptedException {
+    public void taskTestKeyEventsToggle() throws IOException {
         PortListener portListener = services.getPortListener();
-        portListener.onStateChange(4, true);
-        portListener.onStateChange(4, false);
-        Thread.sleep(100);
-        SystemState state = getSystemState();
-        assertTrue(state.getPorts().get(1));
-        portListener.onStateChange(4, true);
-        portListener.onStateChange(4, false);
-        Thread.sleep(100);
-        state = getSystemState();
-        assertFalse(state.getPorts().get(1));
+        StateChangeContext stateChangeContext = portListener.onStateChange(4, true);
+        assertFalse(stateChangeContext.getOffTaskId().isPresent());
+        assertTrue(stateChangeContext.getOnTaskId().isPresent());
+        TaskId taskOnId = stateChangeContext.getOnTaskId().get();
+
+        stateChangeContext = portListener.onStateChange(4, false);
+        assertFalse(stateChangeContext.getOffTaskId().isPresent());
+        assertFalse(stateChangeContext.getOnTaskId().isPresent());
+
+        boolean termination = waitForTaskTermination(taskOnId);
+        assertTrue(termination);
+        Optional<TaskInfo> taskInfo = filterById(getTasks(), taskOnId);
+        assertTrue(taskInfo.isPresent());
+        assertEquals(ExecutionStatus.FINISHED, taskInfo.get().getStatus());
+
+        stateChangeContext = portListener.onStateChange(4, true);
+        assertFalse(stateChangeContext.getOffTaskId().isPresent());
+        assertTrue(stateChangeContext.getOnTaskId().isPresent());
+        taskOnId = stateChangeContext.getOnTaskId().get();
+
+        stateChangeContext = portListener.onStateChange(4, false);
+        assertFalse(stateChangeContext.getOffTaskId().isPresent());
+        assertFalse(stateChangeContext.getOnTaskId().isPresent());
+
+        termination = waitForTaskTermination(taskOnId);
+        assertTrue(termination);
+        taskInfo = filterById(getTasks(), taskOnId);
+        assertTrue(taskInfo.isPresent());
+        assertEquals(ExecutionStatus.FINISHED, taskInfo.get().getStatus());
+
+        boolean result = cleanTaskQueue();
+        assertTrue(result);
     }
 
+    /**
     @Test
     @Order(13)
     public void taskTestKeyEventsToggleKillAll() throws IOException, InterruptedException {
@@ -326,6 +350,7 @@ public class PowerControllerTests {
         state = getSystemState();
         assertFalse(state.getPorts().get(1));
     }
+     */
 
     @AfterAll
     public static void shutdown() throws Exception {
