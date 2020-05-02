@@ -2,6 +2,8 @@
 This project describes how to build AC power switching device controlled remotely over __HTTP / REST__ interface.
 The device is based on [RaspberryPI](https://www.raspberrypi.org/) and compatible hardware peripherals.
 
+![amimation](docs/animation.gif)
+
 __Key features__:
 * __4 AC power ports__ - controlled remotely via HTTP / REST (ON | OFF).
 * __sensor data__ - measures temperature, relative humidity and atmospheric pressure.
