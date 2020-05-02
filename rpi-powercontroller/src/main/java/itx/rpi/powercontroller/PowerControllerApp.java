@@ -26,6 +26,7 @@ import itx.rpi.powercontroller.services.RPiService;
 import itx.rpi.powercontroller.services.ShutdownHook;
 import itx.rpi.powercontroller.services.SystemInfoService;
 import itx.rpi.powercontroller.services.TaskManagerService;
+import itx.rpi.powercontroller.services.TaskQueueCleaner;
 import itx.rpi.powercontroller.services.impl.AAServiceImpl;
 import itx.rpi.powercontroller.services.impl.PortListenerImpl;
 import itx.rpi.powercontroller.services.impl.RPiServiceFactory;
@@ -37,12 +38,18 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 public class PowerControllerApp {
 
     private static final Logger LOG = LoggerFactory.getLogger(PowerControllerApp.class);
 
     public static Services initialize(ObjectMapper mapper, Configuration configuration) {
+
+        ScheduledExecutorService taskQueueCleanupExecutor = Executors.newScheduledThreadPool(1);
+
         AAService aaService = new AAServiceImpl(configuration.getCredentials());
         PortListener portListener = new PortListenerImpl(configuration.getKeyEvents());
         SystemInfoService systemInfoService = new SystemInfoServiceImpl(configuration);
@@ -76,7 +83,12 @@ public class PowerControllerApp {
                 .setHandler(handler)
                 .build();
 
-        return new Services(rPiService, server, taskManagerService, portListener);
+        taskQueueCleanupExecutor.scheduleAtFixedRate(
+                new TaskQueueCleaner(taskManagerService, configuration.getTaskQueueMaxAge()),
+                configuration.getTaskQueueCleanupInterval().getDuration(),
+                configuration.getTaskQueueCleanupInterval().getDuration(), configuration.getTaskQueueCleanupInterval().getTimeUnit());
+
+        return new Services(rPiService, server, taskManagerService, portListener, taskQueueCleanupExecutor);
     }
 
     public static void main(String[] args) throws IOException {
@@ -118,12 +130,15 @@ public class PowerControllerApp {
         private final Undertow server;
         private final TaskManagerService taskManagerService;
         private final PortListener portListener;
+        private final ExecutorService taskQueueCleanupExecutor;
 
-        public Services(RPiService rPiService, Undertow server, TaskManagerService taskManagerService, PortListener portListener) {
+        public Services(RPiService rPiService, Undertow server, TaskManagerService taskManagerService,
+                        PortListener portListener, ExecutorService taskQueueCleanupExecutor) {
             this.rPiService = rPiService;
             this.server = server;
             this.taskManagerService = taskManagerService;
             this.portListener = portListener;
+            this.taskQueueCleanupExecutor = taskQueueCleanupExecutor;
         }
 
         public RPiService getRPiService() {
@@ -143,6 +158,7 @@ public class PowerControllerApp {
         }
 
         public void shutdown() throws Exception {
+            this.taskQueueCleanupExecutor.shutdown();
             this.server.stop();
             this.taskManagerService.close();
             this.rPiService.close();

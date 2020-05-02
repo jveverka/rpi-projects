@@ -194,28 +194,52 @@ public class TaskManagerServiceImpl implements TaskManagerService {
     }
 
     @Override
-    public synchronized void kilAllTasks() {
+    public synchronized int kilAllTasks() {
+        int killCounter = 0;
         for (Task task : tasks.values()) {
             try {
                 task.shutdown();
                 task.awaitForTermination(1, TimeUnit.MINUTES);
                 LOG.info("closed taskId={} jobId={} {}", task.getId(), task.getJobId(), task.getStatus());
+                killCounter++;
             } catch (InterruptedException e) {
                 LOG.error("Task closing error: ", e);
                 Thread.currentThread().interrupt();
             }
         }
+        return killCounter;
     }
 
     @Override
-    public synchronized void cleanTaskQueue() {
+    public synchronized int cleanTaskQueue() {
+        int cleanCounter = 0;
         for (Map.Entry<TaskId, Task> taskEntry: tasks.entrySet()) {
             Task task = taskEntry.getValue();
             if (!(ExecutionStatus.WAITING.equals(task.getStatus())
                     || ExecutionStatus.IN_PROGRESS.equals(task.getStatus()))) {
                 tasks.remove(taskEntry.getKey());
+                cleanCounter++;
             }
         }
+        return cleanCounter;
+    }
+
+    @Override
+    public synchronized int cleanTaskQueue(Long age, TimeUnit timeUnit) {
+        int cleanCounter = 0;
+        long deadline = new Date().getTime() - timeUnit.toMillis(age);
+        for (Map.Entry<TaskId, Task> taskEntry: tasks.entrySet()) {
+            Task task = taskEntry.getValue();
+            if (!(ExecutionStatus.WAITING.equals(task.getStatus())
+                    || ExecutionStatus.IN_PROGRESS.equals(task.getStatus()))) {
+                long taskFinishedTimeStamp = task.getStarted().getTime() + task.getDuration();
+                if (taskFinishedTimeStamp < deadline) {
+                    tasks.remove(taskEntry.getKey());
+                    cleanCounter++;
+                }
+            }
+        }
+        return cleanCounter;
     }
 
     @Override

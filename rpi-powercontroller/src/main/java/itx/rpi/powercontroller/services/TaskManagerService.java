@@ -9,6 +9,7 @@ import itx.rpi.powercontroller.services.jobs.Job;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 public interface TaskManagerService extends AutoCloseable {
 
@@ -30,8 +31,10 @@ public interface TaskManagerService extends AutoCloseable {
 
     Collection<CancelledTaskInfo> cancelTasks(JobId jobId);
 
-    void kilAllTasks();
+    int kilAllTasks();
 
-    void cleanTaskQueue();
+    int cleanTaskQueue();
+
+    int cleanTaskQueue(Long age, TimeUnit timeUnit);
 
 }

@@ -22,6 +22,8 @@ public class Configuration {
     private final Collection<String> executeJobsOnStart;
     private final Map<Integer, KeyEvent> keyEvents;
     private final String killAllTasksJobId;
+    private final TaskQueueInterval taskQueueMaxAge;
+    private final TaskQueueInterval taskQueueCleanupInterval;
 
     @JsonCreator
     public Configuration(@JsonProperty("id") String id,
@@ -34,7 +36,9 @@ public class Configuration {
                          @JsonProperty("credentials") Map<String, String> credentials,
                          @JsonProperty("executeJobsOnStart") Collection<String> executeJobsOnStart,
                          @JsonProperty("keyEvents") Map<Integer, KeyEvent> keyEvents,
-                         @JsonProperty("killAllTasksJobId") String killAllTasksJobId) {
+                         @JsonProperty("killAllTasksJobId") String killAllTasksJobId,
+                         @JsonProperty("taskQueueMaxAge") TaskQueueInterval taskQueueMaxAge,
+                         @JsonProperty("taskQueueCleanupInterval") TaskQueueInterval taskQueueCleanupInterval) {
         this.id = id;
         this.name = name;
         this.host = host;
@@ -47,6 +51,8 @@ public class Configuration {
         this.executeJobsOnStart = executeJobsOnStart;
         this.keyEvents = keyEvents;
         this.killAllTasksJobId = killAllTasksJobId;
+        this.taskQueueMaxAge = taskQueueMaxAge;
+        this.taskQueueCleanupInterval = taskQueueCleanupInterval;
     }
 
     public String getId() {
@@ -98,4 +104,11 @@ public class Configuration {
         return killAllTasksJobId;
     }
 
+    public TaskQueueInterval getTaskQueueMaxAge() {
+        return taskQueueMaxAge;
+    }
+
+    public TaskQueueInterval getTaskQueueCleanupInterval() {
+        return taskQueueCleanupInterval;
+    }
 }

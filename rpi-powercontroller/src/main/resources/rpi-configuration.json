@@ -48,6 +48,14 @@
     "switch-off-all-ports"
   ],
   "killAllTasksJobId": "switch-off-all-ports",
+  "taskQueueMaxAge": {
+    "duration": 3,
+    "timeUnit": "HOURS"
+  },
+  "taskQueueCleanupInterval": {
+    "duration": 1,
+    "timeUnit": "HOURS"
+  },
   "jobConfigurations": [
     {
       "id": "switch-off-all-ports",
