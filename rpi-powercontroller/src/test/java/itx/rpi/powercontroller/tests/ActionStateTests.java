@@ -1,9 +1,9 @@
 package itx.rpi.powercontroller.tests;
 
 import itx.rpi.powercontroller.services.jobs.ExecutionStatus;
+import itx.rpi.powercontroller.services.jobs.impl.ActionWait;
 import itx.rpi.powercontroller.tests.actions.ActionTask;
 import itx.rpi.powercontroller.tests.actions.DummyActionFail;
-import itx.rpi.powercontroller.tests.actions.DummyActionOK;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ public class ActionStateTests {
 
     @Test
     public void testActionOKStateNormalFlow() throws Exception {
-        DummyActionOK okAction = new DummyActionOK(0,2L, TimeUnit.SECONDS);
+        ActionWait okAction = new ActionWait(0,2L, TimeUnit.SECONDS);
         assertEquals(ExecutionStatus.WAITING, okAction.getStatus());
         executorService.submit(new ActionTask(okAction));
         okAction.awaitForStarted(10, TimeUnit.SECONDS);
@@ -36,7 +36,7 @@ public class ActionStateTests {
 
     @Test
     public void testActionOKStateCancelFlow() throws Exception {
-        DummyActionOK okAction = new DummyActionOK(0,0L, TimeUnit.SECONDS);
+        ActionWait okAction = new ActionWait(0,0L, TimeUnit.SECONDS);
         assertEquals(ExecutionStatus.WAITING, okAction.getStatus());
         okAction.shutdown();
         okAction.awaitForTermination(10, TimeUnit.SECONDS);
@@ -45,7 +45,7 @@ public class ActionStateTests {
 
     @Test
     public void testActionOKStateAbortFlow() throws Exception {
-        DummyActionOK okAction = new DummyActionOK(0,10L, TimeUnit.SECONDS);
+        ActionWait okAction = new ActionWait(0,10L, TimeUnit.SECONDS);
         assertEquals(ExecutionStatus.WAITING, okAction.getStatus());
         executorService.submit(new ActionTask(okAction));
         okAction.awaitForStarted(10, TimeUnit.SECONDS);

@@ -5,8 +5,8 @@ import itx.rpi.powercontroller.dto.TaskId;
 import itx.rpi.powercontroller.services.jobs.Action;
 import itx.rpi.powercontroller.services.jobs.ExecutionStatus;
 import itx.rpi.powercontroller.services.jobs.TaskImpl;
+import itx.rpi.powercontroller.services.jobs.impl.ActionWait;
 import itx.rpi.powercontroller.tests.actions.DummyActionFail;
-import itx.rpi.powercontroller.tests.actions.DummyActionOK;
 import itx.rpi.powercontroller.tests.actions.TaskEventListenerImpl;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -72,7 +72,7 @@ public class TaskStateTests {
     public void testCancelInProgressTask() throws InterruptedException {
         TaskEventListenerImpl taskEventListener = new TaskEventListenerImpl();
         Collection<Action> actions = new ArrayList<>();
-        actions.add(new DummyActionOK(0,10L, TimeUnit.SECONDS));
+        actions.add(new ActionWait(0,10L, TimeUnit.SECONDS));
         TaskImpl task = new TaskImpl(TaskId.from("task-001"), JobId.from("job-001"), "", actions, new Date(), taskEventListener);
         taskEventListener.waitForWaiting(3L, TimeUnit.SECONDS);
         assertEquals(ExecutionStatus.WAITING, task.getStatus());
@@ -111,10 +111,10 @@ public class TaskStateTests {
     public void testCancelInProgressComplexTask() throws InterruptedException {
         TaskEventListenerImpl taskEventListener = new TaskEventListenerImpl();
         List<Action> actions = new ArrayList<>();
-        actions.add(new DummyActionOK(0,0L, TimeUnit.SECONDS));
-        actions.add(new DummyActionOK(1,10L, TimeUnit.SECONDS));
-        actions.add(new DummyActionOK(2,10L, TimeUnit.SECONDS));
-        actions.add(new DummyActionOK(3,10L, TimeUnit.SECONDS));
+        actions.add(new ActionWait(0,0L, TimeUnit.SECONDS));
+        actions.add(new ActionWait(1,10L, TimeUnit.SECONDS));
+        actions.add(new ActionWait(2,10L, TimeUnit.SECONDS));
+        actions.add(new ActionWait(3,10L, TimeUnit.SECONDS));
         TaskImpl task = new TaskImpl(TaskId.from("task-001"), JobId.from("job-001"), "", actions, new Date(), taskEventListener);
         taskEventListener.waitForWaiting(3L, TimeUnit.SECONDS);
         assertEquals(ExecutionStatus.WAITING, task.getStatus());

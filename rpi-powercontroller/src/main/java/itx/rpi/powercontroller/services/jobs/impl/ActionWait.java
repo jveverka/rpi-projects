@@ -28,18 +28,13 @@ public class ActionWait extends ActionParent {
     @Override
     public void taskBody() throws Exception {
         long milliseconds = timeUnit.toMillis(delay);
-        long ticks = milliseconds / 100;
-        long reminder = milliseconds - ticks * 100;
-        if (ticks <= 0) {
-            Thread.sleep(milliseconds);
-        } else {
-            for (int i = 0; i < ticks; i++) {
-                Thread.sleep(100);
+        if (milliseconds > 0) {
+            for (int i=0; i<milliseconds; i++) {
+                Thread.sleep(1);
                 if (isStopped()) {
                     return;
                 }
             }
-            Thread.sleep(reminder);
         }
     }
 
