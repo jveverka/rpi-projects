@@ -20,22 +20,26 @@
   },
   "keyEvents": {
     "4": {
-      "toggle": true,
+      "type": "SUBMIT_JOB",
+      "trigger": "RAISING_EDGE",
       "toggleOnJob": "toggle-on-job-001",
       "toggleOffJob": "toggle-off-job-001"
     },
     "5": {
-      "toggle": true,
+      "type": "SUBMIT_JOB",
+      "trigger": "RAISING_EDGE",
       "toggleOnJob": "toggle-on-job-002",
       "toggleOffJob": "toggle-off-job-002"
     },
     "6": {
-      "toggle": false,
+      "type": "TOGGLE_JOBS",
+      "trigger": "RAISING_EDGE",
       "toggleOnJob": "toggle-on-job-001",
       "toggleOffJob": "switch-off-all-ports"
     },
     "7": {
-      "toggle": true,
+      "type": "TOGGLE_JOBS",
+      "trigger": "RAISING_AND_FALLING_EDGE",
       "toggleOnJob": "toggle-on-job-001",
       "toggleOffJob": "switch-off-all-ports"
     }

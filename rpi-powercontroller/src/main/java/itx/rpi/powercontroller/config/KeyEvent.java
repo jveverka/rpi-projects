@@ -6,17 +6,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class KeyEvent {
 
     private final Integer port;
-    private final Boolean toggle;
+    private final EventType type;
+    private final EventTrigger trigger;
     private final String toggleOnJob;
     private final String toggleOffJob;
 
     @JsonCreator
     public KeyEvent(@JsonProperty("port") Integer port,
-                    @JsonProperty("toggle") Boolean toggle,
+                    @JsonProperty("type") EventType type,
+                    @JsonProperty("trigger") EventTrigger trigger,
                     @JsonProperty("toggleOnJob") String toggleOnJob,
                     @JsonProperty("toggleOffJob") String toggleOffJob) {
         this.port = port;
-        this.toggle = toggle;
+        this.type = type;
+        this.trigger = trigger;
         this.toggleOnJob = toggleOnJob;
         this.toggleOffJob = toggleOffJob;
     }
@@ -25,8 +28,12 @@ public class KeyEvent {
         return port;
     }
 
-    public Boolean getToggle() {
-        return toggle;
+    public EventType getType() {
+        return type;
+    }
+
+    public EventTrigger getTrigger() {
+        return trigger;
     }
 
     public String getToggleOnJob() {
