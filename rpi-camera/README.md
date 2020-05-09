@@ -13,9 +13,11 @@ This is simple REST sercice daemon, which allows access camera on Raspberry PI d
    sudo apt install python-picamera python3-picamera
    sudo apt install python3-pip
    pip3 install Flask 
+   pip3 install flask_httpauth
    ```
 4. Copy files on Raspberry Pi device into directory ``/opt/camera`` 
-5. Edit configuration file ``camera-rest.json``
+5. Edit configuration file ``camera-rest.json``, 
+   set http listening port, user credentials. 
 6. Install and enable ``camera-rest`` as systemd service.
    ```
    sudo cp camera-rest.service /etc/systemd/system/
@@ -31,12 +33,15 @@ This is simple REST sercice daemon, which allows access camera on Raspberry PI d
    ```
 
 ## REST APIs
+* [HTTP basic authentication](https://en.wikipedia.org/wiki/Basic_access_authentication) is required.
 * Get info about RPi Camera device.  
-  __GET__ ``/info``
+  __GET__ ``/info``  
+  ``curl -u user1:pwd1 http://<ip-address>:<port>/info``
 * Capture and download image.   
-  __GET__ ``/capture``
+  __GET__ ``/capture``  
+  ``curl -u user1:pwd1 http://<ip-address>:<port>/info``
 
-### Details
+### Hardware Assembly
 ![image-001](docs/image-001.jpg)
 
 ![image-002](docs/image-002.jpg)
