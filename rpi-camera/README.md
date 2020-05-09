@@ -1,5 +1,5 @@
 # RPi Camera REST
-This is simple REST sercice daemon, which allows access camera on Raspberry PI devices remotely.
+This is simple REST service daemon, which allows access camera on Raspberry PI devices remotely.
 
 ## Hardware
 * Supported RPi devices: Raspberry Pi 2, 3, 4.
