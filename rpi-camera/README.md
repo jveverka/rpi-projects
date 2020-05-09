@@ -36,10 +36,10 @@ This is simple REST sercice daemon, which allows access camera on Raspberry PI d
 * [HTTP basic authentication](https://en.wikipedia.org/wiki/Basic_access_authentication) is required.
 * Get info about RPi Camera device.  
   __GET__ ``/info``  
-  ``curl -u user1:pwd1 http://<ip-address>:<port>/info``
+  ``curl -u client-001:ex4oo http://<ip-address>:<port>/info``
 * Capture and download image.   
   __GET__ ``/capture``  
-  ``curl -u user1:pwd1 http://<ip-address>:<port>/info``
+  ``curl -u client-001:ex4oo http://<ip-address>:<port>/info``
 
 ### Hardware Assembly
 ![image-001](docs/image-001.jpg)
