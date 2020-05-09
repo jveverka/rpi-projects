@@ -3,13 +3,13 @@
 Collection of drivers for various chips for Raspberry PI
 Written in Java using [pi4j](http://pi4j.com/).
 
-## supported chips:
-* BMP180 - bosch I2C temperature and pressure sensor
-* DS1621 - I2C temperature sensor
-* HCSR04 - ultrasonic proximity detector
-* HCSR501 - ultrasonic proximity detector 
-* HTU21D - I2C relative humidity and temperature sensor
-* MCP9808 - I2C digital temperature sensor
+## Supported chips:
+* __BMP180__ - bosch I2C temperature and pressure sensor
+* __DS1621__ - I2C temperature sensor
+* __HCSR04__ - ultrasonic proximity detector
+* __HCSR501__ - ultrasonic proximity detector 
+* __HTU21D__ - I2C relative humidity and temperature sensor
+* __MCP9808__ - I2C digital temperature sensor
 
 ## Compile and Install:
 * Clone this git repository.
