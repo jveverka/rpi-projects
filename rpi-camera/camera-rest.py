@@ -28,13 +28,13 @@ def verify_password(username, password):
     if username in users and check_password_hash(users.get(username), password):
         return username
 
-@app.route('/info', methods=["GET"])
+@app.route('/system/info', methods=["GET"])
 @auth.login_required
 def getVersion():
     version = { "id": config['id'], "type": "camera-rest", "version": "1.0.0", "name": config['name'] }
     return jsonify(version)
 
-@app.route('/capture', methods=["GET"])
+@app.route('/system/capture', methods=["GET"])
 @auth.login_required
 def capture():
     print('capture')

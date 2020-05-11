@@ -32,14 +32,14 @@ This is simple REST service daemon, which allows access camera on Raspberry PI d
    sudo systemctl status camera-rest
    ```
 
-## REST APIs
+## REST APIs and Endpoints
 * [HTTP basic authentication](https://en.wikipedia.org/wiki/Basic_access_authentication) is required.
 * Get info about RPi Camera device.  
-  __GET__ ``/info``  
+  __GET__ ``/system/info``  
   ``curl -u client-001:ex4oo http://<ip-address>:<port>/info``
-* Capture and download image.   
-  __GET__ ``/capture``  
-  ``curl -u client-001:ex4oo http://<ip-address>:<port>/info``
+* Capture single image and download it as attachment.   
+  __GET__ ``/system/capture``  
+  ``curl -u client-001:ex4oo http://<ip-address>:<port>/system/info``
 
 ### Hardware Assembly
 ![image-001](docs/image-001.jpg)
@@ -47,4 +47,3 @@ This is simple REST service daemon, which allows access camera on Raspberry PI d
 ![image-002](docs/image-002.jpg)
    
 *Enjoy !*
-   
