@@ -6,9 +6,9 @@ plugins {
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-group = 'itx.rpi.powercontroller'
+group = 'one.microproject.rpi.powercontroller'
 version = '1.0.0'
-mainClassName = 'itx.rpi.powercontroller.PowerControllerApp'
+mainClassName = 'one.microproject.rpi.powercontroller.PowerControllerApp'
 applicationDefaultJvmArgs = ['-Xms32m', '-Xmx32m', '-XX:MaxMetaspaceSize=32m']
 
 repositories {

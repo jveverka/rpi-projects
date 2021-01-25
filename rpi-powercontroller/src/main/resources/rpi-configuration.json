@@ -62,19 +62,19 @@
       "name": "Switch OFF all output ports.",
       "actions" : [
         {
-          "typeId": "itx.rpi.powercontroller.config.actions.ActionPortLowConfig",
+          "typeId": "one.microproject.rpi.powercontroller.config.actions.ActionPortLowConfig",
           "port": 0
         },
         {
-          "typeId": "itx.rpi.powercontroller.config.actions.ActionPortLowConfig",
+          "typeId": "one.microproject.rpi.powercontroller.config.actions.ActionPortLowConfig",
           "port": 1
         },
         {
-          "typeId": "itx.rpi.powercontroller.config.actions.ActionPortLowConfig",
+          "typeId": "one.microproject.rpi.powercontroller.config.actions.ActionPortLowConfig",
           "port": 2
         },
         {
-          "typeId": "itx.rpi.powercontroller.config.actions.ActionPortLowConfig",
+          "typeId": "one.microproject.rpi.powercontroller.config.actions.ActionPortLowConfig",
           "port": 3
         }
       ]
@@ -84,16 +84,16 @@
       "name": "Switching port with short timer job.",
       "actions" : [
         {
-          "typeId": "itx.rpi.powercontroller.config.actions.ActionPortHighConfig",
+          "typeId": "one.microproject.rpi.powercontroller.config.actions.ActionPortHighConfig",
           "port": 0
         },
         {
-          "typeId": "itx.rpi.powercontroller.config.actions.ActionWaitConfig",
+          "typeId": "one.microproject.rpi.powercontroller.config.actions.ActionWaitConfig",
           "delay": 10,
           "timeUnit": "SECONDS"
         },
         {
-          "typeId": "itx.rpi.powercontroller.config.actions.ActionPortLowConfig",
+          "typeId": "one.microproject.rpi.powercontroller.config.actions.ActionPortLowConfig",
           "port": 0
         }
       ]
@@ -103,52 +103,52 @@
       "name": "Switching port with long timer job.",
       "actions" : [
         {
-          "typeId": "itx.rpi.powercontroller.config.actions.ActionPortHighConfig",
+          "typeId": "one.microproject.rpi.powercontroller.config.actions.ActionPortHighConfig",
           "port": 0
         },
         {
-          "typeId": "itx.rpi.powercontroller.config.actions.ActionWaitConfig",
+          "typeId": "one.microproject.rpi.powercontroller.config.actions.ActionWaitConfig",
           "delay": 30,
           "timeUnit": "SECONDS"
         },
         {
-          "typeId": "itx.rpi.powercontroller.config.actions.ActionPortLowConfig",
+          "typeId": "one.microproject.rpi.powercontroller.config.actions.ActionPortLowConfig",
           "port": 0
         },
         {
-          "typeId": "itx.rpi.powercontroller.config.actions.ActionWaitConfig",
+          "typeId": "one.microproject.rpi.powercontroller.config.actions.ActionWaitConfig",
           "delay": 3,
           "timeUnit": "SECONDS"
         },
         {
-          "typeId": "itx.rpi.powercontroller.config.actions.ActionPortHighConfig",
+          "typeId": "one.microproject.rpi.powercontroller.config.actions.ActionPortHighConfig",
           "port": 0
         },
         {
-          "typeId": "itx.rpi.powercontroller.config.actions.ActionWaitConfig",
+          "typeId": "one.microproject.rpi.powercontroller.config.actions.ActionWaitConfig",
           "delay": 20,
           "timeUnit": "SECONDS"
         },
         {
-          "typeId": "itx.rpi.powercontroller.config.actions.ActionPortLowConfig",
+          "typeId": "one.microproject.rpi.powercontroller.config.actions.ActionPortLowConfig",
           "port": 0
         },
         {
-          "typeId": "itx.rpi.powercontroller.config.actions.ActionWaitConfig",
+          "typeId": "one.microproject.rpi.powercontroller.config.actions.ActionWaitConfig",
           "delay": 2,
           "timeUnit": "SECONDS"
         },
         {
-          "typeId": "itx.rpi.powercontroller.config.actions.ActionPortHighConfig",
+          "typeId": "one.microproject.rpi.powercontroller.config.actions.ActionPortHighConfig",
           "port": 0
         },
         {
-          "typeId": "itx.rpi.powercontroller.config.actions.ActionWaitConfig",
+          "typeId": "one.microproject.rpi.powercontroller.config.actions.ActionWaitConfig",
           "delay": 4,
           "timeUnit": "MINUTES"
         },
         {
-          "typeId": "itx.rpi.powercontroller.config.actions.ActionPortLowConfig",
+          "typeId": "one.microproject.rpi.powercontroller.config.actions.ActionPortLowConfig",
           "port": 0
         }
       ]
@@ -158,7 +158,7 @@
       "name": "Turn ON port 01.",
       "actions" : [
         {
-          "typeId": "itx.rpi.powercontroller.config.actions.ActionPortHighConfig",
+          "typeId": "one.microproject.rpi.powercontroller.config.actions.ActionPortHighConfig",
           "port": 1
         }
       ]
@@ -168,7 +168,7 @@
       "name": "Turn OFF port 01.",
       "actions" : [
         {
-          "typeId": "itx.rpi.powercontroller.config.actions.ActionPortLowConfig",
+          "typeId": "one.microproject.rpi.powercontroller.config.actions.ActionPortLowConfig",
           "port": 1
         }
       ]
@@ -178,11 +178,11 @@
       "name": "Turn ON port 02 and wait.",
       "actions" : [
         {
-          "typeId": "itx.rpi.powercontroller.config.actions.ActionPortHighConfig",
+          "typeId": "one.microproject.rpi.powercontroller.config.actions.ActionPortHighConfig",
           "port": 2
         },
         {
-          "typeId": "itx.rpi.powercontroller.config.actions.ActionWaitConfig",
+          "typeId": "one.microproject.rpi.powercontroller.config.actions.ActionWaitConfig",
           "delay": 2,
           "timeUnit": "MINUTES"
         }
@@ -193,7 +193,7 @@
       "name": "Turn OFF port 02.",
       "actions" : [
         {
-          "typeId": "itx.rpi.powercontroller.config.actions.ActionPortLowConfig",
+          "typeId": "one.microproject.rpi.powercontroller.config.actions.ActionPortLowConfig",
           "port": 2
         }
       ]

@@ -98,7 +98,7 @@ curl -u <client-id>:<client-secret> http://<server>:<port>/uri
   
 ## Build & Test on dev PC
 RPi Power Controller is designed to be build and tested on PC. In this case  
-``itx.rpi.powercontroller.services.impl.RPiSimulatedServiceImpl`` is used instead of real RPi hardware.
+``RPiSimulatedServiceImpl`` is used instead of real RPi hardware.
 ### Development Environment
 * [OpenJDK 8 or 11](https://adoptopenjdk.net/).
 * [Gradle 6.0](https://gradle.org/install/) or later.

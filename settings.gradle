@@ -1,2 +1,3 @@
-include "pi4j-drivers"
+include "rpi-drivers"
+include "rpi-powercontroller-client"
 include "rpi-powercontroller"
