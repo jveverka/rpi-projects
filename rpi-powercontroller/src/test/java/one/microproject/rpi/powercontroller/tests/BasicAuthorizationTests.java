@@ -3,6 +3,7 @@ package one.microproject.rpi.powercontroller.tests;
 import one.microproject.rpi.powercontroller.handlers.HandlerUtils;
 import org.junit.jupiter.api.Test;
 
+import static one.microproject.rpi.powercontroller.client.PowerControllerClientImpl.createBasicAuthorizationFromCredentials;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BasicAuthorizationTests {
@@ -20,7 +21,7 @@ public class BasicAuthorizationTests {
 
     @Test
     public void testAuthorizationHeaderEncoding()  {
-        String authString = HandlerUtils.createBasicAuthorizationFromCredentials(clientId, clientSecret);
+        String authString = createBasicAuthorizationFromCredentials(clientId, clientSecret);
         assertEquals(basicAuthorization, authString);
     }
 

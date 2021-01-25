@@ -1,7 +1,10 @@
 package one.microproject.rpi.powercontroller.tests;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import one.microproject.rpi.powercontroller.ClientException;
 import one.microproject.rpi.powercontroller.PowerControllerApp;
+import one.microproject.rpi.powercontroller.PowerControllerClient;
+import one.microproject.rpi.powercontroller.PowerControllerClientBuilder;
 import one.microproject.rpi.powercontroller.config.Configuration;
 import one.microproject.rpi.powercontroller.dto.JobId;
 import one.microproject.rpi.powercontroller.dto.JobInfo;
@@ -12,14 +15,12 @@ import one.microproject.rpi.powercontroller.dto.SystemState;
 import one.microproject.rpi.powercontroller.dto.TaskFilter;
 import one.microproject.rpi.powercontroller.dto.TaskId;
 import one.microproject.rpi.powercontroller.dto.TaskInfo;
-import one.microproject.rpi.powercontroller.handlers.HandlerUtils;
 import one.microproject.rpi.powercontroller.services.PortListener;
 import one.microproject.rpi.powercontroller.services.impl.StateChangeContext;
 import one.microproject.rpi.powercontroller.dto.ExecutionStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
-import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -40,6 +41,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static one.microproject.rpi.powercontroller.client.PowerControllerClientImpl.createBasicAuthorizationFromCredentials;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -47,11 +49,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class PowerControllerTests {
+class PowerControllerTests {
 
     private static final Logger LOG = LoggerFactory.getLogger(PowerControllerTests.class);
 
-    private static final String BASE_URL = "http://localhost:8080/";
+    private static final String BASE_URL = "http://localhost:8080";
     private static final String CLIENT_ID = "client-001";
 
     private static CloseableHttpClient httpClient;
@@ -61,6 +63,8 @@ public class PowerControllerTests {
     private static Configuration configuration;
     private static String clientSecret;
     private static JobId killAllJobId;
+
+    private static PowerControllerClient powerControllerClient;
 
     @BeforeAll
     public static void init() throws IOException {
@@ -72,14 +76,18 @@ public class PowerControllerTests {
         clientSecret = configuration.getCredentials().get(CLIENT_ID);
         services = PowerControllerApp.initialize(mapper, configuration);
         executorService.submit(() -> services.getServer().start());
+        powerControllerClient = PowerControllerClientBuilder.builder()
+                .baseUrl(BASE_URL)
+                .withCredentials(CLIENT_ID, clientSecret)
+                .build();
         for (int i=0; i<10; i++) {
             try {
-                LOG.info("Waiting for server: ");
+                LOG.info("Waiting for server {}", BASE_URL);
                 Thread.sleep(500);
-                HttpGet get = new HttpGet(BASE_URL + "/system/info");
-                httpClient.execute(get);
+                powerControllerClient.getSystemInfo();
+                LOG.info("Server INITIALIZED !");
                 break;
-            } catch (HttpHostConnectException e) {
+            } catch (ClientException e) {
                 LOG.error("Server not running: ", e);
             } catch (InterruptedException e) {
                 LOG.error("Exception", e);
@@ -89,30 +97,22 @@ public class PowerControllerTests {
 
     @Test
     @Order(1)
-    public void testSystemInfo() throws IOException {
-        HttpGet get = new HttpGet(BASE_URL + "/system/info");
-        get.addHeader("Authorization", HandlerUtils.createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
-        CloseableHttpResponse response = httpClient.execute(get);
-        assertEquals(200, response.getStatusLine().getStatusCode());
-        SystemInfo systemInfo = mapper.readValue(response.getEntity().getContent(), SystemInfo.class);
+    void testSystemInfo() {
+        SystemInfo systemInfo = powerControllerClient.getSystemInfo();
         assertNotNull(systemInfo);
         assertEquals(configuration.getId(), systemInfo.getId());
         assertNotNull(systemInfo.getVersion());
         assertNotNull(systemInfo.getName());
         assertNotNull(systemInfo.getType());
         assertNotNull(systemInfo.getStarted());
-        assertNotNull(systemInfo.getUptime());
+        assertTrue(systemInfo.getUptime() > 0);
         assertNotNull(systemInfo.getUptimeDays());
     }
 
     @Test
     @Order(2)
-    public void testSystemMeasurements() throws IOException {
-        HttpGet get = new HttpGet(BASE_URL + "/system/measurements");
-        get.addHeader("Authorization", HandlerUtils.createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
-        CloseableHttpResponse response = httpClient.execute(get);
-        assertEquals(200, response.getStatusLine().getStatusCode());
-        Measurements measurements = mapper.readValue(response.getEntity().getContent(), Measurements.class);
+    void testSystemMeasurements() {
+        Measurements measurements = powerControllerClient.getMeasurements();
         assertNotNull(measurements);
         assertNotNull(measurements.getTimeStamp());
         assertNotNull(measurements.getPressureUnit());
@@ -125,8 +125,8 @@ public class PowerControllerTests {
 
     @Test
     @Order(3)
-    public void testSystemState() throws IOException {
-        SystemState systemState = getSystemState();
+    void testSystemState() {
+        SystemState systemState = powerControllerClient.getSystemState();
         assertNotNull(systemState);
         assertNotNull(systemState.getTimeStamp());
         assertNotNull(systemState.getPortTypes());
@@ -135,9 +135,9 @@ public class PowerControllerTests {
 
     @Test
     @Order(4)
-    public void testGetJobs() throws IOException {
+    void testGetJobs() throws IOException {
         HttpGet get = new HttpGet(BASE_URL + "/system/jobs");
-        get.addHeader("Authorization", HandlerUtils.createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
+        get.addHeader("Authorization", createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
         CloseableHttpResponse response = httpClient.execute(get);
         assertEquals(200, response.getStatusLine().getStatusCode());
         JobInfo[] jobs = mapper.readValue(response.getEntity().getContent(), JobInfo[].class);
@@ -147,21 +147,21 @@ public class PowerControllerTests {
 
     @Test
     @Order(5)
-    public void testPort0OnAndOff() throws IOException {
+    void testPort0OnAndOff() throws IOException {
         Integer portId = 0;
         assertTrue(setPortState(portId, true));
-        SystemState systemState = getSystemState();
+        SystemState systemState = powerControllerClient.getSystemState();
         assertTrue(systemState.getPorts().get(portId));
         assertTrue(setPortState(portId, false));
-        systemState = getSystemState();
+        systemState = powerControllerClient.getSystemState();
         assertFalse(systemState.getPorts().get(portId));
     }
 
     @Test
     @Order(6)
-    public void testKillAllJobId() throws IOException {
+    void testKillAllJobId() throws IOException {
         HttpGet get = new HttpGet(BASE_URL + "/system/jobs/killalljobid");
-        get.addHeader("Authorization", HandlerUtils.createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
+        get.addHeader("Authorization", createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
         CloseableHttpResponse response = httpClient.execute(get);
         assertEquals(200, response.getStatusLine().getStatusCode());
         killAllJobId = mapper.readValue(response.getEntity().getContent(), JobId.class);
@@ -170,7 +170,7 @@ public class PowerControllerTests {
 
     @Test
     @Order(7)
-    public void getAllTasks() throws IOException {
+    void getAllTasks() throws IOException {
         TaskInfo[] taskInfos = getTasks();
         assertNotNull(taskInfos);
         assertEquals(1, taskInfos.length);
@@ -179,7 +179,7 @@ public class PowerControllerTests {
 
     @Test
     @Order(8)
-    public void cleanTaskQueueTest() throws IOException {
+    void cleanTaskQueueTest() throws IOException {
         boolean result = cleanTaskQueue();
         assertTrue(result);
         TaskInfo[] taskInfos = getTasks();
@@ -188,7 +188,7 @@ public class PowerControllerTests {
 
     @Test
     @Order(9)
-    public void tasksSubmitAndCancelTest() throws IOException, InterruptedException {
+    void tasksSubmitAndCancelTest() throws IOException, InterruptedException {
         Optional<TaskId> taskId = submitTask(JobId.from("toggle-on-job-002"));
         assertTrue(taskId.isPresent());
 
@@ -212,7 +212,7 @@ public class PowerControllerTests {
 
     @Test
     @Order(10)
-    public void tasksSubmitAndFinishTest() throws IOException, InterruptedException {
+    void tasksSubmitAndFinishTest() throws IOException, InterruptedException {
         Optional<TaskId> taskId = submitTask(JobId.from("toggle-on-job-001"));
         assertTrue(taskId.isPresent());
         Optional<TaskInfo> taskInfo = filterById(getTasks(), taskId.get());
@@ -230,7 +230,7 @@ public class PowerControllerTests {
 
     @Test
     @Order(11)
-    public void tasksSubmitManyAndCancelAll() throws IOException, InterruptedException {
+    void tasksSubmitManyAndCancelAll() throws IOException, InterruptedException {
         TaskInfo[] taskInfos = getTasks();
         assertEquals(0, taskInfos.length);
 
@@ -284,7 +284,7 @@ public class PowerControllerTests {
 
     @Test
     @Order(12)
-    public void taskTestKeyEventsToggleFastJob() throws IOException {
+    void taskTestKeyEventsToggleFastJob() throws IOException {
         PortListener portListener = services.getPortListener();
         StateChangeContext stateChangeContext = portListener.onStateChange(4, true);
         assertFalse(stateChangeContext.getOffTaskId().isPresent());
@@ -320,7 +320,7 @@ public class PowerControllerTests {
 
     @Test
     @Order(13)
-    public void taskTestKeyEventsToggleSlowJob() throws IOException, InterruptedException {
+    void taskTestKeyEventsToggleSlowJob() throws IOException, InterruptedException {
         PortListener portListener = services.getPortListener();
         StateChangeContext stateChangeContext = portListener.onStateChange(5, true);
         assertFalse(stateChangeContext.getOffTaskId().isPresent());
@@ -362,18 +362,10 @@ public class PowerControllerTests {
         executorService.shutdown();
     }
 
-    private SystemState getSystemState() throws IOException {
-        HttpGet get = new HttpGet(BASE_URL + "/system/state");
-        get.addHeader("Authorization", HandlerUtils.createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
-        CloseableHttpResponse response = httpClient.execute(get);
-        assertEquals(200, response.getStatusLine().getStatusCode());
-        return mapper.readValue(response.getEntity().getContent(), SystemState.class);
-    }
-
     private boolean setPortState(Integer port, Boolean state) throws IOException {
         HttpPut put = new HttpPut(BASE_URL + "/system/port");
         SetPortRequest  request = new SetPortRequest(port, state);
-        put.addHeader("Authorization", HandlerUtils.createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
+        put.addHeader("Authorization", createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
         StringEntity stringEntity = new StringEntity(mapper.writeValueAsString(request));
         stringEntity.setContentType("application/json");
         put.setEntity(stringEntity);
@@ -383,7 +375,7 @@ public class PowerControllerTests {
 
     private TaskInfo[] getTasks() throws IOException {
         HttpGet get = new HttpGet(BASE_URL + "/system/tasks");
-        get.addHeader("Authorization", HandlerUtils.createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
+        get.addHeader("Authorization", createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
         CloseableHttpResponse response = httpClient.execute(get);
         assertEquals(200, response.getStatusLine().getStatusCode());
         return mapper.readValue(response.getEntity().getContent(), TaskInfo[].class);
@@ -391,7 +383,7 @@ public class PowerControllerTests {
 
     private TaskInfo[] getTasks(TaskFilter filter) throws IOException {
         HttpPut put = new HttpPut(BASE_URL + "/system/tasks");
-        put.addHeader("Authorization", HandlerUtils.createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
+        put.addHeader("Authorization", createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
         StringEntity stringEntity = new StringEntity(mapper.writeValueAsString(filter));
         stringEntity.setContentType("application/json");
         put.setEntity(stringEntity);
@@ -402,7 +394,7 @@ public class PowerControllerTests {
 
     private Optional<TaskId> submitTask(JobId id) throws IOException {
         HttpPut put = new HttpPut(BASE_URL + "/system/tasks/submit");
-        put.addHeader("Authorization", HandlerUtils.createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
+        put.addHeader("Authorization", createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
         StringEntity stringEntity = new StringEntity(mapper.writeValueAsString(id));
         stringEntity.setContentType("application/json");
         put.setEntity(stringEntity);
@@ -417,7 +409,7 @@ public class PowerControllerTests {
 
     private boolean cancelTask(TaskId id) throws IOException {
         HttpPut put = new HttpPut(BASE_URL + "/system/tasks/cancel");
-        put.addHeader("Authorization", HandlerUtils.createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
+        put.addHeader("Authorization", createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
         StringEntity stringEntity = new StringEntity(mapper.writeValueAsString(id));
         stringEntity.setContentType("application/json");
         put.setEntity(stringEntity);
@@ -431,7 +423,7 @@ public class PowerControllerTests {
 
     private boolean cancelAllTasks() throws IOException {
         HttpPut put = new HttpPut(BASE_URL + "/system/tasks/cancel/all");
-        put.addHeader("Authorization", HandlerUtils.createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
+        put.addHeader("Authorization", createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
         CloseableHttpResponse response = httpClient.execute(put);
         if (response.getStatusLine().getStatusCode() == 200) {
             return true;
@@ -442,7 +434,7 @@ public class PowerControllerTests {
 
     private boolean waitForTaskStarted(TaskId id) throws IOException {
         HttpPut put = new HttpPut(BASE_URL + "/system/tasks/wait/started");
-        put.addHeader("Authorization", HandlerUtils.createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
+        put.addHeader("Authorization", createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
         StringEntity stringEntity = new StringEntity(mapper.writeValueAsString(id));
         stringEntity.setContentType("application/json");
         put.setEntity(stringEntity);
@@ -456,7 +448,7 @@ public class PowerControllerTests {
 
     private boolean waitForTaskTermination(TaskId id) throws IOException {
         HttpPut put = new HttpPut(BASE_URL + "/system/tasks/wait/termination");
-        put.addHeader("Authorization", HandlerUtils.createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
+        put.addHeader("Authorization", createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
         StringEntity stringEntity = new StringEntity(mapper.writeValueAsString(id));
         stringEntity.setContentType("application/json");
         put.setEntity(stringEntity);
@@ -470,7 +462,7 @@ public class PowerControllerTests {
 
     private boolean cleanTaskQueue() throws IOException {
         HttpPut put = new HttpPut(BASE_URL + "/system/tasks/clean");
-        put.addHeader("Authorization", HandlerUtils.createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
+        put.addHeader("Authorization", createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
         CloseableHttpResponse response = httpClient.execute(put);
         if (response.getStatusLine().getStatusCode() == 200) {
             return true;

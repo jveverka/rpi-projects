@@ -39,11 +39,4 @@ public final class HandlerUtils {
         return decodedString.split(":");
     }
 
-    public static String createBasicAuthorizationFromCredentials(String clientId, String clientSecret) {
-        String authorization = clientId + ":" + clientSecret;
-        byte[] encodedBytes = Base64.getEncoder().encode(authorization.getBytes());
-        String encodedString = new String(encodedBytes);
-        return "Basic " + encodedString;
-    }
-
 }
