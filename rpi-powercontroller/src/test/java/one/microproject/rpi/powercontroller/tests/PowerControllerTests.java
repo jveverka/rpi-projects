@@ -15,7 +15,7 @@ import one.microproject.rpi.powercontroller.dto.TaskInfo;
 import one.microproject.rpi.powercontroller.handlers.HandlerUtils;
 import one.microproject.rpi.powercontroller.services.PortListener;
 import one.microproject.rpi.powercontroller.services.impl.StateChangeContext;
-import one.microproject.rpi.powercontroller.services.jobs.ExecutionStatus;
+import one.microproject.rpi.powercontroller.dto.ExecutionStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;

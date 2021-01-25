@@ -2,7 +2,6 @@ package one.microproject.rpi.powercontroller.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import one.microproject.rpi.powercontroller.config.PortType;
 
 import java.util.Date;
 import java.util.Map;

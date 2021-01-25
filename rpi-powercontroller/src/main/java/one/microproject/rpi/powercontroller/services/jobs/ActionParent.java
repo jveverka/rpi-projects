@@ -1,5 +1,6 @@
 package one.microproject.rpi.powercontroller.services.jobs;
 
+import one.microproject.rpi.powercontroller.dto.ExecutionStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

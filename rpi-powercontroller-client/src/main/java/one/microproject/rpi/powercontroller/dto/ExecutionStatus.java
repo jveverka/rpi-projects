@@ -1,4 +1,4 @@
-package one.microproject.rpi.powercontroller.services.jobs;
+package one.microproject.rpi.powercontroller.dto;
 
 public enum ExecutionStatus {
 

@@ -3,7 +3,7 @@ package one.microproject.rpi.powercontroller.tests;
 import one.microproject.rpi.powercontroller.dto.JobId;
 import one.microproject.rpi.powercontroller.dto.TaskId;
 import one.microproject.rpi.powercontroller.services.jobs.Action;
-import one.microproject.rpi.powercontroller.services.jobs.ExecutionStatus;
+import one.microproject.rpi.powercontroller.dto.ExecutionStatus;
 import one.microproject.rpi.powercontroller.services.jobs.TaskImpl;
 import one.microproject.rpi.powercontroller.services.jobs.impl.ActionWait;
 import one.microproject.rpi.powercontroller.tests.actions.DummyActionFail;

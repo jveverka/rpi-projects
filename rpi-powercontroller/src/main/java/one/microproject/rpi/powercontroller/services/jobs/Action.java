@@ -1,5 +1,7 @@
 package one.microproject.rpi.powercontroller.services.jobs;
 
+import one.microproject.rpi.powercontroller.dto.ExecutionStatus;
+
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 

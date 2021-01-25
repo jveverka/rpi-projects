@@ -7,7 +7,7 @@ import one.microproject.rpi.powercontroller.dto.TaskId;
 import one.microproject.rpi.powercontroller.services.PortListener;
 import one.microproject.rpi.powercontroller.services.TaskManagerService;
 import one.microproject.rpi.powercontroller.config.KeyEvent;
-import one.microproject.rpi.powercontroller.services.jobs.ExecutionStatus;
+import one.microproject.rpi.powercontroller.dto.ExecutionStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

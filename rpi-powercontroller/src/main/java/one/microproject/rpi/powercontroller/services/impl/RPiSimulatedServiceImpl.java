@@ -1,7 +1,7 @@
 package one.microproject.rpi.powercontroller.services.impl;
 
 import one.microproject.rpi.powercontroller.config.Configuration;
-import one.microproject.rpi.powercontroller.config.PortType;
+import one.microproject.rpi.powercontroller.dto.PortType;
 import one.microproject.rpi.powercontroller.dto.Measurements;
 import one.microproject.rpi.powercontroller.dto.SystemState;
 import one.microproject.rpi.powercontroller.services.PortListener;

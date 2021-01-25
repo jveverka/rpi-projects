@@ -1,5 +1,5 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-![Build and Test](https://github.com/jveverka/rpi-drivers/workflows/Build%20and%20Test/badge.svg)
+![Build and Test](https://github.com/jveverka/rpi-projects/workflows/Build%20and%20Test/badge.svg)
 
 # Raspberry PI projects and drivers
 

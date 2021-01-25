@@ -1,7 +1,7 @@
 package one.microproject.rpi.powercontroller.tests.actions;
 
 import one.microproject.rpi.powercontroller.dto.TaskId;
-import one.microproject.rpi.powercontroller.services.jobs.ExecutionStatus;
+import one.microproject.rpi.powercontroller.dto.ExecutionStatus;
 import one.microproject.rpi.powercontroller.services.jobs.TaskEventListener;
 
 import java.util.ArrayList;

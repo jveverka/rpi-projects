@@ -6,6 +6,7 @@ import one.microproject.rpi.powercontroller.config.actions.ActionPortLowConfig;
 import one.microproject.rpi.powercontroller.config.actions.ActionWaitConfig;
 import one.microproject.rpi.powercontroller.dto.ActionTaskInfo;
 import one.microproject.rpi.powercontroller.dto.CancelledTaskInfo;
+import one.microproject.rpi.powercontroller.dto.ExecutionStatus;
 import one.microproject.rpi.powercontroller.dto.JobId;
 import one.microproject.rpi.powercontroller.dto.TaskFilter;
 import one.microproject.rpi.powercontroller.dto.TaskId;

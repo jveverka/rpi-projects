@@ -11,7 +11,7 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import one.microproject.rpi.hardware.gpio.sensors.BMP180;
 import one.microproject.rpi.hardware.gpio.sensors.HTU21DF;
 import one.microproject.rpi.powercontroller.config.Configuration;
-import one.microproject.rpi.powercontroller.config.PortType;
+import one.microproject.rpi.powercontroller.dto.PortType;
 import one.microproject.rpi.powercontroller.dto.Measurements;
 import one.microproject.rpi.powercontroller.dto.SystemState;
 import one.microproject.rpi.powercontroller.services.PortListener;

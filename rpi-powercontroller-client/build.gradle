@@ -19,6 +19,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-core:2.11.3'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.3'
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.11.3'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.0'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.0'
 }
 
