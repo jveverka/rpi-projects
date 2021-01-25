@@ -18,12 +18,12 @@ repositories {
 
 dependencies {
     implementation 'com.pi4j:pi4j-core:1.2'
-    implementation 'io.undertow:undertow-core:2.2.0.Final'
+    implementation 'io.undertow:undertow-core:2.2.3.Final'
     implementation 'org.slf4j:slf4j-api:1.7.30'
     implementation 'org.slf4j:slf4j-simple:1.7.30'
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.11.3'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.3'
-    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.11.3'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.12.1'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.1'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.12.1'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.0'
     testImplementation 'org.apache.httpcomponents:httpclient:4.5.12'
 }
