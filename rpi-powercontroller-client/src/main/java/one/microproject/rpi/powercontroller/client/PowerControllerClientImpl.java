@@ -196,32 +196,115 @@ public class PowerControllerClientImpl implements PowerControllerClient {
 
     @Override
     public Optional<TaskId> submitTask(JobId id) {
-        return Optional.empty();
+        try {
+            String requestBody = mapper.writeValueAsString(id);
+            Request request = new Request.Builder()
+                    .url(baseURL + "/system/tasks/submit")
+                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(userName, password))
+                    .put(RequestBody.create(requestBody, MediaType.parse(APPLICATION_JSON)))
+                    .build();
+            Response response = client.newCall(request).execute();
+            if (response.code() == 200) {
+                return Optional.of(mapper.readValue(response.body().string(), TaskId.class));
+            }
+            LOG.info("Expected http=200, received http={}", response.code());
+            return Optional.empty();
+        } catch (IOException e) {
+            throw new ClientException(e);
+        }
     }
 
     @Override
     public boolean cancelTask(TaskId id) {
-        return false;
+        try {
+            String requestBody = mapper.writeValueAsString(id);
+            Request request = new Request.Builder()
+                    .url(baseURL + "/system/tasks/cancel")
+                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(userName, password))
+                    .put(RequestBody.create(requestBody, MediaType.parse(APPLICATION_JSON)))
+                    .build();
+            Response response = client.newCall(request).execute();
+            if (response.code() == 200) {
+                return 200 == response.code();
+            }
+            throw new ClientException("Expected http=200, received http=" + response.code());
+        } catch (IOException e) {
+            throw new ClientException(e);
+        }
     }
 
     @Override
     public boolean cancelAllTasks() {
-        return false;
+        try {
+            Request request = new Request.Builder()
+                    .url(baseURL + "/system/tasks/cancel/all")
+                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(userName, password))
+                    .put(RequestBody.create("{}", MediaType.parse(APPLICATION_JSON)))
+                    .build();
+            Response response = client.newCall(request).execute();
+            if (response.code() == 200) {
+                return 200 == response.code();
+            }
+            throw new ClientException("Expected http=200, received http=" + response.code());
+        } catch (IOException e) {
+            throw new ClientException(e);
+        }
     }
 
     @Override
     public boolean waitForTaskStarted(TaskId id) {
-        return false;
+        try {
+            String requestBody = mapper.writeValueAsString(id);
+            Request request = new Request.Builder()
+                    .url(baseURL + "/system/tasks/wait/started")
+                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(userName, password))
+                    .put(RequestBody.create(requestBody, MediaType.parse(APPLICATION_JSON)))
+                    .build();
+            Response response = client.newCall(request).execute();
+            if (response.code() == 200) {
+                return 200 == response.code();
+            }
+            throw new ClientException("Expected http=200, received http=" + response.code());
+        } catch (IOException e) {
+            throw new ClientException(e);
+        }
     }
 
     @Override
     public boolean waitForTaskTermination(TaskId id) {
-        return false;
+        try {
+            String requestBody = mapper.writeValueAsString(id);
+            Request request = new Request.Builder()
+                    .url(baseURL + "/system/tasks/wait/termination")
+                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(userName, password))
+                    .put(RequestBody.create(requestBody, MediaType.parse(APPLICATION_JSON)))
+                    .build();
+            Response response = client.newCall(request).execute();
+            if (response.code() == 200) {
+                return 200 == response.code();
+            }
+            throw new ClientException("Expected http=200, received http=" + response.code());
+        } catch (IOException e) {
+            throw new ClientException(e);
+        }
     }
 
     @Override
     public boolean cleanTaskQueue() {
-        return false;
+        try {
+            Request request = new Request.Builder()
+                    .url(baseURL + "/system/tasks/clean")
+                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(userName, password))
+                    .put(RequestBody.create("{}", MediaType.parse(APPLICATION_JSON)))
+                    .build();
+            Response response = client.newCall(request).execute();
+            if (response.code() == 200) {
+                return 200 == response.code();
+            }
+            throw new ClientException("Expected http=200, received http=" + response.code());
+        } catch (IOException e) {
+            throw new ClientException(e);
+        }
     }
 
     public static String createBasicAuthorizationFromCredentials(String clientId, String clientSecret) {

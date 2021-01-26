@@ -9,7 +9,6 @@ import one.microproject.rpi.powercontroller.config.Configuration;
 import one.microproject.rpi.powercontroller.dto.JobId;
 import one.microproject.rpi.powercontroller.dto.JobInfo;
 import one.microproject.rpi.powercontroller.dto.Measurements;
-import one.microproject.rpi.powercontroller.dto.SetPortRequest;
 import one.microproject.rpi.powercontroller.dto.SystemInfo;
 import one.microproject.rpi.powercontroller.dto.SystemState;
 import one.microproject.rpi.powercontroller.dto.TaskFilter;
@@ -18,12 +17,6 @@ import one.microproject.rpi.powercontroller.dto.TaskInfo;
 import one.microproject.rpi.powercontroller.services.PortListener;
 import one.microproject.rpi.powercontroller.services.impl.StateChangeContext;
 import one.microproject.rpi.powercontroller.dto.ExecutionStatus;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -42,7 +35,6 @@ import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static one.microproject.rpi.powercontroller.client.PowerControllerClientImpl.createBasicAuthorizationFromCredentials;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -57,7 +49,6 @@ class PowerControllerTests {
     private static final String BASE_URL = "http://localhost:8080";
     private static final String CLIENT_ID = "client-001";
 
-    private static CloseableHttpClient httpClient;
     private static PowerControllerApp.Services services;
     private static ExecutorService executorService;
     private static ObjectMapper mapper;
@@ -68,7 +59,6 @@ class PowerControllerTests {
 
     @BeforeAll
     public static void init() throws IOException {
-        httpClient = HttpClients.createDefault();
         executorService = Executors.newSingleThreadExecutor();
         mapper = new ObjectMapper();
         InputStream is = PowerControllerApp.class.getResourceAsStream("/rpi-configuration.json");
@@ -174,7 +164,7 @@ class PowerControllerTests {
     @Test
     @Order(8)
     void cleanTaskQueueTest() throws IOException {
-        boolean result = cleanTaskQueue();
+        boolean result = powerControllerClient.cleanTaskQueue();
         assertTrue(result);
         Collection<TaskInfo> taskInfos = powerControllerClient.getAllTasks();
         assertEquals(0, taskInfos.size());
@@ -183,42 +173,42 @@ class PowerControllerTests {
     @Test
     @Order(9)
     void tasksSubmitAndCancelTest() throws IOException {
-        Optional<TaskId> taskId = submitTask(JobId.from("toggle-on-job-002"));
+        Optional<TaskId> taskId = powerControllerClient.submitTask(JobId.from("toggle-on-job-002"));
         assertTrue(taskId.isPresent());
 
-        boolean waitResult = waitForTaskStarted(taskId.get());
+        boolean waitResult = powerControllerClient.waitForTaskStarted(taskId.get());
         assertTrue(waitResult);
 
         Optional<TaskInfo> taskInfo = filterById(powerControllerClient.getAllTasks(), taskId.get());
         assertTrue(taskInfo.isPresent());
         assertEquals(ExecutionStatus.IN_PROGRESS, taskInfo.get().getStatus());
-        assertTrue(cancelTask(taskId.get()));
+        assertTrue(powerControllerClient.cancelTask(taskId.get()));
 
-        waitResult = waitForTaskTermination(taskId.get());
+        waitResult = powerControllerClient.waitForTaskTermination(taskId.get());
         assertTrue(waitResult);
 
         taskInfo = filterById(powerControllerClient.getAllTasks(), taskId.get());
         assertEquals(ExecutionStatus.ABORTED, taskInfo.get().getStatus());
 
-        boolean result = cleanTaskQueue();
+        boolean result = powerControllerClient.cleanTaskQueue();
         assertTrue(result);
     }
 
     @Test
     @Order(10)
     void tasksSubmitAndFinishTest() throws IOException {
-        Optional<TaskId> taskId = submitTask(JobId.from("toggle-on-job-001"));
+        Optional<TaskId> taskId = powerControllerClient.submitTask(JobId.from("toggle-on-job-001"));
         assertTrue(taskId.isPresent());
         Optional<TaskInfo> taskInfo = filterById(powerControllerClient.getAllTasks(), taskId.get());
         assertTrue(taskInfo.isPresent());
 
-        boolean waitResult = waitForTaskTermination(taskId.get());
+        boolean waitResult = powerControllerClient.waitForTaskTermination(taskId.get());
         assertTrue(waitResult);
 
         taskInfo = filterById(powerControllerClient.getAllTasks(), taskId.get());
         assertEquals(ExecutionStatus.FINISHED, taskInfo.get().getStatus());
 
-        boolean result = cleanTaskQueue();
+        boolean result = powerControllerClient.cleanTaskQueue();
         assertTrue(result);
     }
 
@@ -228,14 +218,14 @@ class PowerControllerTests {
         Collection<TaskInfo> taskInfos = powerControllerClient.getAllTasks();
         assertEquals(0, taskInfos.size());
 
-        Optional<TaskId> taskId01 = submitTask(JobId.from("toggle-on-job-002"));
+        Optional<TaskId> taskId01 = powerControllerClient.submitTask(JobId.from("toggle-on-job-002"));
         assertTrue(taskId01.isPresent());
-        Optional<TaskId> taskId02 = submitTask(JobId.from("toggle-on-job-002"));
+        Optional<TaskId> taskId02 = powerControllerClient.submitTask(JobId.from("toggle-on-job-002"));
         assertTrue(taskId02.isPresent());
-        Optional<TaskId> taskId03 = submitTask(JobId.from("toggle-on-job-002"));
+        Optional<TaskId> taskId03 = powerControllerClient.submitTask(JobId.from("toggle-on-job-002"));
         assertTrue(taskId03.isPresent());
 
-        boolean waitResult = waitForTaskStarted(taskId01.get());
+        boolean waitResult = powerControllerClient.waitForTaskStarted(taskId01.get());
         assertTrue(waitResult);
         taskInfos = powerControllerClient.getAllTasks();
         assertEquals(3, taskInfos.size());
@@ -246,10 +236,10 @@ class PowerControllerTests {
         int waitingCounter = filterByStatus(taskInfos, ExecutionStatus.WAITING);
         assertEquals(2, waitingCounter);
 
-        boolean cancelled = cancelAllTasks();
+        boolean cancelled = powerControllerClient.cancelAllTasks();
         assertTrue(cancelled);
 
-        waitResult = waitForTaskTermination(taskId03.get());
+        waitResult = powerControllerClient.waitForTaskTermination(taskId03.get());
         assertTrue(waitResult);
         taskInfos = powerControllerClient.getAllTasks();
         assertEquals(3, taskInfos.size());
@@ -272,7 +262,7 @@ class PowerControllerTests {
         filteredList = powerControllerClient.getTasks(new TaskFilter(statuses));
         assertEquals(3, filteredList.size());
 
-        boolean result = cleanTaskQueue();
+        boolean result = powerControllerClient.cleanTaskQueue();
         assertTrue(result);
     }
 
@@ -288,7 +278,7 @@ class PowerControllerTests {
         stateChangeContext = portListener.onStateChange(4, false);
         assertTrue(stateChangeContext.isEmpty());
 
-        boolean termination = waitForTaskTermination(taskOnId);
+        boolean termination = powerControllerClient.waitForTaskTermination(taskOnId);
         assertTrue(termination);
         Optional<TaskInfo> taskInfo = filterById(powerControllerClient.getAllTasks(), taskOnId);
         assertTrue(taskInfo.isPresent());
@@ -302,13 +292,13 @@ class PowerControllerTests {
         stateChangeContext = portListener.onStateChange(4, false);
         assertTrue(stateChangeContext.isEmpty());
 
-        termination = waitForTaskTermination(taskOnId);
+        termination = powerControllerClient.waitForTaskTermination(taskOnId);
         assertTrue(termination);
         taskInfo = filterById(powerControllerClient.getAllTasks(), taskOnId);
         assertTrue(taskInfo.isPresent());
         assertEquals(ExecutionStatus.FINISHED, taskInfo.get().getStatus());
 
-        boolean result = cleanTaskQueue();
+        boolean result = powerControllerClient.cleanTaskQueue();
         assertTrue(result);
     }
 
@@ -324,7 +314,7 @@ class PowerControllerTests {
         stateChangeContext = portListener.onStateChange(5, false);
         assertTrue(stateChangeContext.isEmpty());
 
-        boolean started = waitForTaskStarted(taskOnId);
+        boolean started = powerControllerClient.waitForTaskStarted(taskOnId);
         assertTrue(started);
         Optional<TaskInfo> taskInfo = filterById(powerControllerClient.getAllTasks(), taskOnId);
         assertTrue(taskInfo.isPresent());
@@ -338,101 +328,21 @@ class PowerControllerTests {
         stateChangeContext = portListener.onStateChange(5, false);
         assertTrue(stateChangeContext.isEmpty());
 
-        boolean termination = waitForTaskTermination(taskOffId);
+        boolean termination = powerControllerClient.waitForTaskTermination(taskOffId);
         assertTrue(termination);
         taskInfo = filterById(powerControllerClient.getAllTasks(), taskOffId);
         assertTrue(taskInfo.isPresent());
         assertEquals(ExecutionStatus.FINISHED, taskInfo.get().getStatus());
 
-        boolean result = cleanTaskQueue();
+        boolean result = powerControllerClient.cleanTaskQueue();
         assertTrue(result);
     }
 
     @AfterAll
     public static void shutdown() throws Exception {
-        httpClient.close();
         services.getServer().stop();
         services.shutdown();
         executorService.shutdown();
-    }
-
-    private Optional<TaskId> submitTask(JobId id) throws IOException {
-        HttpPut put = new HttpPut(BASE_URL + "/system/tasks/submit");
-        put.addHeader("Authorization", createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
-        StringEntity stringEntity = new StringEntity(mapper.writeValueAsString(id));
-        stringEntity.setContentType("application/json");
-        put.setEntity(stringEntity);
-        CloseableHttpResponse response = httpClient.execute(put);
-        if (response.getStatusLine().getStatusCode() == 200) {
-            TaskId taskId = mapper.readValue(response.getEntity().getContent(), TaskId.class);
-            return Optional.of(taskId);
-        } else {
-            return Optional.empty();
-        }
-    }
-
-    private boolean cancelTask(TaskId id) throws IOException {
-        HttpPut put = new HttpPut(BASE_URL + "/system/tasks/cancel");
-        put.addHeader("Authorization", createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
-        StringEntity stringEntity = new StringEntity(mapper.writeValueAsString(id));
-        stringEntity.setContentType("application/json");
-        put.setEntity(stringEntity);
-        CloseableHttpResponse response = httpClient.execute(put);
-        if (response.getStatusLine().getStatusCode() == 200) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private boolean cancelAllTasks() throws IOException {
-        HttpPut put = new HttpPut(BASE_URL + "/system/tasks/cancel/all");
-        put.addHeader("Authorization", createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
-        CloseableHttpResponse response = httpClient.execute(put);
-        if (response.getStatusLine().getStatusCode() == 200) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private boolean waitForTaskStarted(TaskId id) throws IOException {
-        HttpPut put = new HttpPut(BASE_URL + "/system/tasks/wait/started");
-        put.addHeader("Authorization", createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
-        StringEntity stringEntity = new StringEntity(mapper.writeValueAsString(id));
-        stringEntity.setContentType("application/json");
-        put.setEntity(stringEntity);
-        CloseableHttpResponse response = httpClient.execute(put);
-        if (response.getStatusLine().getStatusCode() == 200) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private boolean waitForTaskTermination(TaskId id) throws IOException {
-        HttpPut put = new HttpPut(BASE_URL + "/system/tasks/wait/termination");
-        put.addHeader("Authorization", createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
-        StringEntity stringEntity = new StringEntity(mapper.writeValueAsString(id));
-        stringEntity.setContentType("application/json");
-        put.setEntity(stringEntity);
-        CloseableHttpResponse response = httpClient.execute(put);
-        if (response.getStatusLine().getStatusCode() == 200) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private boolean cleanTaskQueue() throws IOException {
-        HttpPut put = new HttpPut(BASE_URL + "/system/tasks/clean");
-        put.addHeader("Authorization", createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
-        CloseableHttpResponse response = httpClient.execute(put);
-        if (response.getStatusLine().getStatusCode() == 200) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     private Optional<TaskInfo> filterById(Collection<TaskInfo> taskInfos, TaskId id) {
