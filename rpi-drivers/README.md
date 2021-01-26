@@ -1,3 +1,5 @@
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/one.microproject.rpi/rpi-drivers/badge.svg)](https://maven-badges.herokuapp.com/maven-central/one.microproject.rpi/rpi-drivers)
+
 # RPI Drivers
 
 Collection of drivers for various chips for Raspberry PI
@@ -11,12 +13,13 @@ Written in Java using [pi4j](http://pi4j.com/).
 * __HTU21D__ - I2C relative humidity and temperature sensor
 * __MCP9808__ - I2C digital temperature sensor
 
-## Compile and Install:
+## Use, Compile and Install
+* Use official [published artefacts](https://search.maven.org/search?q=one.microproject.rpi), or ...
 * Clone this git repository.
 * Run ``gradle clean build test publishToMavenLocal`` to install this jar locally.
 * Use maven or gradle dependency below.
 
-### maven:
+### use with maven
 ```
 <dependency>
     <groupId>one.microproject.rpi</groupId>
@@ -25,12 +28,12 @@ Written in Java using [pi4j](http://pi4j.com/).
 </dependency>
 ```
 
-### gradle:
+### use with gradle
 ```
 implementation 'one.microproject.rpi:rpi-drivers:1.0.0'
 ```
 
-### testing:
+### testing
 * install java on raspberry pi
 * enable I2C on raspberry pi
 * copy pi4j and rpi-drivers jars in tmp directory

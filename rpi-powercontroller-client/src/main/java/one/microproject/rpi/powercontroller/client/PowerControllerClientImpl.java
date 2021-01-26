@@ -36,15 +36,15 @@ public class PowerControllerClientImpl implements PowerControllerClient {
     private final ObjectMapper mapper;
 
     private final String baseURL;
-    private final String userName;
-    private final String password;
+    private final String clientId;
+    private final String clientSecret;
 
-    public PowerControllerClientImpl(String baseURL, String userName, String password) {
+    public PowerControllerClientImpl(String baseURL, String clientId, String clientSecret) {
         this.client = new OkHttpClient();
         this.mapper = new ObjectMapper();
         this.baseURL = baseURL;
-        this.userName = userName;
-        this.password = password;
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
     }
 
     @Override
@@ -52,7 +52,7 @@ public class PowerControllerClientImpl implements PowerControllerClient {
         try {
             Request request = new Request.Builder()
                     .url(baseURL + "/system/info")
-                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(userName, password))
+                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(clientId, clientSecret))
                     .get()
                     .build();
             Response response = client.newCall(request).execute();
@@ -70,7 +70,7 @@ public class PowerControllerClientImpl implements PowerControllerClient {
         try {
             Request request = new Request.Builder()
                     .url(baseURL + "/system/state")
-                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(userName, password))
+                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(clientId, clientSecret))
                     .get()
                     .build();
             Response response = client.newCall(request).execute();
@@ -88,7 +88,7 @@ public class PowerControllerClientImpl implements PowerControllerClient {
         try {
             Request request = new Request.Builder()
                     .url(baseURL + "/system/measurements")
-                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(userName, password))
+                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(clientId, clientSecret))
                     .get()
                     .build();
             Response response = client.newCall(request).execute();
@@ -106,7 +106,7 @@ public class PowerControllerClientImpl implements PowerControllerClient {
         try {
             Request request = new Request.Builder()
                     .url(baseURL + "/system/jobs")
-                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(userName, password))
+                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(clientId, clientSecret))
                     .get()
                     .build();
             Response response = client.newCall(request).execute();
@@ -124,7 +124,7 @@ public class PowerControllerClientImpl implements PowerControllerClient {
         try {
             Request request = new Request.Builder()
                     .url(baseURL + "/system/jobs/killalljobid")
-                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(userName, password))
+                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(clientId, clientSecret))
                     .get()
                     .build();
             Response response = client.newCall(request).execute();
@@ -142,7 +142,7 @@ public class PowerControllerClientImpl implements PowerControllerClient {
         try {
             Request request = new Request.Builder()
                     .url(baseURL + "/system/tasks")
-                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(userName, password))
+                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(clientId, clientSecret))
                     .get()
                     .build();
             Response response = client.newCall(request).execute();
@@ -161,7 +161,7 @@ public class PowerControllerClientImpl implements PowerControllerClient {
             String requestBody = mapper.writeValueAsString(filter);
             Request request = new Request.Builder()
                     .url(baseURL + "/system/tasks")
-                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(userName, password))
+                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(clientId, clientSecret))
                     .put(RequestBody.create(requestBody, MediaType.parse(APPLICATION_JSON)))
                     .build();
             Response response = client.newCall(request).execute();
@@ -181,7 +181,7 @@ public class PowerControllerClientImpl implements PowerControllerClient {
             String requestBody = mapper.writeValueAsString(setPortRequest);
             Request request = new Request.Builder()
                     .url(baseURL + "/system/port")
-                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(userName, password))
+                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(clientId, clientSecret))
                     .put(RequestBody.create(requestBody, MediaType.parse(APPLICATION_JSON)))
                     .build();
             Response response = client.newCall(request).execute();
@@ -200,7 +200,7 @@ public class PowerControllerClientImpl implements PowerControllerClient {
             String requestBody = mapper.writeValueAsString(id);
             Request request = new Request.Builder()
                     .url(baseURL + "/system/tasks/submit")
-                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(userName, password))
+                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(clientId, clientSecret))
                     .put(RequestBody.create(requestBody, MediaType.parse(APPLICATION_JSON)))
                     .build();
             Response response = client.newCall(request).execute();
@@ -220,7 +220,7 @@ public class PowerControllerClientImpl implements PowerControllerClient {
             String requestBody = mapper.writeValueAsString(id);
             Request request = new Request.Builder()
                     .url(baseURL + "/system/tasks/cancel")
-                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(userName, password))
+                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(clientId, clientSecret))
                     .put(RequestBody.create(requestBody, MediaType.parse(APPLICATION_JSON)))
                     .build();
             Response response = client.newCall(request).execute();
@@ -238,7 +238,7 @@ public class PowerControllerClientImpl implements PowerControllerClient {
         try {
             Request request = new Request.Builder()
                     .url(baseURL + "/system/tasks/cancel/all")
-                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(userName, password))
+                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(clientId, clientSecret))
                     .put(RequestBody.create("{}", MediaType.parse(APPLICATION_JSON)))
                     .build();
             Response response = client.newCall(request).execute();
@@ -257,7 +257,7 @@ public class PowerControllerClientImpl implements PowerControllerClient {
             String requestBody = mapper.writeValueAsString(id);
             Request request = new Request.Builder()
                     .url(baseURL + "/system/tasks/wait/started")
-                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(userName, password))
+                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(clientId, clientSecret))
                     .put(RequestBody.create(requestBody, MediaType.parse(APPLICATION_JSON)))
                     .build();
             Response response = client.newCall(request).execute();
@@ -276,7 +276,7 @@ public class PowerControllerClientImpl implements PowerControllerClient {
             String requestBody = mapper.writeValueAsString(id);
             Request request = new Request.Builder()
                     .url(baseURL + "/system/tasks/wait/termination")
-                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(userName, password))
+                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(clientId, clientSecret))
                     .put(RequestBody.create(requestBody, MediaType.parse(APPLICATION_JSON)))
                     .build();
             Response response = client.newCall(request).execute();
@@ -294,7 +294,7 @@ public class PowerControllerClientImpl implements PowerControllerClient {
         try {
             Request request = new Request.Builder()
                     .url(baseURL + "/system/tasks/clean")
-                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(userName, password))
+                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(clientId, clientSecret))
                     .put(RequestBody.create("{}", MediaType.parse(APPLICATION_JSON)))
                     .build();
             Response response = client.newCall(request).execute();

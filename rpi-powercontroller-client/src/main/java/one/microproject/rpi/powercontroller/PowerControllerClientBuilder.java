@@ -5,22 +5,22 @@ import one.microproject.rpi.powercontroller.client.PowerControllerClientImpl;
 public class PowerControllerClientBuilder {
 
     private String baseURL;
-    private String userName;
-    private String password;
+    private String clientId;
+    private String clientSecret;
 
     public PowerControllerClientBuilder baseUrl(String baseURL) {
         this.baseURL = baseURL;
         return this;
     }
 
-    public PowerControllerClientBuilder withCredentials(String userName, String password) {
-        this.userName = userName;
-        this.password = password;
+    public PowerControllerClientBuilder withCredentials(String clientId, String clientSecret) {
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
         return this;
     }
 
     public PowerControllerClient build() {
-        return new PowerControllerClientImpl(baseURL, userName, password);
+        return new PowerControllerClientImpl(baseURL, clientId, clientSecret);
     }
 
     public static PowerControllerClientBuilder builder() {
