@@ -2,8 +2,10 @@ package one.microproject.rpi.powercontroller.client;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import one.microproject.rpi.powercontroller.ClientException;
 import one.microproject.rpi.powercontroller.PowerControllerClient;
@@ -28,6 +30,7 @@ public class PowerControllerClientImpl implements PowerControllerClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(PowerControllerClientImpl.class);
     private static final String AUTHORIZATION  = "Authorization";
+    private static final String APPLICATION_JSON = "application/json";
 
     private final OkHttpClient client;
     private final ObjectMapper mapper;
@@ -154,12 +157,41 @@ public class PowerControllerClientImpl implements PowerControllerClient {
 
     @Override
     public Collection<TaskInfo> getTasks(TaskFilter filter) {
-        return null;
+        try {
+            String requestBody = mapper.writeValueAsString(filter);
+            Request request = new Request.Builder()
+                    .url(baseURL + "/system/tasks")
+                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(userName, password))
+                    .put(RequestBody.create(requestBody, MediaType.parse(APPLICATION_JSON)))
+                    .build();
+            Response response = client.newCall(request).execute();
+            if (response.code() == 200) {
+                return mapper.readValue(response.body().string(), new TypeReference<Collection<TaskInfo>>(){});
+            }
+            throw new ClientException("Expected http=200, received http=" + response.code());
+        } catch (IOException e) {
+            throw new ClientException(e);
+        }
     }
 
     @Override
-    public boolean setPortState(SetPortRequest request) {
-        return false;
+    public boolean setPortState(Integer port, Boolean state) {
+        try {
+            SetPortRequest setPortRequest = new SetPortRequest(port, state);
+            String requestBody = mapper.writeValueAsString(setPortRequest);
+            Request request = new Request.Builder()
+                    .url(baseURL + "/system/port")
+                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(userName, password))
+                    .put(RequestBody.create(requestBody, MediaType.parse(APPLICATION_JSON)))
+                    .build();
+            Response response = client.newCall(request).execute();
+            if (response.code() == 200) {
+                return 200 == response.code();
+            }
+            throw new ClientException("Expected http=200, received http=" + response.code());
+        } catch (IOException e) {
+            throw new ClientException(e);
+        }
     }
 
     @Override

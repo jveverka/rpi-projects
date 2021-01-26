@@ -3,7 +3,6 @@ package one.microproject.rpi.powercontroller;
 import one.microproject.rpi.powercontroller.dto.JobId;
 import one.microproject.rpi.powercontroller.dto.JobInfo;
 import one.microproject.rpi.powercontroller.dto.Measurements;
-import one.microproject.rpi.powercontroller.dto.SetPortRequest;
 import one.microproject.rpi.powercontroller.dto.SystemInfo;
 import one.microproject.rpi.powercontroller.dto.SystemState;
 import one.microproject.rpi.powercontroller.dto.TaskFilter;
@@ -29,7 +28,7 @@ public interface PowerControllerClient {
 
     Collection<TaskInfo> getTasks(TaskFilter filter);
 
-    boolean setPortState(SetPortRequest request);
+    boolean setPortState(Integer port, Boolean state);
 
     Optional<TaskId> submitTask(JobId id);
 

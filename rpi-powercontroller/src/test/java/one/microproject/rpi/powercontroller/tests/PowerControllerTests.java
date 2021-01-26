@@ -143,12 +143,12 @@ class PowerControllerTests {
 
     @Test
     @Order(5)
-    void testPort0OnAndOff() throws IOException {
+    void testPort0OnAndOff() {
         Integer portId = 0;
-        assertTrue(setPortState(portId, true));
+        assertTrue(powerControllerClient.setPortState(portId, true));
         SystemState systemState = powerControllerClient.getSystemState();
         assertTrue(systemState.getPorts().get(portId));
-        assertTrue(setPortState(portId, false));
+        assertTrue(powerControllerClient.setPortState(portId, false));
         systemState = powerControllerClient.getSystemState();
         assertFalse(systemState.getPorts().get(portId));
     }
@@ -176,8 +176,8 @@ class PowerControllerTests {
     void cleanTaskQueueTest() throws IOException {
         boolean result = cleanTaskQueue();
         assertTrue(result);
-        TaskInfo[] taskInfos = getTasks();
-        assertEquals(0, taskInfos.length);
+        Collection<TaskInfo> taskInfos = powerControllerClient.getAllTasks();
+        assertEquals(0, taskInfos.size());
     }
 
     @Test
@@ -189,7 +189,7 @@ class PowerControllerTests {
         boolean waitResult = waitForTaskStarted(taskId.get());
         assertTrue(waitResult);
 
-        Optional<TaskInfo> taskInfo = filterById(getTasks(), taskId.get());
+        Optional<TaskInfo> taskInfo = filterById(powerControllerClient.getAllTasks(), taskId.get());
         assertTrue(taskInfo.isPresent());
         assertEquals(ExecutionStatus.IN_PROGRESS, taskInfo.get().getStatus());
         assertTrue(cancelTask(taskId.get()));
@@ -197,7 +197,7 @@ class PowerControllerTests {
         waitResult = waitForTaskTermination(taskId.get());
         assertTrue(waitResult);
 
-        taskInfo = filterById(getTasks(), taskId.get());
+        taskInfo = filterById(powerControllerClient.getAllTasks(), taskId.get());
         assertEquals(ExecutionStatus.ABORTED, taskInfo.get().getStatus());
 
         boolean result = cleanTaskQueue();
@@ -209,13 +209,13 @@ class PowerControllerTests {
     void tasksSubmitAndFinishTest() throws IOException {
         Optional<TaskId> taskId = submitTask(JobId.from("toggle-on-job-001"));
         assertTrue(taskId.isPresent());
-        Optional<TaskInfo> taskInfo = filterById(getTasks(), taskId.get());
+        Optional<TaskInfo> taskInfo = filterById(powerControllerClient.getAllTasks(), taskId.get());
         assertTrue(taskInfo.isPresent());
 
         boolean waitResult = waitForTaskTermination(taskId.get());
         assertTrue(waitResult);
 
-        taskInfo = filterById(getTasks(), taskId.get());
+        taskInfo = filterById(powerControllerClient.getAllTasks(), taskId.get());
         assertEquals(ExecutionStatus.FINISHED, taskInfo.get().getStatus());
 
         boolean result = cleanTaskQueue();
@@ -225,8 +225,8 @@ class PowerControllerTests {
     @Test
     @Order(11)
     void tasksSubmitManyAndCancelAll() throws IOException {
-        TaskInfo[] taskInfos = getTasks();
-        assertEquals(0, taskInfos.length);
+        Collection<TaskInfo> taskInfos = powerControllerClient.getAllTasks();
+        assertEquals(0, taskInfos.size());
 
         Optional<TaskId> taskId01 = submitTask(JobId.from("toggle-on-job-002"));
         assertTrue(taskId01.isPresent());
@@ -237,8 +237,8 @@ class PowerControllerTests {
 
         boolean waitResult = waitForTaskStarted(taskId01.get());
         assertTrue(waitResult);
-        taskInfos = getTasks();
-        assertEquals(3, taskInfos.length);
+        taskInfos = powerControllerClient.getAllTasks();
+        assertEquals(3, taskInfos.size());
 
         int inProgressCounter = filterByStatus(taskInfos, ExecutionStatus.IN_PROGRESS);
         assertEquals(1, inProgressCounter);
@@ -251,8 +251,8 @@ class PowerControllerTests {
 
         waitResult = waitForTaskTermination(taskId03.get());
         assertTrue(waitResult);
-        taskInfos = getTasks();
-        assertEquals(3, taskInfos.length);
+        taskInfos = powerControllerClient.getAllTasks();
+        assertEquals(3, taskInfos.size());
 
         int abortedCounter = filterByStatus(taskInfos, ExecutionStatus.ABORTED);
         assertEquals(1, abortedCounter);
@@ -261,16 +261,16 @@ class PowerControllerTests {
         assertEquals(2, cancelledCounter);
 
         List<ExecutionStatus> statuses = Arrays.asList(ExecutionStatus.FINISHED);
-        TaskInfo[] filteredList = getTasks(new TaskFilter(statuses));
-        assertEquals(0, filteredList.length);
+        Collection<TaskInfo> filteredList = powerControllerClient.getTasks(new TaskFilter(statuses));
+        assertEquals(0, filteredList.size());
 
         statuses = Arrays.asList(ExecutionStatus.FINISHED, ExecutionStatus.ABORTED);
-        filteredList = getTasks(new TaskFilter(statuses));
-        assertEquals(1, filteredList.length);
+        filteredList = powerControllerClient.getTasks(new TaskFilter(statuses));
+        assertEquals(1, filteredList.size());
 
         statuses = Arrays.asList(ExecutionStatus.FINISHED, ExecutionStatus.ABORTED, ExecutionStatus.CANCELLED);
-        filteredList = getTasks(new TaskFilter(statuses));
-        assertEquals(3, filteredList.length);
+        filteredList = powerControllerClient.getTasks(new TaskFilter(statuses));
+        assertEquals(3, filteredList.size());
 
         boolean result = cleanTaskQueue();
         assertTrue(result);
@@ -290,7 +290,7 @@ class PowerControllerTests {
 
         boolean termination = waitForTaskTermination(taskOnId);
         assertTrue(termination);
-        Optional<TaskInfo> taskInfo = filterById(getTasks(), taskOnId);
+        Optional<TaskInfo> taskInfo = filterById(powerControllerClient.getAllTasks(), taskOnId);
         assertTrue(taskInfo.isPresent());
         assertEquals(ExecutionStatus.FINISHED, taskInfo.get().getStatus());
 
@@ -304,7 +304,7 @@ class PowerControllerTests {
 
         termination = waitForTaskTermination(taskOnId);
         assertTrue(termination);
-        taskInfo = filterById(getTasks(), taskOnId);
+        taskInfo = filterById(powerControllerClient.getAllTasks(), taskOnId);
         assertTrue(taskInfo.isPresent());
         assertEquals(ExecutionStatus.FINISHED, taskInfo.get().getStatus());
 
@@ -326,7 +326,7 @@ class PowerControllerTests {
 
         boolean started = waitForTaskStarted(taskOnId);
         assertTrue(started);
-        Optional<TaskInfo> taskInfo = filterById(getTasks(), taskOnId);
+        Optional<TaskInfo> taskInfo = filterById(powerControllerClient.getAllTasks(), taskOnId);
         assertTrue(taskInfo.isPresent());
         assertEquals(ExecutionStatus.IN_PROGRESS, taskInfo.get().getStatus());
 
@@ -340,7 +340,7 @@ class PowerControllerTests {
 
         boolean termination = waitForTaskTermination(taskOffId);
         assertTrue(termination);
-        taskInfo = filterById(getTasks(), taskOffId);
+        taskInfo = filterById(powerControllerClient.getAllTasks(), taskOffId);
         assertTrue(taskInfo.isPresent());
         assertEquals(ExecutionStatus.FINISHED, taskInfo.get().getStatus());
 
@@ -354,36 +354,6 @@ class PowerControllerTests {
         services.getServer().stop();
         services.shutdown();
         executorService.shutdown();
-    }
-
-    private boolean setPortState(Integer port, Boolean state) throws IOException {
-        HttpPut put = new HttpPut(BASE_URL + "/system/port");
-        SetPortRequest  request = new SetPortRequest(port, state);
-        put.addHeader("Authorization", createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
-        StringEntity stringEntity = new StringEntity(mapper.writeValueAsString(request));
-        stringEntity.setContentType("application/json");
-        put.setEntity(stringEntity);
-        CloseableHttpResponse response = httpClient.execute(put);
-        return 200 == response.getStatusLine().getStatusCode();
-    }
-
-    private TaskInfo[] getTasks() throws IOException {
-        HttpGet get = new HttpGet(BASE_URL + "/system/tasks");
-        get.addHeader("Authorization", createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
-        CloseableHttpResponse response = httpClient.execute(get);
-        assertEquals(200, response.getStatusLine().getStatusCode());
-        return mapper.readValue(response.getEntity().getContent(), TaskInfo[].class);
-    }
-
-    private TaskInfo[] getTasks(TaskFilter filter) throws IOException {
-        HttpPut put = new HttpPut(BASE_URL + "/system/tasks");
-        put.addHeader("Authorization", createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
-        StringEntity stringEntity = new StringEntity(mapper.writeValueAsString(filter));
-        stringEntity.setContentType("application/json");
-        put.setEntity(stringEntity);
-        CloseableHttpResponse response = httpClient.execute(put);
-        assertEquals(200, response.getStatusLine().getStatusCode());
-        return mapper.readValue(response.getEntity().getContent(), TaskInfo[].class);
     }
 
     private Optional<TaskId> submitTask(JobId id) throws IOException {
@@ -465,7 +435,7 @@ class PowerControllerTests {
         }
     }
 
-    private Optional<TaskInfo> filterById(TaskInfo[] taskInfos, TaskId id) {
+    private Optional<TaskInfo> filterById(Collection<TaskInfo> taskInfos, TaskId id) {
         for (TaskInfo taskInfo: taskInfos) {
             if (id.getId().equals(taskInfo.getId())) {
                 return Optional.of(taskInfo);
@@ -474,7 +444,7 @@ class PowerControllerTests {
         return Optional.empty();
     }
 
-    private int filterByStatus(TaskInfo[] taskInfos, ExecutionStatus executionStatus) {
+    private int filterByStatus(Collection<TaskInfo> taskInfos, ExecutionStatus executionStatus) {
         int counter = 0;
         for (TaskInfo taskInfo: taskInfos) {
             if (executionStatus.equals(taskInfo.getStatus())) {
