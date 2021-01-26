@@ -6,6 +6,7 @@ import one.microproject.rpi.powercontroller.dto.Measurements;
 import one.microproject.rpi.powercontroller.dto.SetPortRequest;
 import one.microproject.rpi.powercontroller.dto.SystemInfo;
 import one.microproject.rpi.powercontroller.dto.SystemState;
+import one.microproject.rpi.powercontroller.dto.TaskFilter;
 import one.microproject.rpi.powercontroller.dto.TaskId;
 import one.microproject.rpi.powercontroller.dto.TaskInfo;
 
@@ -22,9 +23,11 @@ public interface PowerControllerClient {
 
     Collection<JobInfo> getSystemJobs();
 
-    void killAllJobs();
+    JobId killAllJobId();
 
     Collection<TaskInfo> getAllTasks();
+
+    Collection<TaskInfo> getTasks(TaskFilter filter);
 
     boolean setPortState(SetPortRequest request);
 

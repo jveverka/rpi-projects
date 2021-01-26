@@ -1,5 +1,6 @@
 package one.microproject.rpi.powercontroller.client;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -12,6 +13,7 @@ import one.microproject.rpi.powercontroller.dto.Measurements;
 import one.microproject.rpi.powercontroller.dto.SetPortRequest;
 import one.microproject.rpi.powercontroller.dto.SystemInfo;
 import one.microproject.rpi.powercontroller.dto.SystemState;
+import one.microproject.rpi.powercontroller.dto.TaskFilter;
 import one.microproject.rpi.powercontroller.dto.TaskId;
 import one.microproject.rpi.powercontroller.dto.TaskInfo;
 import org.slf4j.Logger;
@@ -98,16 +100,60 @@ public class PowerControllerClientImpl implements PowerControllerClient {
 
     @Override
     public Collection<JobInfo> getSystemJobs() {
-        return null;
+        try {
+            Request request = new Request.Builder()
+                    .url(baseURL + "/system/jobs")
+                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(userName, password))
+                    .get()
+                    .build();
+            Response response = client.newCall(request).execute();
+            if (response.code() == 200) {
+                return mapper.readValue(response.body().string(), new TypeReference<Collection<JobInfo>>(){});
+            }
+            throw new ClientException("Expected http=200, received http=" + response.code());
+        } catch (IOException e) {
+            throw new ClientException(e);
+        }
     }
 
     @Override
-    public void killAllJobs() {
-
+    public JobId killAllJobId() {
+        try {
+            Request request = new Request.Builder()
+                    .url(baseURL + "/system/jobs/killalljobid")
+                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(userName, password))
+                    .get()
+                    .build();
+            Response response = client.newCall(request).execute();
+            if (response.code() == 200) {
+                return mapper.readValue(response.body().string(), JobId.class);
+            }
+            throw new ClientException("Expected http=200, received http=" + response.code());
+        } catch (IOException e) {
+            throw new ClientException(e);
+        }
     }
 
     @Override
     public Collection<TaskInfo> getAllTasks() {
+        try {
+            Request request = new Request.Builder()
+                    .url(baseURL + "/system/tasks")
+                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(userName, password))
+                    .get()
+                    .build();
+            Response response = client.newCall(request).execute();
+            if (response.code() == 200) {
+                return mapper.readValue(response.body().string(), new TypeReference<Collection<TaskInfo>>(){});
+            }
+            throw new ClientException("Expected http=200, received http=" + response.code());
+        } catch (IOException e) {
+            throw new ClientException(e);
+        }
+    }
+
+    @Override
+    public Collection<TaskInfo> getTasks(TaskFilter filter) {
         return null;
     }
 

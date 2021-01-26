@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
@@ -62,7 +63,6 @@ class PowerControllerTests {
     private static ObjectMapper mapper;
     private static Configuration configuration;
     private static String clientSecret;
-    private static JobId killAllJobId;
 
     private static PowerControllerClient powerControllerClient;
 
@@ -135,14 +135,10 @@ class PowerControllerTests {
 
     @Test
     @Order(4)
-    void testGetJobs() throws IOException {
-        HttpGet get = new HttpGet(BASE_URL + "/system/jobs");
-        get.addHeader("Authorization", createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
-        CloseableHttpResponse response = httpClient.execute(get);
-        assertEquals(200, response.getStatusLine().getStatusCode());
-        JobInfo[] jobs = mapper.readValue(response.getEntity().getContent(), JobInfo[].class);
+    void testGetJobs() {
+        Collection<JobInfo> jobs = powerControllerClient.getSystemJobs();
         assertNotNull(jobs);
-        assertTrue(jobs.length > 0);
+        assertTrue(jobs.size() > 0);
     }
 
     @Test
@@ -159,22 +155,20 @@ class PowerControllerTests {
 
     @Test
     @Order(6)
-    void testKillAllJobId() throws IOException {
-        HttpGet get = new HttpGet(BASE_URL + "/system/jobs/killalljobid");
-        get.addHeader("Authorization", createBasicAuthorizationFromCredentials(CLIENT_ID, clientSecret));
-        CloseableHttpResponse response = httpClient.execute(get);
-        assertEquals(200, response.getStatusLine().getStatusCode());
-        killAllJobId = mapper.readValue(response.getEntity().getContent(), JobId.class);
+    void testKillAllJobId() {
+        JobId killAllJobId = powerControllerClient.killAllJobId();
         assertNotNull(killAllJobId);
     }
 
     @Test
     @Order(7)
-    void getAllTasks() throws IOException {
-        TaskInfo[] taskInfos = getTasks();
+    void getAllTasks() {
+        Collection<TaskInfo> taskInfos = powerControllerClient.getAllTasks();
         assertNotNull(taskInfos);
-        assertEquals(1, taskInfos.length);
-        assertEquals(ExecutionStatus.FINISHED, taskInfos[0].getStatus());
+        assertEquals(1, taskInfos.size());
+        Optional<TaskInfo> first = taskInfos.stream().findFirst();
+        assertTrue(first.isPresent());
+        assertEquals(ExecutionStatus.FINISHED, first.get().getStatus());
     }
 
     @Test
@@ -188,7 +182,7 @@ class PowerControllerTests {
 
     @Test
     @Order(9)
-    void tasksSubmitAndCancelTest() throws IOException, InterruptedException {
+    void tasksSubmitAndCancelTest() throws IOException {
         Optional<TaskId> taskId = submitTask(JobId.from("toggle-on-job-002"));
         assertTrue(taskId.isPresent());
 
@@ -212,7 +206,7 @@ class PowerControllerTests {
 
     @Test
     @Order(10)
-    void tasksSubmitAndFinishTest() throws IOException, InterruptedException {
+    void tasksSubmitAndFinishTest() throws IOException {
         Optional<TaskId> taskId = submitTask(JobId.from("toggle-on-job-001"));
         assertTrue(taskId.isPresent());
         Optional<TaskInfo> taskInfo = filterById(getTasks(), taskId.get());
@@ -230,7 +224,7 @@ class PowerControllerTests {
 
     @Test
     @Order(11)
-    void tasksSubmitManyAndCancelAll() throws IOException, InterruptedException {
+    void tasksSubmitManyAndCancelAll() throws IOException {
         TaskInfo[] taskInfos = getTasks();
         assertEquals(0, taskInfos.length);
 
@@ -320,7 +314,7 @@ class PowerControllerTests {
 
     @Test
     @Order(13)
-    void taskTestKeyEventsToggleSlowJob() throws IOException, InterruptedException {
+    void taskTestKeyEventsToggleSlowJob() throws IOException {
         PortListener portListener = services.getPortListener();
         StateChangeContext stateChangeContext = portListener.onStateChange(5, true);
         assertFalse(stateChangeContext.getOffTaskId().isPresent());
