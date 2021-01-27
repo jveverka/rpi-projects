@@ -36,7 +36,11 @@ public class PortStateHandler implements HttpHandler {
             SetPortRequest setPortRequest = mapper.readValue(is, SetPortRequest.class);
             Optional<Boolean> result = rPiService.setPortState(setPortRequest.getPort(), setPortRequest.getState());
             if (result.isPresent()) {
-                exchange.setStatusCode(HandlerUtils.OK);
+                if (setPortRequest.getState().equals(result.get())) {
+                    exchange.setStatusCode(HandlerUtils.OK);
+                } else {
+                    exchange.setStatusCode(HandlerUtils.INTERNAL_SERVER_ERROR);
+                }
             } else {
                 exchange.setStatusCode(HandlerUtils.NOT_FOUND);
             }

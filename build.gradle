@@ -14,7 +14,9 @@ project(':rpi-powercontroller-client') {
 
 project(':rpi-powercontroller') {
     dependencies {
-        implementation project(':rpi-drivers')
-        implementation project(':rpi-powercontroller-client')
+        implementation (project(':rpi-drivers'))
+        implementation (project(':rpi-powercontroller-client')) {
+            exclude group: 'com.squareup.okhttp3', module: 'okhttp'
+        }
     }
 }

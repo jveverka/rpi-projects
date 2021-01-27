@@ -146,7 +146,7 @@ class PowerControllerTests {
     @Test
     @Order(6)
     void testKillAllJobId() {
-        JobId killAllJobId = powerControllerClient.killAllJobId();
+        JobId killAllJobId = powerControllerClient.getKillAllJobId();
         assertNotNull(killAllJobId);
     }
 

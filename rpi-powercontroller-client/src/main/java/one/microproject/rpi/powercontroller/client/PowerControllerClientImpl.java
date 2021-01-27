@@ -31,6 +31,7 @@ public class PowerControllerClientImpl implements PowerControllerClient {
     private static final Logger LOG = LoggerFactory.getLogger(PowerControllerClientImpl.class);
     private static final String AUTHORIZATION  = "Authorization";
     private static final String APPLICATION_JSON = "application/json";
+    private static final String ERROR_MESSAGE = "Expected http=200, received http=";
 
     private final OkHttpClient client;
     private final ObjectMapper mapper;
@@ -59,7 +60,7 @@ public class PowerControllerClientImpl implements PowerControllerClient {
             if (response.code() == 200) {
                 return mapper.readValue(response.body().string(), SystemInfo.class);
             }
-            throw new ClientException("Expected http=200, received http=" + response.code());
+            throw new ClientException(ERROR_MESSAGE + response.code());
         } catch (IOException e) {
             throw new ClientException(e);
         }
@@ -77,7 +78,7 @@ public class PowerControllerClientImpl implements PowerControllerClient {
             if (response.code() == 200) {
                 return mapper.readValue(response.body().string(), SystemState.class);
             }
-            throw new ClientException("Expected http=200, received http=" + response.code());
+            throw new ClientException(ERROR_MESSAGE + response.code());
         } catch (IOException e) {
             throw new ClientException(e);
         }
@@ -95,7 +96,7 @@ public class PowerControllerClientImpl implements PowerControllerClient {
             if (response.code() == 200) {
                 return mapper.readValue(response.body().string(), Measurements.class);
             }
-            throw new ClientException("Expected http=200, received http=" + response.code());
+            throw new ClientException(ERROR_MESSAGE + response.code());
         } catch (IOException e) {
             throw new ClientException(e);
         }
@@ -113,14 +114,14 @@ public class PowerControllerClientImpl implements PowerControllerClient {
             if (response.code() == 200) {
                 return mapper.readValue(response.body().string(), new TypeReference<Collection<JobInfo>>(){});
             }
-            throw new ClientException("Expected http=200, received http=" + response.code());
+            throw new ClientException(ERROR_MESSAGE + response.code());
         } catch (IOException e) {
             throw new ClientException(e);
         }
     }
 
     @Override
-    public JobId killAllJobId() {
+    public JobId getKillAllJobId() {
         try {
             Request request = new Request.Builder()
                     .url(baseURL + "/system/jobs/killalljobid")
@@ -131,7 +132,7 @@ public class PowerControllerClientImpl implements PowerControllerClient {
             if (response.code() == 200) {
                 return mapper.readValue(response.body().string(), JobId.class);
             }
-            throw new ClientException("Expected http=200, received http=" + response.code());
+            throw new ClientException(ERROR_MESSAGE + response.code());
         } catch (IOException e) {
             throw new ClientException(e);
         }
@@ -149,7 +150,7 @@ public class PowerControllerClientImpl implements PowerControllerClient {
             if (response.code() == 200) {
                 return mapper.readValue(response.body().string(), new TypeReference<Collection<TaskInfo>>(){});
             }
-            throw new ClientException("Expected http=200, received http=" + response.code());
+            throw new ClientException(ERROR_MESSAGE + response.code());
         } catch (IOException e) {
             throw new ClientException(e);
         }
@@ -168,7 +169,7 @@ public class PowerControllerClientImpl implements PowerControllerClient {
             if (response.code() == 200) {
                 return mapper.readValue(response.body().string(), new TypeReference<Collection<TaskInfo>>(){});
             }
-            throw new ClientException("Expected http=200, received http=" + response.code());
+            throw new ClientException(ERROR_MESSAGE + response.code());
         } catch (IOException e) {
             throw new ClientException(e);
         }
@@ -188,7 +189,7 @@ public class PowerControllerClientImpl implements PowerControllerClient {
             if (response.code() == 200) {
                 return 200 == response.code();
             }
-            throw new ClientException("Expected http=200, received http=" + response.code());
+            throw new ClientException(ERROR_MESSAGE + response.code());
         } catch (IOException e) {
             throw new ClientException(e);
         }
@@ -207,7 +208,7 @@ public class PowerControllerClientImpl implements PowerControllerClient {
             if (response.code() == 200) {
                 return Optional.of(mapper.readValue(response.body().string(), TaskId.class));
             }
-            LOG.info("Expected http=200, received http={}", response.code());
+            LOG.info(ERROR_MESSAGE, response.code());
             return Optional.empty();
         } catch (IOException e) {
             throw new ClientException(e);
@@ -227,7 +228,7 @@ public class PowerControllerClientImpl implements PowerControllerClient {
             if (response.code() == 200) {
                 return 200 == response.code();
             }
-            throw new ClientException("Expected http=200, received http=" + response.code());
+            throw new ClientException(ERROR_MESSAGE + response.code());
         } catch (IOException e) {
             throw new ClientException(e);
         }
@@ -245,7 +246,7 @@ public class PowerControllerClientImpl implements PowerControllerClient {
             if (response.code() == 200) {
                 return 200 == response.code();
             }
-            throw new ClientException("Expected http=200, received http=" + response.code());
+            throw new ClientException(ERROR_MESSAGE + response.code());
         } catch (IOException e) {
             throw new ClientException(e);
         }
@@ -264,7 +265,7 @@ public class PowerControllerClientImpl implements PowerControllerClient {
             if (response.code() == 200) {
                 return 200 == response.code();
             }
-            throw new ClientException("Expected http=200, received http=" + response.code());
+            throw new ClientException(ERROR_MESSAGE + response.code());
         } catch (IOException e) {
             throw new ClientException(e);
         }
@@ -283,7 +284,7 @@ public class PowerControllerClientImpl implements PowerControllerClient {
             if (response.code() == 200) {
                 return 200 == response.code();
             }
-            throw new ClientException("Expected http=200, received http=" + response.code());
+            throw new ClientException(ERROR_MESSAGE + response.code());
         } catch (IOException e) {
             throw new ClientException(e);
         }
@@ -301,7 +302,7 @@ public class PowerControllerClientImpl implements PowerControllerClient {
             if (response.code() == 200) {
                 return 200 == response.code();
             }
-            throw new ClientException("Expected http=200, received http=" + response.code());
+            throw new ClientException(ERROR_MESSAGE + response.code());
         } catch (IOException e) {
             throw new ClientException(e);
         }

@@ -23,6 +23,10 @@ public class PowerControllerClientBuilder {
         return new PowerControllerClientImpl(baseURL, clientId, clientSecret);
     }
 
+    public PowerControllerReadClient buildReadClient() {
+        return new PowerControllerClientImpl(baseURL, clientId, clientSecret);
+    }
+
     public static PowerControllerClientBuilder builder() {
         return new PowerControllerClientBuilder();
     }
