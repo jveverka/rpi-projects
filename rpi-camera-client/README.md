@@ -25,6 +25,7 @@ implementation 'one.microproject.rpi:rpi-camera-client:1.0.0'
 ```
 
 ### use in your java code
+See also [this code example](src/test/java/one/microproject/rpi/camera/client/tests/CodeExample.java). 
 ```java
 CameraClient cameraClient = CameraClientBuilder.builder()
     .baseUrl("https://localhost:8090")

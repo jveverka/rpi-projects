@@ -8,8 +8,8 @@ This is simple REST service daemon, which allows access camera on Raspberry PI d
 * Raspberry Pi [Camera Module v2](https://www.raspberrypi.org/products/camera-module-v2/)
 
 ## Install on Raspberry PI
-1. Install [Raspbian Buster Lite 2020-02-13](https://www.raspberrypi.org/downloads/raspbian/)
-2. Enable camera using ``raspi-config``
+1. Install [Raspberry Pi OS Lite 2021-01-11](https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2021-01-12/2021-01-11-raspios-buster-armhf-lite.zip)
+2. Enable camera using ``sudo raspi-config``
 3. Install software dependencies
    ```
    sudo apt install python-picamera python3-picamera

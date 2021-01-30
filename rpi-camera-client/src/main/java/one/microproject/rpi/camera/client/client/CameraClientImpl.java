@@ -19,7 +19,6 @@ public class CameraClientImpl implements CameraClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(CameraClientImpl.class);
     private static final String AUTHORIZATION  = "Authorization";
-    private static final String APPLICATION_JSON = "application/json";
     private static final String ERROR_MESSAGE = "Expected http=200, received http=";
 
     private final URL baseURL;
@@ -56,6 +55,7 @@ public class CameraClientImpl implements CameraClient {
             if (response.code() == 200) {
                 return mapper.readValue(response.body().string(), SystemInfo.class);
             }
+            LOG.warn("Http error: {}", response.code());
             throw new ClientException(ERROR_MESSAGE + response.code());
         } catch (IOException e) {
             throw new ClientException(e);
@@ -74,6 +74,7 @@ public class CameraClientImpl implements CameraClient {
             if (response.code() == 200) {
                 return response.body().byteStream();
             }
+            LOG.warn("Http error: {}", response.code());
             throw new ClientException(ERROR_MESSAGE + response.code());
         } catch (IOException e) {
             throw new ClientException(e);
