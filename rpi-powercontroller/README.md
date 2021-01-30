@@ -111,7 +111,7 @@ gradle clean build test installDist distZip
 ```
 
 ## Install and Run on Raspberry PI
-1. Install [Raspbian Buster Lite](https://downloads.raspberrypi.org/raspbian_lite_latest)  
+1. Install [Raspberry Pi OS Lite 2021-01-11](https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2021-01-12/2021-01-11-raspios-buster-armhf-lite.zip)  
 2. Enable I2C bus ``sudo raspi-config`` 
 3. Install I2C tools and [wiringpi](http://wiringpi.com/download-and-install/)  
    ```
