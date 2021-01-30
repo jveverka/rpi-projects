@@ -18,6 +18,7 @@ public interface PowerControllerReadClient {
 
     /**
      * Get {@link SystemInfo} for this RPi Power Controller.
+     * Contains information like unique ID of this device, type, version and description.
      * @return {@link SystemInfo}
      */
     SystemInfo getSystemInfo();

@@ -5,6 +5,10 @@ import one.microproject.rpi.powercontroller.dto.TaskId;
 
 import java.util.Optional;
 
+/**
+ * Read data and send commands to RPi Power Controller.
+ * https://github.com/jveverka/rpi-projects/tree/master/rpi-powercontroller
+ */
 public interface PowerControllerClient extends PowerControllerReadClient {
 
     /**

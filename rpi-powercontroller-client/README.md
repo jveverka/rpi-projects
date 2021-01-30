@@ -2,7 +2,7 @@
 
 # Java client for RPi Power Controller
 
-This is Java client SDK for [RPi Power Controller](../rpi-powercontroller). 
+This is Java client HTTP REST API SDK for [RPi Power Controller](../rpi-powercontroller). 
 
 ## Use, Compile and Install
 * Use official [published artefacts](https://search.maven.org/search?q=one.microproject.rpi), or ...
@@ -27,7 +27,7 @@ implementation 'one.microproject.rpi:rpi-powercontroller-client:1.2.0'
 ### use in your java code
 ```java
 PowerControllerReadClient powerControllerReadClient = PowerControllerClientBuilder.builder()
-        .baseUrl("http://localhost:8090")
+        .baseUrl("https://localhost:8090")
         .withCredentials("client-001", "secret")
         .buildReadClient();
 powerControllerReadClient.getSystemInfo();
@@ -35,7 +35,7 @@ powerControllerReadClient.getSystemInfo();
 ```
 ```java
 PowerControllerClient powerControllerClient = PowerControllerClientBuilder.builder()
-        .baseUrl("http://localhost:8090")
+        .baseUrl("https://localhost:8090")
         .withCredentials("client-001", "secret")
         .build();
 powerControllerClient.getSystemInfo();
