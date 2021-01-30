@@ -2,14 +2,17 @@ package one.microproject.rpi.powercontroller;
 
 import one.microproject.rpi.powercontroller.client.PowerControllerClientImpl;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 public class PowerControllerClientBuilder {
 
-    private String baseURL;
+    private URL baseURL;
     private String clientId;
     private String clientSecret;
 
-    public PowerControllerClientBuilder baseUrl(String baseURL) {
-        this.baseURL = baseURL;
+    public PowerControllerClientBuilder baseUrl(String baseURL) throws MalformedURLException {
+        this.baseURL = new URL(baseURL);
         return this;
     }
 
@@ -20,11 +23,14 @@ public class PowerControllerClientBuilder {
     }
 
     public PowerControllerClient build() {
+        if (clientId == null || clientSecret == null) {
+            throw new ClientException("Invalid client credentials !");
+        }
         return new PowerControllerClientImpl(baseURL, clientId, clientSecret);
     }
 
     public PowerControllerReadClient buildReadClient() {
-        return new PowerControllerClientImpl(baseURL, clientId, clientSecret);
+        return build();
     }
 
     public static PowerControllerClientBuilder builder() {

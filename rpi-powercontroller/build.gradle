@@ -7,7 +7,7 @@ plugins {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-group = 'one.microproject.rpi.powercontroller'
+group = 'one.microproject.rpi'
 version = '1.0.0'
 mainClassName = 'one.microproject.rpi.powercontroller.PowerControllerApp'
 applicationDefaultJvmArgs = ['-Xms32m', '-Xmx32m', '-XX:MaxMetaspaceSize=32m']

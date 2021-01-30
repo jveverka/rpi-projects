@@ -12,6 +12,9 @@ project(':rpi-drivers') {
 project(':rpi-powercontroller-client') {
 }
 
+project(':rpi-camera-client') {
+}
+
 project(':rpi-powercontroller') {
     dependencies {
         implementation (project(':rpi-drivers'))

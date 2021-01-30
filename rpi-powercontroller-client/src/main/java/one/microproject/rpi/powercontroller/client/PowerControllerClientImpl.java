@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Optional;
@@ -36,13 +37,21 @@ public class PowerControllerClientImpl implements PowerControllerClient {
     private final OkHttpClient client;
     private final ObjectMapper mapper;
 
-    private final String baseURL;
+    private final URL baseURL;
     private final String clientId;
     private final String clientSecret;
 
-    public PowerControllerClientImpl(String baseURL, String clientId, String clientSecret) {
+    public PowerControllerClientImpl(URL baseURL, String clientId, String clientSecret) {
         this.client = new OkHttpClient();
         this.mapper = new ObjectMapper();
+        this.baseURL = baseURL;
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
+    }
+
+    public PowerControllerClientImpl(URL baseURL, String clientId, String clientSecret, OkHttpClient client, ObjectMapper mapper) {
+        this.client = client;
+        this.mapper = mapper;
         this.baseURL = baseURL;
         this.clientId = clientId;
         this.clientSecret = clientSecret;

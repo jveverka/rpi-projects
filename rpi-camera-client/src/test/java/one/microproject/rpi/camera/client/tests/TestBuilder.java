@@ -1,5 +1,8 @@
-package one.microproject.rpi.powercontroller;
+package one.microproject.rpi.camera.client.tests;
 
+import one.microproject.rpi.camera.client.CameraClient;
+import one.microproject.rpi.camera.client.CameraClientBuilder;
+import one.microproject.rpi.camera.client.ClientException;
 import org.junit.jupiter.api.Test;
 
 import java.net.MalformedURLException;
@@ -11,38 +14,29 @@ class TestBuilder {
 
     @Test
     void testClientBuilder() throws MalformedURLException {
-        PowerControllerClient powerControllerClient = PowerControllerClientBuilder.builder()
+        CameraClient cameraClient = CameraClientBuilder.builder()
                 .baseUrl("http://localhost:8090")
                 .withCredentials("client-001", "secret")
                 .build();
-        assertNotNull(powerControllerClient);
-    }
-
-    @Test
-    void testReadClientBuilder() throws MalformedURLException {
-        PowerControllerReadClient powerControllerReadClient = PowerControllerClientBuilder.builder()
-                .baseUrl("http://localhost:8090")
-                .withCredentials("client-001", "secret")
-                .buildReadClient();
-        assertNotNull(powerControllerReadClient);
+        assertNotNull(cameraClient);
     }
 
     @Test
     void testInvalidUrlClientBuilder() {
         assertThrows(MalformedURLException.class, () -> {
-            PowerControllerClientBuilder.builder()
+            CameraClientBuilder.builder()
                     .baseUrl("invalid-url")
                     .withCredentials("client-001", "secret")
-                    .buildReadClient();
+                    .build();
         });
     }
 
     @Test
     void testInvalidCredentialsClientBuilder() {
         assertThrows(ClientException.class, () -> {
-            PowerControllerClientBuilder.builder()
+            CameraClientBuilder.builder()
                     .baseUrl("http://localhost:8090")
-                    .buildReadClient();
+                    .build();
         });
     }
 
