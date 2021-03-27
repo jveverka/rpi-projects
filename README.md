@@ -22,7 +22,7 @@ This project contains various DYI projects, hardware drivers, schematics and cod
 * __[rpi-camera-client](rpi-camera-client)__ - Java Client for [rpi-camera](rpi-camera).
 
 ### Kubernetes Cluster
-* __[Kubernetes Cluster](k8s-cluster)__ - running backend on RPi4 hardware.
+* __[Kubernetes Cluster](k8s-cluster)__ - running backend on Arm64 RPi4 hardware.
 
 ## Build and Test
 ``

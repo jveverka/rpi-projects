@@ -1,10 +1,13 @@
-# K8s Cluster on RPi4(s)
+# RPi4 Kubernetes Cluster 
+Running dockerized backend services on Arm64 RPi4 hardware.
+
+![architecture](docs/architecture.svg)
 
 ### 1. Hardware list
-| Node Type        | Device                        |
-|------------------|-------------------------------|
-| K8s Controller   | Raspberry Pi 4 (4G or 8G RAM) |
-| K8s Worker Nodes | Raspberry Pi 4 (8G RAM)       |
+| Node Type           | Device                        |
+|---------------------|-------------------------------|
+| K8s Controller Node | Raspberry Pi 4 (4G or 8G RAM) |
+| K8s Worker Nodes    | Raspberry Pi 4 (8G RAM)       |
 
 ### 2. Prepare all nodes
 * Install [64bit Raspberry Pi OS Lite](https://downloads.raspberrypi.org/raspios_lite_arm64/) for Arm64.
