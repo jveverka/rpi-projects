@@ -21,6 +21,9 @@ This project contains various DYI projects, hardware drivers, schematics and cod
 * __[rpi-camera](rpi-camera)__ - Capture images via HTTP/REST APIs. 
 * __[rpi-camera-client](rpi-camera-client)__ - Java Client for [rpi-camera](rpi-camera).
 
+### Kubernetes Cluster
+* __[Kubernetes Cluster](k8s-cluster)__ - running backend on RPi4 hardware.
+
 ## Build and Test
 ``
 gradle clean build test
