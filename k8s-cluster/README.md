@@ -36,10 +36,11 @@ Running dockerized backend services on Arm64 RPi4 hardware.
   ```
   cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory
   ```
+* Use official Kubernetes [kubeadm install](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/) guide.
+  Install [kubeadm, kubelet and kubectl](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#installing-kubeadm-kubelet-and-kubectl).
 
 ### 3. Setup controller k8s node  
-* Use official Kubernetes [kubeadm install](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/) guide.
-* On kubernetes controller node:
+* Init controller node:
   ```
   sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=<IP-ADDRESS-OF-CONTROLLER> 
   ```
