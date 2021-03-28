@@ -50,7 +50,7 @@ Running dockerized backend services on Arm64 RPi4 hardware.
   sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
   sudo chown $(id -u):$(id -g) $HOME/.kube/config
   ```
-* Deploy a pod network to the cluster using Flannel. Note that cidr=10.244.0.0/16 is hardcoded in ``kube-flannel.yml`` !
+* Deploy a pod network to the cluster using Flannel. Note that ``cidr=10.244.0.0/16`` is hardcoded in ``kube-flannel.yml`` !
   ```
   kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml;  
   ```
