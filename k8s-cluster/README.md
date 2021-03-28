@@ -85,4 +85,5 @@ Running dockerized backend services on Arm64 RPi4 hardware.
   kubectl get pods --all-namespaces
   kubectl logs -f <pod-name> -n <name-space>
   kubectl get namespace
+  kubectl get --raw='/readyz?verbose'
   ```
