@@ -39,7 +39,7 @@ Running dockerized backend services on Arm64 RPi4 hardware.
 * Use official Kubernetes [kubeadm install](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/) guide.
   Install [kubeadm, kubelet and kubectl](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#installing-kubeadm-kubelet-and-kubectl).
 
-### 3. Setup controller k8s node  
+### 3. Setup k8s controller node  
 * Init controller node:
   ```
   sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=<IP-ADDRESS-OF-CONTROLLER> 
@@ -59,8 +59,8 @@ Running dockerized backend services on Arm64 RPi4 hardware.
   sudo kubeadm token create --print-join-command
   ```
   
-### 4. Setup worker k8s node(s)  
-* Join any number of worker nodes by running the following on each as root:
+### 4. Setup k8s worker node(s)  
+* Join any number of worker nodes by running the following on each as root on each node:
   ```
   sudo kubeadm join <IP-ADDRESS-OF-CONTROLLER>:6443 --token <TOKEN> \
     --discovery-token-ca-cert-hash sha256:<CERT-HASH> 
