@@ -81,6 +81,7 @@ Running dockerized backend services on Arm64 RPi4 hardware.
   ```
   kubectl config view
   kubectl get nodes
+  kubectl get all -A
   kubectl describe nodes
   kubectl get pods --all-namespaces
   kubectl logs -f <pod-name> -n <name-space>
