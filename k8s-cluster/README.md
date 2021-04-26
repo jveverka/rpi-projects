@@ -76,7 +76,14 @@ Running dockerized backend services on Arm64 RPi4 hardware.
   sudo kubeadm join <IP-ADDRESS-OF-CONTROLLER>:6443 --token <TOKEN> \
     --discovery-token-ca-cert-hash sha256:<CERT-HASH> 
   ```
-### 5. Check k8s cluster setup 
+
+### 5. Setup Nginx Ingress Controller (Optional)
+* Install nginx-ingress controller
+  ```
+  kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.45.0/deploy/static/provider/baremetal/deploy.yaml
+  ```
+
+### 6. Check k8s cluster setup 
 * On k8s controller node:
   ```
   kubectl config view
@@ -87,4 +94,5 @@ Running dockerized backend services on Arm64 RPi4 hardware.
   kubectl logs -f <pod-name> -n <name-space>
   kubectl get namespace
   kubectl get --raw='/readyz?verbose'
+  kubectl describe ingress
   ```
