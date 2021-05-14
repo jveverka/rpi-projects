@@ -8,10 +8,11 @@
 
 This project contains various DYI projects, hardware drivers, schematics and code examples for Raspberry PI.
 
-### Hardware drivers 
+### Hardware drivers & docs
 * __[rpi-drivers](rpi-drivers)__ - Java APIs for some PRi/[pi4j](https://pi4j.com/) compatible hardware.
 * __[waveshare-lcd-13-driver](waveshare-lcd-13-driver)__ - Java driver for small LCD display.
 * __[sensehat-games](sensehat-games)__ - small compilation of python games for 8x8 [sensehat](https://www.raspberrypi.org/products/sense-hat/) display.
+* __[pir-motion-detectors](pir-motion-detectors)__ - RPi compatible motion detectors.
 
 ### RPi Power Controller   
 * __[rpi-powercontroller](rpi-powercontroller)__ - Control relay power switch via HTTP/REST APIs.

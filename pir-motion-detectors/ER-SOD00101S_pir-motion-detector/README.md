@@ -1,4 +1,4 @@
-# ER-SOD00101S PIR Motion Sensor
+# ER-SOD00101S PIR Motion Detector
 
 This is a highly integrated module popularly used for human-being entry detection, it can simplely and easily to adopt in system. There are two adjustable potentiometer on the module, you can use them to change the trigger sensitivity and the duration of the trigger signal.Besides,The module can also be set as retriggerable or un- retriggerable. When the switch is in the H position, the module is retriggerable and is unretrigerred when the switch is in L position.
 
