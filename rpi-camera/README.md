@@ -48,5 +48,7 @@ This is simple REST service daemon, which allows access camera on Raspberry PI d
 ![image-001](docs/image-001.jpg)
 
 ![image-002](docs/image-002.jpg)
+
+![image-003](docs/image-003.jpg)
    
 *Enjoy !*
