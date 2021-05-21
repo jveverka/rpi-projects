@@ -42,7 +42,7 @@ This is simple REST service daemon, which allows access camera on Raspberry PI d
   ``curl -u client-001:ex4oo http://<ip-address>:<port>/system/info``
 * Capture single image and download it as attachment.   
   __GET__ ``/system/capture``  
-  ``curl -u client-001:ex4oo http://<ip-address>:<port>/system/capture``
+  ``curl -u client-001:ex4oo http://<ip-address>:<port>/system/capture --output snapshot.jpg``
 
 ### Hardware Assembly
 ![image-001](docs/image-001.jpg)
