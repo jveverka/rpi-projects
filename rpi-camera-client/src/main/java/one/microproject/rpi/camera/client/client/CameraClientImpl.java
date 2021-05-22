@@ -1,11 +1,13 @@
 package one.microproject.rpi.camera.client.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import one.microproject.rpi.camera.client.CameraClient;
 import one.microproject.rpi.camera.client.ClientException;
+import one.microproject.rpi.camera.client.dto.ImageFormat;
 import one.microproject.rpi.camera.client.dto.SystemInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Base64;
+import java.util.concurrent.TimeUnit;
 
 public class CameraClientImpl implements CameraClient {
 
@@ -31,7 +34,10 @@ public class CameraClientImpl implements CameraClient {
         this.baseURL = baseURL;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
-        this.client = new OkHttpClient().newBuilder().build();
+        this.client = new OkHttpClient().newBuilder()
+                .connectTimeout(40, TimeUnit.SECONDS)
+                .callTimeout(40, TimeUnit.SECONDS)
+                .build();
         this.mapper = new ObjectMapper();
     }
 
@@ -64,12 +70,41 @@ public class CameraClientImpl implements CameraClient {
 
     @Override
     public InputStream captureImage() {
+        return captureImageAction(null, null);
+    }
+
+    @Override
+    public InputStream captureImage(Integer shutterSpeed) {
+        return captureImageAction(shutterSpeed, null);
+    }
+
+    @Override
+    public InputStream captureImage(Integer shutterSpeed, ImageFormat imageFormat) {
+        return captureImageAction(shutterSpeed, imageFormat);
+    }
+
+    public static String createBasicAuthorizationFromCredentials(String clientId, String clientSecret) {
+        String authorization = clientId + ":" + clientSecret;
+        byte[] encodedBytes = Base64.getEncoder().encode(authorization.getBytes());
+        String encodedString = new String(encodedBytes);
+        return "Basic " + encodedString;
+    }
+
+    private InputStream captureImageAction(Integer shutterSpeed, ImageFormat imageFormat) {
         try {
+            HttpUrl.Builder httpUrlBuilder = HttpUrl.parse(baseURL + "/system/capture").newBuilder();
+            if (shutterSpeed != null) {
+                httpUrlBuilder.addQueryParameter("shutter-speed", shutterSpeed.toString());
+            }
+            if (imageFormat != null) {
+                httpUrlBuilder.addQueryParameter("format", imageFormat.getFormat());
+            }
             Request request = new Request.Builder()
-                    .url(baseURL + "/system/capture")
+                    .url(httpUrlBuilder.build())
                     .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(clientId, clientSecret))
                     .get()
                     .build();
+
             Response response = client.newCall(request).execute();
             if (response.code() == 200) {
                 return response.body().byteStream();
@@ -79,13 +114,6 @@ public class CameraClientImpl implements CameraClient {
         } catch (IOException e) {
             throw new ClientException(e);
         }
-    }
-
-    public static String createBasicAuthorizationFromCredentials(String clientId, String clientSecret) {
-        String authorization = clientId + ":" + clientSecret;
-        byte[] encodedBytes = Base64.getEncoder().encode(authorization.getBytes());
-        String encodedString = new String(encodedBytes);
-        return "Basic " + encodedString;
     }
 
 }
