@@ -41,14 +41,6 @@ public class PowerControllerClientImpl implements PowerControllerClient {
     private final String clientId;
     private final String clientSecret;
 
-    public PowerControllerClientImpl(URL baseURL, String clientId, String clientSecret) {
-        this.client = new OkHttpClient();
-        this.mapper = new ObjectMapper();
-        this.baseURL = baseURL;
-        this.clientId = clientId;
-        this.clientSecret = clientSecret;
-    }
-
     public PowerControllerClientImpl(URL baseURL, String clientId, String clientSecret, OkHttpClient client, ObjectMapper mapper) {
         this.client = client;
         this.mapper = mapper;
