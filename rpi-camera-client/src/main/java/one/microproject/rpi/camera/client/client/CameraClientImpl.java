@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Base64;
-import java.util.concurrent.TimeUnit;
 
 public class CameraClientImpl implements CameraClient {
 
@@ -29,17 +28,6 @@ public class CameraClientImpl implements CameraClient {
     private final String clientSecret;
     private final OkHttpClient client;
     private final ObjectMapper mapper;
-
-    public CameraClientImpl(URL baseURL, String clientId, String clientSecret) {
-        this.baseURL = baseURL;
-        this.clientId = clientId;
-        this.clientSecret = clientSecret;
-        this.client = new OkHttpClient().newBuilder()
-                .connectTimeout(40, TimeUnit.SECONDS)
-                .callTimeout(40, TimeUnit.SECONDS)
-                .build();
-        this.mapper = new ObjectMapper();
-    }
 
     public CameraClientImpl(URL baseURL, String clientId, String clientSecret, OkHttpClient client, ObjectMapper mapper) {
         this.baseURL = baseURL;
