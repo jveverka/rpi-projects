@@ -3,6 +3,7 @@
 import picamera
 import json
 import sys
+import io
 from flask import Flask, request, jsonify, send_file
 from flask_httpauth import HTTPBasicAuth
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -39,6 +40,7 @@ def getVersion():
 def capture():
     print('capture')
     file_format = 'jpeg'
+    file_name='capture-image.jpg'
     args = request.args
     if 'shutter-speed' in args:
        shutter_speed = int(args['shutter-speed'])
@@ -47,21 +49,26 @@ def capture():
     else:
        camera.shutter_speed = 0
     if 'format' in args:
-       print('format = ' + format)
        file_format = args['format']
+       file_name='capture-image.' +  file_format
+       print('format = ' + file_format)
+
     camera.start_preview()
-    camera.capture(config['captureFile'], file_format)
+    image_buffer = io.BytesIO()
+    camera.capture(image_buffer, file_format)
     camera.stop_preview()
-    return send_file(config['captureFile'], as_attachment=True)
+    
+    image_buffer.flush()
+    image_buffer.seek(0, 0)
+    return send_file(image_buffer, attachment_filename=file_name, as_attachment=True)
 
 if __name__ == '__main__':
     try:
         print('camera-rest init.')
         print('#CONFIG Id: ' + config['id'])
-        print('#CONFIG captureFile: ' + config['captureFile'])
+        print('#CONFIG name: ' + config['name'])
         camera.resolution = (2592, 1944)
         camera.framerate = 15
-        print('camera-rest starting preview')
         print('camera-rest REST APis')
         app.run(debug=False, host=config['host'], port=config['port'])
     except SystemExit:
