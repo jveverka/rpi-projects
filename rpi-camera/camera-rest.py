@@ -32,7 +32,7 @@ def verify_password(username, password):
 @app.route('/system/info', methods=["GET"])
 @auth.login_required
 def getVersion():
-    version = { "id": config['id'], "type": "camera-rest", "version": "1.0.0", "name": config['name'] }
+    version = { "id": config['id'], "type": "camera-rest", "version": "1.2.0", "name": config['name'] }
     return jsonify(version)
 
 @app.route('/system/capture', methods=["GET"])
