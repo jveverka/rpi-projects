@@ -38,6 +38,13 @@ def getVersion():
 @auth.login_required
 def capture():
     print('capture')
+    args = request.args
+    if 'shutter-speed' in args:
+       shutter_speed = int(args['shutter-speed'])
+       print('shutter_speed = ' + str(shutter_speed))
+       camera.shutter_speed = shutter_speed * 1000
+    else:
+       camera.shutter_speed = 0
     camera.start_preview()
     camera.capture(config['captureFile'])
     camera.stop_preview()
