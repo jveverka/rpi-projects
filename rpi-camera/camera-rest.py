@@ -38,6 +38,7 @@ def getVersion():
 @auth.login_required
 def capture():
     print('capture')
+    file_format = 'jpeg'
     args = request.args
     if 'shutter-speed' in args:
        shutter_speed = int(args['shutter-speed'])
@@ -45,8 +46,11 @@ def capture():
        camera.shutter_speed = shutter_speed * 1000
     else:
        camera.shutter_speed = 0
+    if 'format' in args:
+       print('format = ' + format)
+       file_format = args['format']
     camera.start_preview()
-    camera.capture(config['captureFile'])
+    camera.capture(config['captureFile'], file_format)
     camera.stop_preview()
     return send_file(config['captureFile'], as_attachment=True)
 
