@@ -38,7 +38,9 @@ def getVersion():
 @auth.login_required
 def capture():
     print('capture')
+    camera.start_preview()
     camera.capture(config['captureFile'])
+    camera.stop_preview()
     return send_file(config['captureFile'], as_attachment=True)
 
 if __name__ == '__main__':
@@ -49,11 +51,10 @@ if __name__ == '__main__':
         camera.resolution = (2592, 1944)
         camera.framerate = 15
         print('camera-rest starting preview')
-        camera.start_preview()
         print('camera-rest REST APis')
         app.run(debug=False, host=config['host'], port=config['port'])
     except SystemExit:
-        camera.stop_preview()
+        camera.close()
         print('camera-rest shutdown.')
         pass
 
