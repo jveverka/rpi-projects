@@ -3,7 +3,6 @@
   "host": "0.0.0.0",
   "port": 8080,
   "name": "Raspberry PI camera device", 
-  "captureFile": "/opt/camera/images/image-capture.jpg",
   "credentials": {
     "client-001": "ex4oo",
     "client-002": "Eejee"
