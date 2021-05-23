@@ -9,7 +9,7 @@ targetCompatibility = 1.8
 
 group = 'one.microproject.rpi'
 archivesBaseName = "rpi-camera-client"
-version = '1.2.1'
+version = '1.2.2'
 
 repositories {
     mavenLocal()
@@ -18,11 +18,12 @@ repositories {
 
 dependencies {
     implementation 'org.slf4j:slf4j-api:1.7.30'
-    implementation 'org.slf4j:slf4j-simple:1.7.30'
     implementation 'com.fasterxml.jackson.core:jackson-core:2.12.3'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.12.3'
     implementation 'com.squareup.okhttp3:okhttp:4.9.1'
+
+    testImplementation 'org.slf4j:slf4j-simple:1.7.30'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
 }
 
