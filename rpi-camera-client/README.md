@@ -15,13 +15,13 @@ This is Java client HTTP REST API SDK for [RPi Camera](../rpi-camera).
 <dependency>
     <groupId>one.microproject.rpi</groupId>
     <artifactId>rpi-camera-client</artifactId>
-    <version>1.0.0</version>
+    <version>1.2.0</version>
 </dependency>
 ```
 
 ### use with gradle
 ```
-implementation 'one.microproject.rpi:rpi-camera-client:1.0.0'
+implementation 'one.microproject.rpi:rpi-camera-client:1.2.0'
 ```
 
 ### use in your java code

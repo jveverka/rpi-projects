@@ -15,13 +15,13 @@ This is Java client HTTP REST API SDK for [RPi Power Controller](../rpi-powercon
 <dependency>
     <groupId>one.microproject.rpi</groupId>
     <artifactId>rpi-powercontroller-client</artifactId>
-    <version>1.2.0</version>
+    <version>1.3.1</version>
 </dependency>
 ```
 
 ### use with gradle
 ```
-implementation 'one.microproject.rpi:rpi-powercontroller-client:1.2.0'
+implementation 'one.microproject.rpi:rpi-powercontroller-client:1.3.1'
 ```
 
 ### use in your java code
