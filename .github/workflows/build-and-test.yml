@@ -8,7 +8,22 @@ on:
     branches: [ master ]
 
 jobs:
-  build-java11:
+  build-core-java8:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 8
+      - name: Check Java version
+        run: java -version
+      - name: Check Gradle version
+        run: gradle -version
+      - name: Run Gradle Build and tests
+        run: gradle --info clean build test
+
+  build-core-java11:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -23,7 +38,7 @@ jobs:
       - name: Run Gradle Build and tests
         run: gradle --info clean build test
 
-  build-java16:
+  build-device-controller:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
