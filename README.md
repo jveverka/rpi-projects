@@ -23,6 +23,7 @@ This project contains various DYI projects, hardware drivers, schematics and cod
 * __[rpi-camera-client](rpi-camera-client)__ - Java Client for [rpi-camera](rpi-camera).
 
 ### Others
+* __[Device Controller](device-controller)__ - controller gateway for RPi devices.
 * __[Kubernetes Cluster](k8s-cluster)__ - running backend on Arm64 RPi4 hardware.
 * __[Guidelines and Procedures](guidelines-and-procedures)__ - various guidelines.
 
