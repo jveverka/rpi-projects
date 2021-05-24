@@ -8,6 +8,7 @@ import okhttp3.Response;
 import one.microproject.rpi.camera.client.CameraClient;
 import one.microproject.rpi.camera.client.ClientException;
 import one.microproject.rpi.camera.client.dto.ImageFormat;
+import one.microproject.rpi.camera.client.dto.Resolution;
 import one.microproject.rpi.camera.client.dto.SystemInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,17 +59,27 @@ public class CameraClientImpl implements CameraClient {
 
     @Override
     public InputStream captureImage() {
-        return captureImageAction(null, null);
+        return captureImageAction(null, null, null);
     }
 
     @Override
     public InputStream captureImage(Integer shutterSpeed) {
-        return captureImageAction(shutterSpeed, null);
+        return captureImageAction(shutterSpeed, null, null);
     }
 
     @Override
     public InputStream captureImage(Integer shutterSpeed, ImageFormat imageFormat) {
-        return captureImageAction(shutterSpeed, imageFormat);
+        return captureImageAction(shutterSpeed, imageFormat, null);
+    }
+
+    @Override
+    public InputStream captureImage(Integer shutterSpeed, ImageFormat imageFormat, Resolution resolution) {
+        return captureImageAction(shutterSpeed, imageFormat, resolution);
+    }
+
+    @Override
+    public InputStream captureImage(Integer shutterSpeed, Resolution resolution) {
+        return captureImageAction(shutterSpeed, null, resolution);
     }
 
     public static String createBasicAuthorizationFromCredentials(String clientId, String clientSecret) {
@@ -78,7 +89,7 @@ public class CameraClientImpl implements CameraClient {
         return "Basic " + encodedString;
     }
 
-    private InputStream captureImageAction(Integer shutterSpeed, ImageFormat imageFormat) {
+    private InputStream captureImageAction(Integer shutterSpeed, ImageFormat imageFormat, Resolution resolution) {
         try {
             HttpUrl.Builder httpUrlBuilder = HttpUrl.parse(baseURL + "/system/capture").newBuilder();
             if (shutterSpeed != null) {
@@ -86,6 +97,9 @@ public class CameraClientImpl implements CameraClient {
             }
             if (imageFormat != null) {
                 httpUrlBuilder.addQueryParameter("format", imageFormat.getFormat());
+            }
+            if (resolution != null) {
+                httpUrlBuilder.addQueryParameter("resolution", resolution.getResolution());
             }
             Request request = new Request.Builder()
                     .url(httpUrlBuilder.build())

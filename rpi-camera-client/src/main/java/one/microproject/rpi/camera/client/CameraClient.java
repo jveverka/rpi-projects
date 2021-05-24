@@ -1,6 +1,7 @@
 package one.microproject.rpi.camera.client;
 
 import one.microproject.rpi.camera.client.dto.ImageFormat;
+import one.microproject.rpi.camera.client.dto.Resolution;
 import one.microproject.rpi.camera.client.dto.SystemInfo;
 
 import java.io.InputStream;
@@ -38,5 +39,23 @@ public interface CameraClient {
      * @return image data as {@link InputStream}.
      */
     InputStream captureImage(Integer shutterSpeed, ImageFormat imageFormat);
+
+
+    /**
+     * Capture camera image in selected format.
+     * @param shutterSpeed in milliseconds, 0=automatic.
+     * @param imageFormat selected image format.
+     * @param resolution image resolution in megapixels: 1M, 2M, 5M, 8M.
+     * @return image data as {@link InputStream}.
+     */
+    InputStream captureImage(Integer shutterSpeed, ImageFormat imageFormat, Resolution resolution);
+
+    /**
+     * Capture camera image in JPEG format.
+     * @param shutterSpeed in milliseconds, 0=automatic.
+     * @param resolution image resolution in megapixels: 1M, 2M, 5M, 8M.
+     * @return JPEG image data as {@link InputStream}.
+     */
+    InputStream captureImage(Integer shutterSpeed, Resolution resolution);
 
 }

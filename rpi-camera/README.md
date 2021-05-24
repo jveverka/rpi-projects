@@ -45,10 +45,11 @@ This is simple REST service daemon, which allows access camera on Raspberry PI d
   ``curl -u client-001:ex4oo http://<ip-address>:<port>/system/capture --output snapshot.jpg``  
   Supported query parameters:
   
-  |  parameter    | type   | description                    |
-  |---------------|--------|--------------------------------|
-  | shutter-speed | int    | shutter speed in milliseconds  |
-  | format        | string | "jpeg", "png"                  | 
+  |  parameter    | type   | default | description                             |
+  |---------------|--------|---------|-----------------------------------------|
+  | shutter-speed | int    | 0       | float, shutter speed in milliseconds    |
+  | format        | string | "jpeg"  | enum, "jpeg", "png"                     | 
+  | resolution    | string | "5M"    | enum, "1M", "2M", "5M", "8M" megapixels | 
 
 ### Hardware Assembly
 ![image-001](docs/image-001.jpg)

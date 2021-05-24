@@ -16,6 +16,25 @@ auth = HTTPBasicAuth()
 cf = open(sys.argv[1])
 config = json.load(cf)
 
+camera_resolutions = {
+  "8M" : {
+     "image_width": 3280,
+     "image_height": 2464
+  },
+  "5M" : {
+     "image_width": 2592,
+     "image_height": 1944
+  },
+  "2M" : {
+     "image_width": 1920,
+     "image_height": 1440
+  },
+  "1M" : {
+     "image_width": 1280,
+     "image_height": 960
+  }
+}
+
 print('loading credentials ...')
 users = {}
 for user in config['credentials']:
@@ -41,23 +60,38 @@ def capture():
     print('capture')
     file_format = 'jpeg'
     file_name='capture-image.jpg'
+    default_resolution = '5M'
     args = request.args
+
     if 'shutter-speed' in args:
        shutter_speed = float(args['shutter-speed'])
        print('shutter_speed = ' + str(shutter_speed))
        camera.shutter_speed = int(shutter_speed * 1000)
     else:
        camera.shutter_speed = 0
+
     if 'format' in args:
        file_format = args['format']
        file_name='capture-image.' +  file_format
        print('format = ' + file_format)
 
+    if 'resolution' in args:
+       default_resolution = args['resolution']
+       print('resolution = ' + default_resolution + ' ' +
+          str(camera_resolutions[default_resolution]['image_width']) + 'x' +
+          str(camera_resolutions[default_resolution]['image_height'])
+       )
+
+    camera.resolution = (
+       camera_resolutions[default_resolution]['image_width'],
+       camera_resolutions[default_resolution]['image_height']
+    )
+    camera.framerate = 15
     camera.start_preview()
     image_buffer = io.BytesIO()
     camera.capture(image_buffer, file_format)
     camera.stop_preview()
-    
+
     image_buffer.flush()
     image_buffer.seek(0, 0)
     return send_file(image_buffer, attachment_filename=file_name, as_attachment=True)
@@ -67,12 +101,9 @@ if __name__ == '__main__':
         print('camera-rest init.')
         print('#CONFIG Id: ' + config['id'])
         print('#CONFIG name: ' + config['name'])
-        camera.resolution = (2592, 1944)
-        camera.framerate = 15
         print('camera-rest REST APis')
         app.run(debug=False, host=config['host'], port=config['port'])
     except SystemExit:
         camera.close()
         print('camera-rest shutdown.')
         pass
-
