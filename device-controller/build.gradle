@@ -1,0 +1,14 @@
+
+subprojects {
+    apply plugin: 'java'
+}
+
+project(':device-client-sim') {
+}
+
+project(':device-controller') {
+    dependencies {
+        implementation project(':device-client-sim')
+    }
+}
+
