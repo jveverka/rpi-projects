@@ -43,9 +43,9 @@ def capture():
     file_name='capture-image.jpg'
     args = request.args
     if 'shutter-speed' in args:
-       shutter_speed = int(args['shutter-speed'])
+       shutter_speed = float(args['shutter-speed'])
        print('shutter_speed = ' + str(shutter_speed))
-       camera.shutter_speed = shutter_speed * 1000
+       camera.shutter_speed = int(shutter_speed * 1000)
     else:
        camera.shutter_speed = 0
     if 'format' in args:
