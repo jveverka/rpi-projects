@@ -1,0 +1,33 @@
+version: '3.1'
+
+services:
+
+  mongo:
+    image: mongo:4.4.4-bionic
+    restart: always
+    network_mode: 'host'
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_DATABASE: admin
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: secret
+
+  device-controller:
+    image: device-controller:1.0.0-SNAPSHOT
+    build:
+      context: .
+      dockerfile: Dockerfile
+    network_mode: 'host'
+    ports:
+      - 8080:8080
+    depends_on:
+      - mongo
+    environment:
+      MONGO_DATABASE: admin
+      MONGO_USERNAME: root
+      MONGO_PASSWORD: secret
+      MONGO_PORT: 27017
+      MONGO_HOST: 127.0.0.1
+      LOG_ROOT_LEVEL: INFO
+      LOG_APP_LEVEL: DEBUG

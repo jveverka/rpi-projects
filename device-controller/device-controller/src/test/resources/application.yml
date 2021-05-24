@@ -1,0 +1,11 @@
+spring:
+  data:
+    mongodb:
+      uri: uri
+
+logging:
+  level:
+    root: INFO
+    one:
+      microproject:
+        devicecontroller: DEBUG

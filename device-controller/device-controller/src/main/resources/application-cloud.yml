@@ -1,0 +1,21 @@
+server:
+  port: 8080
+  shutdown: graceful
+
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
+  data:
+    mongodb:
+      database: ${MONGO_DATABASE}
+      username: ${MONGO_USERNAME}
+      password: ${MONGO_PASSWORD}
+      port: ${MONGO_PORT}
+      host: ${MONGO_HOST}
+
+logging:
+  level:
+    root: ${LOG_ROOT_LEVEL}
+    one:
+      microproject:
+        devicecontroller: ${LOG_APP_LEVEL}

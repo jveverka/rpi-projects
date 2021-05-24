@@ -1,0 +1,21 @@
+server:
+  port: 8080
+  shutdown: graceful
+
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
+  data:
+    mongodb:
+      database: devicemangerdb
+      username: root
+      password: secret
+      port: 27017
+      host: localhost
+
+logging:
+  level:
+    root: INFO
+    one:
+      microproject:
+        devicecontroller: DEBUG
