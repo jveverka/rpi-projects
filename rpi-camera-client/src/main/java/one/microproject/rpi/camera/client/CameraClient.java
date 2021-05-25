@@ -1,10 +1,10 @@
 package one.microproject.rpi.camera.client;
 
+import one.microproject.rpi.camera.client.dto.ImageCapture;
 import one.microproject.rpi.camera.client.dto.ImageFormat;
 import one.microproject.rpi.camera.client.dto.Resolution;
 import one.microproject.rpi.camera.client.dto.SystemInfo;
 
-import java.io.InputStream;
 
 /**
  * Read data from RPi remote camera.
@@ -21,24 +21,24 @@ public interface CameraClient {
 
     /**
      * Capture camera image in JPEG format.
-     * @return JPEG image data as {@link InputStream}.
+     * @return JPEG image data as {@link ImageCapture}.
      */
-    InputStream captureImage();
+    ImageCapture captureImage();
 
     /**
      * Capture camera image in JPEG format.
      * @param shutterSpeed in milliseconds, 0=automatic.
-     * @return JPEG image data as {@link InputStream}.
+     * @return JPEG image data as {@link ImageCapture}.
      */
-    InputStream captureImage(Integer shutterSpeed);
+    ImageCapture captureImage(Float shutterSpeed);
 
     /**
      * Capture camera image in selected format.
      * @param shutterSpeed in milliseconds, 0=automatic.
      * @param imageFormat selected image format.
-     * @return image data as {@link InputStream}.
+     * @return image data as {@link ImageCapture}.
      */
-    InputStream captureImage(Integer shutterSpeed, ImageFormat imageFormat);
+    ImageCapture captureImage(Float shutterSpeed, ImageFormat imageFormat);
 
 
     /**
@@ -46,16 +46,16 @@ public interface CameraClient {
      * @param shutterSpeed in milliseconds, 0=automatic.
      * @param imageFormat selected image format.
      * @param resolution image resolution in megapixels: 1M, 2M, 5M, 8M.
-     * @return image data as {@link InputStream}.
+     * @return image data as {@link ImageCapture}.
      */
-    InputStream captureImage(Integer shutterSpeed, ImageFormat imageFormat, Resolution resolution);
+    ImageCapture captureImage(Float shutterSpeed, ImageFormat imageFormat, Resolution resolution);
 
     /**
      * Capture camera image in JPEG format.
      * @param shutterSpeed in milliseconds, 0=automatic.
      * @param resolution image resolution in megapixels: 1M, 2M, 5M, 8M.
-     * @return JPEG image data as {@link InputStream}.
+     * @return JPEG image data as {@link ImageCapture}.
      */
-    InputStream captureImage(Integer shutterSpeed, Resolution resolution);
+    ImageCapture captureImage(Float shutterSpeed, Resolution resolution);
 
 }

@@ -7,6 +7,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import one.microproject.rpi.camera.client.CameraClient;
 import one.microproject.rpi.camera.client.ClientException;
+import one.microproject.rpi.camera.client.dto.ImageCapture;
 import one.microproject.rpi.camera.client.dto.ImageFormat;
 import one.microproject.rpi.camera.client.dto.Resolution;
 import one.microproject.rpi.camera.client.dto.SystemInfo;
@@ -14,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.Base64;
 
@@ -58,27 +58,27 @@ public class CameraClientImpl implements CameraClient {
     }
 
     @Override
-    public InputStream captureImage() {
+    public ImageCapture captureImage() {
         return captureImageAction(null, null, null);
     }
 
     @Override
-    public InputStream captureImage(Integer shutterSpeed) {
+    public ImageCapture captureImage(Float shutterSpeed) {
         return captureImageAction(shutterSpeed, null, null);
     }
 
     @Override
-    public InputStream captureImage(Integer shutterSpeed, ImageFormat imageFormat) {
+    public ImageCapture captureImage(Float shutterSpeed, ImageFormat imageFormat) {
         return captureImageAction(shutterSpeed, imageFormat, null);
     }
 
     @Override
-    public InputStream captureImage(Integer shutterSpeed, ImageFormat imageFormat, Resolution resolution) {
+    public ImageCapture captureImage(Float shutterSpeed, ImageFormat imageFormat, Resolution resolution) {
         return captureImageAction(shutterSpeed, imageFormat, resolution);
     }
 
     @Override
-    public InputStream captureImage(Integer shutterSpeed, Resolution resolution) {
+    public ImageCapture captureImage(Float shutterSpeed, Resolution resolution) {
         return captureImageAction(shutterSpeed, null, resolution);
     }
 
@@ -89,7 +89,7 @@ public class CameraClientImpl implements CameraClient {
         return "Basic " + encodedString;
     }
 
-    private InputStream captureImageAction(Integer shutterSpeed, ImageFormat imageFormat, Resolution resolution) {
+    private ImageCapture captureImageAction(Float shutterSpeed, ImageFormat imageFormat, Resolution resolution) {
         try {
             HttpUrl.Builder httpUrlBuilder = HttpUrl.parse(baseURL + "/system/capture").newBuilder();
             if (shutterSpeed != null) {
@@ -109,12 +109,28 @@ public class CameraClientImpl implements CameraClient {
 
             Response response = client.newCall(request).execute();
             if (response.code() == 200) {
-                return response.body().byteStream();
+                String mimeType = response.header("Content-Type");
+                String fileName = getFileNameFromHeader(response.header("Content-Disposition"), mimeType);
+                LOG.debug("Http OK: {} {}", mimeType, fileName);
+                return new ImageCapture(response.body().byteStream(), fileName, mimeType);
             }
             LOG.warn("Http error: {}", response.code());
             throw new ClientException(ERROR_MESSAGE + response.code());
         } catch (IOException e) {
             throw new ClientException(e);
+        }
+    }
+
+    public static String getFileNameFromHeader(String contentDisposition, String mimeType) {
+        try {
+            try {
+                String[] split = contentDisposition.split(";");
+                return split[1].split("=")[1].trim();
+            } catch (Exception e) {
+                return "capture-image." + mimeType.split("/")[1];
+            }
+        } catch (Exception e) {
+            return "capture-image.jpg";
         }
     }
 

@@ -2,6 +2,7 @@ package one.microproject.rpi.camera.client.tests;
 
 import one.microproject.rpi.camera.client.CameraClient;
 import one.microproject.rpi.camera.client.CameraClientBuilder;
+import one.microproject.rpi.camera.client.dto.ImageCapture;
 import one.microproject.rpi.camera.client.dto.ImageFormat;
 import one.microproject.rpi.camera.client.dto.SystemInfo;
 import org.slf4j.Logger;
@@ -28,9 +29,9 @@ public class CodeExample {
         LOG.info("systemInfo: {} {} {}", systemInfo.getId(), systemInfo.getName(), systemInfo.getVersion());
         //InputStream is = cameraClient.captureImage();
         //InputStream is = cameraClient.captureImage(1);
-        InputStream is = cameraClient.captureImage(1, ImageFormat.PNG);
+        ImageCapture imageCapture = cameraClient.captureImage(0.1F, ImageFormat.JPEG);
         File file = new File("/home/juraj/Downloads/camera-test.png");
-        Files.copy(is, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(imageCapture.getIs(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
 
 }
