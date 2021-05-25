@@ -16,7 +16,7 @@ services:
   device-controller:
     image: device-controller:1.0.0-SNAPSHOT
     build:
-      context: .
+      context: ./device-controller
       dockerfile: Dockerfile
     network_mode: 'host'
     ports:

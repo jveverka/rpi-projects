@@ -12,6 +12,7 @@ import one.microproject.clientsim.dto.SystemInfo;
 import one.microproject.devicecontroller.dto.ClientAdapterWrapper;
 import one.microproject.devicecontroller.dto.DeviceQuery;
 import one.microproject.devicecontroller.dto.DeviceQueryResponse;
+import one.microproject.devicecontroller.dto.DeviceType;
 import one.microproject.devicecontroller.model.DeviceData;
 import one.microproject.rpi.camera.client.CameraClient;
 import one.microproject.rpi.camera.client.CameraClientBuilder;
@@ -79,7 +80,7 @@ public class DeviceDataServiceImpl implements DeviceDataService {
     private ClientAdapterWrapper getOrCreateAdapterIfNotCreated(DeviceData deviceData, DeviceQuery query) throws MalformedURLException {
         if (!clients.containsKey(query.deviceId())) {
             LOG.debug("initializing client deviceId={} type={}", deviceData.getId(), deviceData.getType());
-            if ("device-sim".equals(deviceData.getType())) {
+            if (DeviceType.DEVICE_SIM.getType().equals(deviceData.getType())) {
                 ClientSim clientSim = ClientSimBuilder.builder()
                         .withDeviceId(query.deviceId())
                         .build();
@@ -113,7 +114,7 @@ public class DeviceDataServiceImpl implements DeviceDataService {
     }
 
     private DeviceQueryResponse getDeviceResponse(ClientAdapterWrapper<?> clientAdapterWrapper, DeviceData deviceData, DeviceQuery query) throws JsonProcessingException {
-        if ("device-sim".equals(deviceData.getType())) {
+        if (DeviceType.DEVICE_SIM.getType().equals(deviceData.getType())) {
             ClientSim clientSim = (ClientSim) clientAdapterWrapper.getClient();
             if ("system-info".equals(query.queryType())) {
                 SystemInfo systemInfo = clientSim.getSystemInfo();
@@ -127,17 +128,33 @@ public class DeviceDataServiceImpl implements DeviceDataService {
             } else {
                 throw new UnsupportedOperationException("Unsupported query type=" + query.queryType() + "  for device type=" + deviceData.getType());
             }
+        } else if (DeviceType.RPI_CAMERA.getType().equals(deviceData.getType())) {
+            CameraClient cameraClient = (CameraClient) clientAdapterWrapper.getClient();
+            if ("system-info".equals(query.queryType())) {
+                one.microproject.rpi.camera.client.dto.SystemInfo systemInfo = cameraClient.getSystemInfo();
+                ObjectNode objectNode = objectMapper.valueToTree(systemInfo);
+                return new DeviceQueryResponse(query.id(), query.deviceId(), query.queryType(), objectNode);
+            } else {
+                throw new UnsupportedOperationException("Unsupported query type=" + query.queryType() + "  for device type=" + deviceData.getType());
+            }
         } else {
             throw new UnsupportedOperationException("Unsupported device type=" + deviceData.getType());
         }
     }
 
     private InputStream getDeviceData(ClientAdapterWrapper<?> clientAdapterWrapper, DeviceData deviceData, DeviceQuery query) throws JsonProcessingException {
-        if ("device-sim".equals(deviceData.getType())) {
+        if (DeviceType.DEVICE_SIM.getType().equals(deviceData.getType())) {
             ClientSim clientSim = (ClientSim) clientAdapterWrapper.getClient();
             if ("download".equals(query.queryType())) {
                 DataRequest dataRequest = objectMapper.treeToValue(query.payload(), DataRequest.class);
                 return clientSim.download(dataRequest);
+            } else {
+                throw new UnsupportedOperationException("Unsupported query type=" + query.queryType() + "  for device type=" + deviceData.getType());
+            }
+        } else if (DeviceType.RPI_CAMERA.getType().equals(deviceData.getType())) {
+            CameraClient cameraClient = (CameraClient) clientAdapterWrapper.getClient();
+            if ("capture".equals(query.queryType())) {
+                return cameraClient.captureImage();
             } else {
                 throw new UnsupportedOperationException("Unsupported query type=" + query.queryType() + "  for device type=" + deviceData.getType());
             }

@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,7 +56,11 @@ public class DeviceDataController {
     @PostMapping("/download")
     public ResponseEntity<Resource> downloadQuery(@RequestBody DeviceQuery query) {
         InputStream is = deviceDataService.download(query);
-        return ResponseEntity.ok(new InputStreamResource(is));
+        InputStreamResource resource = new InputStreamResource(is);
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("image/jpeg"))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"filename=capture-image.jpg\"")
+                .body(resource);
     }
 
 }
