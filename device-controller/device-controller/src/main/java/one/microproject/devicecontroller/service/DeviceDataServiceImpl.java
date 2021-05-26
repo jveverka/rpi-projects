@@ -9,12 +9,14 @@ import one.microproject.clientsim.ClientSimBuilder;
 import one.microproject.clientsim.dto.DataRequest;
 import one.microproject.clientsim.dto.DataResponse;
 import one.microproject.clientsim.dto.SystemInfo;
+import one.microproject.devicecontroller.dto.JobsWrapper;
 import one.microproject.devicecontroller.dto.ClientAdapterWrapper;
 import one.microproject.devicecontroller.dto.DataStream;
 import one.microproject.devicecontroller.dto.DeviceQuery;
 import one.microproject.devicecontroller.dto.DeviceQueryResponse;
 import one.microproject.devicecontroller.dto.DeviceType;
 import one.microproject.devicecontroller.dto.ResultId;
+import one.microproject.devicecontroller.dto.TasksWrapper;
 import one.microproject.devicecontroller.model.DeviceData;
 import one.microproject.rpi.camera.client.CameraClient;
 import one.microproject.rpi.camera.client.CameraClientBuilder;
@@ -22,17 +24,14 @@ import one.microproject.rpi.camera.client.dto.ImageCapture;
 import one.microproject.rpi.powercontroller.PowerControllerClient;
 import one.microproject.rpi.powercontroller.PowerControllerClientBuilder;
 import one.microproject.rpi.powercontroller.dto.JobId;
-import one.microproject.rpi.powercontroller.dto.JobInfo;
 import one.microproject.rpi.powercontroller.dto.Measurements;
 import one.microproject.rpi.powercontroller.dto.SystemState;
 import one.microproject.rpi.powercontroller.dto.TaskId;
-import one.microproject.rpi.powercontroller.dto.TaskInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.net.MalformedURLException;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -152,12 +151,12 @@ public class DeviceDataServiceImpl implements DeviceDataService {
                 ObjectNode objectNode = objectMapper.valueToTree(systemState);
                 return new DeviceQueryResponse(query.id(), query.deviceId(), query.queryType(), objectNode);
             } else if ("jobs".equals(query.queryType())) {
-                Collection<JobInfo> systemJobs = powerControllerClient.getSystemJobs();
-                ObjectNode objectNode = objectMapper.valueToTree(systemJobs);
+                JobsWrapper wrapper = new JobsWrapper(powerControllerClient.getSystemJobs());
+                ObjectNode objectNode = objectMapper.valueToTree(wrapper);
                 return new DeviceQueryResponse(query.id(), query.deviceId(), query.queryType(), objectNode);
             } else if ("tasks".equals(query.queryType())) {
-                Collection<TaskInfo> allTasks = powerControllerClient.getAllTasks();
-                ObjectNode objectNode = objectMapper.valueToTree(allTasks);
+                TasksWrapper wrapper = new TasksWrapper(powerControllerClient.getAllTasks());
+                ObjectNode objectNode = objectMapper.valueToTree(wrapper);
                 return new DeviceQueryResponse(query.id(), query.deviceId(), query.queryType(), objectNode);
             } else if ("submit-task".equals(query.queryType())) {
                 JobId jobId = objectMapper.treeToValue(query.payload(), JobId.class);
