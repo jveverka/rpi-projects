@@ -10,19 +10,20 @@ import one.microproject.clientsim.dto.DataRequest;
 import one.microproject.clientsim.dto.DataResponse;
 import one.microproject.clientsim.dto.SystemInfo;
 import one.microproject.devicecontroller.dto.ClientAdapterWrapper;
+import one.microproject.devicecontroller.dto.DataStream;
 import one.microproject.devicecontroller.dto.DeviceQuery;
 import one.microproject.devicecontroller.dto.DeviceQueryResponse;
 import one.microproject.devicecontroller.dto.DeviceType;
 import one.microproject.devicecontroller.model.DeviceData;
 import one.microproject.rpi.camera.client.CameraClient;
 import one.microproject.rpi.camera.client.CameraClientBuilder;
+import one.microproject.rpi.camera.client.dto.ImageCapture;
 import one.microproject.rpi.powercontroller.PowerControllerClient;
 import one.microproject.rpi.powercontroller.PowerControllerClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.Map;
 import java.util.Optional;
@@ -62,7 +63,7 @@ public class DeviceDataServiceImpl implements DeviceDataService {
     }
 
     @Override
-    public InputStream download(DeviceQuery query) throws DeviceException {
+    public DataStream download(DeviceQuery query) throws DeviceException {
         try {
             Optional<DeviceData> deviceDataOptional = deviceAdminService.getDeviceDataById(query.deviceId());
             if (deviceDataOptional.isPresent()) {
@@ -142,19 +143,20 @@ public class DeviceDataServiceImpl implements DeviceDataService {
         }
     }
 
-    private InputStream getDeviceData(ClientAdapterWrapper<?> clientAdapterWrapper, DeviceData deviceData, DeviceQuery query) throws JsonProcessingException {
+    private DataStream getDeviceData(ClientAdapterWrapper<?> clientAdapterWrapper, DeviceData deviceData, DeviceQuery query) throws JsonProcessingException {
         if (DeviceType.DEVICE_SIM.getType().equals(deviceData.getType())) {
             ClientSim clientSim = (ClientSim) clientAdapterWrapper.getClient();
             if ("download".equals(query.queryType())) {
                 DataRequest dataRequest = objectMapper.treeToValue(query.payload(), DataRequest.class);
-                return clientSim.download(dataRequest);
+                return new DataStream(clientSim.download(dataRequest), "data.file", "text/plain");
             } else {
                 throw new UnsupportedOperationException("Unsupported query type=" + query.queryType() + "  for device type=" + deviceData.getType());
             }
         } else if (DeviceType.RPI_CAMERA.getType().equals(deviceData.getType())) {
             CameraClient cameraClient = (CameraClient) clientAdapterWrapper.getClient();
             if ("capture".equals(query.queryType())) {
-                return cameraClient.captureImage();
+                ImageCapture imageCapture = cameraClient.captureImage();
+                return new DataStream(imageCapture.getIs(), imageCapture.getFileName(), imageCapture.getMimeType());
             } else {
                 throw new UnsupportedOperationException("Unsupported query type=" + query.queryType() + "  for device type=" + deviceData.getType());
             }

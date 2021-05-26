@@ -1,5 +1,6 @@
 package one.microproject.devicecontroller.controller;
 
+import one.microproject.devicecontroller.dto.DataStream;
 import one.microproject.devicecontroller.dto.DeviceInfo;
 import one.microproject.devicecontroller.dto.DeviceQuery;
 import one.microproject.devicecontroller.dto.DeviceQueryResponse;
@@ -55,11 +56,11 @@ public class DeviceDataController {
 
     @PostMapping("/download")
     public ResponseEntity<Resource> downloadQuery(@RequestBody DeviceQuery query) {
-        InputStream is = deviceDataService.download(query);
-        InputStreamResource resource = new InputStreamResource(is);
+        DataStream dataStream = deviceDataService.download(query);
+        InputStreamResource resource = new InputStreamResource(dataStream.is());
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType("image/jpeg"))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"filename=capture-image.jpg\"")
+                .contentType(MediaType.parseMediaType(dataStream.mimeType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + dataStream.fileName() + "\"")
                 .body(resource);
     }
 
