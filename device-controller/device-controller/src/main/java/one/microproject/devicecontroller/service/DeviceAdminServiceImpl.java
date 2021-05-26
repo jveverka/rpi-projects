@@ -2,6 +2,7 @@ package one.microproject.devicecontroller.service;
 
 import one.microproject.devicecontroller.dto.DeviceCreateRequest;
 import one.microproject.devicecontroller.dto.DeviceInfo;
+import one.microproject.devicecontroller.dto.DeviceType;
 import one.microproject.devicecontroller.model.DeviceData;
 import one.microproject.devicecontroller.repository.DeviceDataRepository;
 import org.springframework.stereotype.Service;
@@ -54,7 +55,11 @@ public class DeviceAdminServiceImpl implements DeviceAdminService {
 
     @Override
     public List<String> getSupportedDeviceTypes() {
-        return List.of("device-sim", "rpi-power-controller", "rpi-camera");
+        return List.of(
+                DeviceType.DEVICE_SIM.getType(),
+                DeviceType.RPI_CAMERA.getType(),
+                DeviceType.PRI_POWER_CONTROLLER.getType()
+        );
     }
 
 }
