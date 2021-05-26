@@ -58,7 +58,7 @@ public class DeviceAdminServiceImpl implements DeviceAdminService {
         return List.of(
                 DeviceType.DEVICE_SIM.getType(),
                 DeviceType.RPI_CAMERA.getType(),
-                DeviceType.PRI_POWER_CONTROLLER.getType()
+                DeviceType.RPI_POWER_CONTROLLER.getType()
         );
     }
 

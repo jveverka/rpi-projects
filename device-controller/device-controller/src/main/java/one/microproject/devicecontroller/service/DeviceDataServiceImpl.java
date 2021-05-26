@@ -20,6 +20,7 @@ import one.microproject.rpi.camera.client.CameraClientBuilder;
 import one.microproject.rpi.camera.client.dto.ImageCapture;
 import one.microproject.rpi.powercontroller.PowerControllerClient;
 import one.microproject.rpi.powercontroller.PowerControllerClientBuilder;
+import one.microproject.rpi.powercontroller.dto.Measurements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -88,7 +89,7 @@ public class DeviceDataServiceImpl implements DeviceDataService {
                 ClientAdapterWrapper<ClientSim> clientAdapterWrapper = new ClientAdapterWrapper<>(clientSim);
                 clients.put(query.deviceId(), clientAdapterWrapper);
                 return clientAdapterWrapper;
-            } else if ("rpi-power-controller".equals(deviceData.getType())) {
+            } else if (DeviceType.RPI_POWER_CONTROLLER.getType().equals(deviceData.getType())) {
                 PowerControllerClient powerControllerClient = PowerControllerClientBuilder.builder()
                         .baseUrl(deviceData.getBaseUrl())
                         .withCredentials(deviceData.getClientId(), deviceData.getClientSecret())
@@ -97,7 +98,7 @@ public class DeviceDataServiceImpl implements DeviceDataService {
                 ClientAdapterWrapper<PowerControllerClient> clientAdapterWrapper = new ClientAdapterWrapper<>(powerControllerClient);
                 clients.put(query.deviceId(), clientAdapterWrapper);
                 return clientAdapterWrapper;
-            } else if ("rpi-camera".equals(deviceData.getType())) {
+            } else if (DeviceType.RPI_CAMERA.getType().equals(deviceData.getType())) {
                 CameraClient cameraClient = CameraClientBuilder.builder()
                         .baseUrl(deviceData.getBaseUrl())
                         .withCredentials(deviceData.getClientId(), deviceData.getClientSecret())
@@ -125,6 +126,19 @@ public class DeviceDataServiceImpl implements DeviceDataService {
                 DataRequest dataRequest = objectMapper.treeToValue(query.payload(), DataRequest.class);
                 DataResponse dataResponse = clientSim.getData(dataRequest);
                 ObjectNode objectNode = objectMapper.valueToTree(dataResponse);
+                return new DeviceQueryResponse(query.id(), query.deviceId(), query.queryType(), objectNode);
+            } else {
+                throw new UnsupportedOperationException("Unsupported query type=" + query.queryType() + "  for device type=" + deviceData.getType());
+            }
+        } else if (DeviceType.RPI_POWER_CONTROLLER.getType().equals(deviceData.getType())) {
+            PowerControllerClient powerControllerClient = (PowerControllerClient) clientAdapterWrapper.getClient();
+            if ("system-info".equals(query.queryType())) {
+                one.microproject.rpi.powercontroller.dto.SystemInfo systemInfo = powerControllerClient.getSystemInfo();
+                ObjectNode objectNode = objectMapper.valueToTree(systemInfo);
+                return new DeviceQueryResponse(query.id(), query.deviceId(), query.queryType(), objectNode);
+            } else if ("measurements".equals(query.queryType())) {
+                Measurements measurements = powerControllerClient.getMeasurements();
+                ObjectNode objectNode = objectMapper.valueToTree(measurements);
                 return new DeviceQueryResponse(query.id(), query.deviceId(), query.queryType(), objectNode);
             } else {
                 throw new UnsupportedOperationException("Unsupported query type=" + query.queryType() + "  for device type=" + deviceData.getType());

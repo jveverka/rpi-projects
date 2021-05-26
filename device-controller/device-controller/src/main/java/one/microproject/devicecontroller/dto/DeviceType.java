@@ -4,7 +4,7 @@ public enum DeviceType {
 
     DEVICE_SIM("device-sim"),
     RPI_CAMERA("rpi-camera"),
-    PRI_POWER_CONTROLLER("rpi-powercontroller");
+    RPI_POWER_CONTROLLER("rpi-power-controller");
 
     private final String type;
 
