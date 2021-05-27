@@ -2,6 +2,7 @@ package one.microproject.devicecontroller.service;
 
 import one.microproject.devicecontroller.dto.DeviceCreateRequest;
 import one.microproject.devicecontroller.dto.DeviceInfo;
+import one.microproject.devicecontroller.dto.DeviceStatus;
 import one.microproject.devicecontroller.model.DeviceData;
 import org.springframework.stereotype.Component;
 
@@ -13,8 +14,8 @@ public class DataMapper {
                 request.credentials().clientId(), request.credentials().secret(), request.groupId());
     }
 
-    public DeviceInfo map(DeviceData deviceData) {
-        return new DeviceInfo(deviceData.getId(), deviceData.getType(), deviceData.getGroupId(), deviceData.getBaseUrl());
+    public DeviceInfo map(DeviceData deviceData, DeviceStatus status) {
+        return new DeviceInfo(deviceData.getId(), deviceData.getType(), deviceData.getGroupId(), deviceData.getBaseUrl(), status);
     }
 
 }

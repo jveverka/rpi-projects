@@ -1,15 +1,13 @@
 package one.microproject.devicecontroller.dto;
 
-public class ClientAdapterWrapper<T> {
+public interface ClientAdapterWrapper<T> {
 
-    private final T client;
+    T getClient();
 
-    public ClientAdapterWrapper(T client) {
-        this.client = client;
-    }
+    DeviceStatus getStatus();
 
-    public T getClient() {
-        return client;
-    }
+    void setStatus(DeviceStatus deviceStatus);
+
+    DeviceType getType();
 
 }

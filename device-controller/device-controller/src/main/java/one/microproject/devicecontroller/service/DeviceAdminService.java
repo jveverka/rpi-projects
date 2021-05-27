@@ -9,15 +9,13 @@ import java.util.Optional;
 
 public interface DeviceAdminService {
 
-    void addDevice(DeviceCreateRequest deviceCreateRequest);
+    void addDevice(DeviceCreateRequest deviceCreateRequest) throws DeviceException;
 
     void removeDevice(String deviceId);
 
     List<DeviceInfo> getAll();
 
     Optional<DeviceInfo> getById(String deviceId);
-
-    Optional<DeviceData> getDeviceDataById(String deviceId);
 
     List<String> getSupportedDeviceTypes();
 

@@ -6,6 +6,9 @@ import one.microproject.clientsim.ClientSimBuilder;
 import one.microproject.devicecontroller.dto.ClientAdapterWrapper;
 import one.microproject.devicecontroller.dto.DeviceType;
 import one.microproject.devicecontroller.model.DeviceData;
+import one.microproject.devicecontroller.service.devices.ClientAdapterCamera;
+import one.microproject.devicecontroller.service.devices.ClientAdapterPowerController;
+import one.microproject.devicecontroller.service.devices.ClientAdapterSim;
 import one.microproject.rpi.camera.client.CameraClient;
 import one.microproject.rpi.camera.client.CameraClientBuilder;
 import one.microproject.rpi.powercontroller.PowerControllerClient;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.net.MalformedURLException;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -32,40 +36,45 @@ public class ClientAdapterFactoryImpl implements ClientAdapterFactory {
     }
 
     @Override
-    public ClientAdapterWrapper<?> get(DeviceData deviceData) throws MalformedURLException {
+    public void create(DeviceData deviceData) throws MalformedURLException {
         if (!clients.containsKey(deviceData.getId())) {
             LOG.debug("initializing client deviceId={} type={}", deviceData.getId(), deviceData.getType());
             if (DeviceType.DEVICE_SIM.getType().equals(deviceData.getType())) {
                 ClientSim clientSim = ClientSimBuilder.builder()
                         .withDeviceId(deviceData.getId())
                         .build();
-                ClientAdapterWrapper<ClientSim> clientAdapterWrapper = new ClientAdapterWrapper<>(clientSim);
+                ClientAdapterSim clientAdapterWrapper = new ClientAdapterSim(clientSim);
                 clients.put(deviceData.getId(), clientAdapterWrapper);
-                return clientAdapterWrapper;
             } else if (DeviceType.RPI_POWER_CONTROLLER.getType().equals(deviceData.getType())) {
                 PowerControllerClient powerControllerClient = PowerControllerClientBuilder.builder()
                         .baseUrl(deviceData.getBaseUrl())
                         .withCredentials(deviceData.getClientId(), deviceData.getClientSecret())
                         .setHttpClient(okHttpClient)
                         .build();
-                ClientAdapterWrapper<PowerControllerClient> clientAdapterWrapper = new ClientAdapterWrapper<>(powerControllerClient);
+                ClientAdapterPowerController clientAdapterWrapper = new ClientAdapterPowerController(powerControllerClient);
                 clients.put(deviceData.getId(), clientAdapterWrapper);
-                return clientAdapterWrapper;
             } else if (DeviceType.RPI_CAMERA.getType().equals(deviceData.getType())) {
                 CameraClient cameraClient = CameraClientBuilder.builder()
                         .baseUrl(deviceData.getBaseUrl())
                         .withCredentials(deviceData.getClientId(), deviceData.getClientSecret())
                         .setHttpClient(okHttpClient)
                         .build();
-                ClientAdapterWrapper<CameraClient> clientAdapterWrapper = new ClientAdapterWrapper<>(cameraClient);
+                ClientAdapterCamera clientAdapterWrapper = new ClientAdapterCamera(cameraClient);
                 clients.put(deviceData.getId(), clientAdapterWrapper);
-                return clientAdapterWrapper;
             } else {
                 throw new UnsupportedOperationException("Unknown or unsupported device type " + deviceData.getType());
             }
-        } else {
-            return clients.get(deviceData.getId());
         }
+    }
+
+    @Override
+    public Optional<ClientAdapterWrapper<?>> get(String id) {
+        return Optional.ofNullable(clients.get(id));
+    }
+
+    @Override
+    public void remove(String id) {
+        clients.remove(id);
     }
 
 }
