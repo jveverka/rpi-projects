@@ -27,7 +27,12 @@ public class DeviceAdminServiceImpl implements DeviceAdminService {
     @Override
     @Transactional
     public void addDevice(DeviceCreateRequest deviceCreateRequest) {
-        repository.save(dataMapper.map(deviceCreateRequest));
+        Optional<DeviceData> deviceDataOptional = repository.findById(deviceCreateRequest.id());
+        if (deviceDataOptional.isEmpty()) {
+            repository.save(dataMapper.map(deviceCreateRequest));
+        } else {
+            throw new DeviceAdminException("Device id=" + deviceCreateRequest.id() + " already exists !");
+        }
     }
 
     @Override

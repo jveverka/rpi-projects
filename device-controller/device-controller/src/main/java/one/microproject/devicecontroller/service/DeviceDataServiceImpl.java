@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import okhttp3.OkHttpClient;
 import one.microproject.clientsim.ClientSim;
-import one.microproject.clientsim.ClientSimBuilder;
 import one.microproject.clientsim.dto.DataRequest;
 import one.microproject.clientsim.dto.DataResponse;
 import one.microproject.clientsim.dto.SystemInfo;
@@ -19,10 +18,8 @@ import one.microproject.devicecontroller.dto.ResultId;
 import one.microproject.devicecontroller.dto.TasksWrapper;
 import one.microproject.devicecontroller.model.DeviceData;
 import one.microproject.rpi.camera.client.CameraClient;
-import one.microproject.rpi.camera.client.CameraClientBuilder;
 import one.microproject.rpi.camera.client.dto.ImageCapture;
 import one.microproject.rpi.powercontroller.PowerControllerClient;
-import one.microproject.rpi.powercontroller.PowerControllerClientBuilder;
 import one.microproject.rpi.powercontroller.dto.JobId;
 import one.microproject.rpi.powercontroller.dto.Measurements;
 import one.microproject.rpi.powercontroller.dto.SystemState;
@@ -31,10 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.net.MalformedURLException;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class DeviceDataServiceImpl implements DeviceDataService {
@@ -42,15 +36,14 @@ public class DeviceDataServiceImpl implements DeviceDataService {
     private static final Logger LOG = LoggerFactory.getLogger(DeviceDataServiceImpl.class);
 
     private final DeviceAdminService deviceAdminService;
-    private final OkHttpClient okHttpClient;
+    private final ClientAdapterFactory clientAdapterFactory;
     private final ObjectMapper objectMapper;
-    private final Map<String, ClientAdapterWrapper<?>> clients;
 
-    public DeviceDataServiceImpl(DeviceAdminService deviceAdminService, OkHttpClient okHttpClient, ObjectMapper objectMapper) {
+
+    public DeviceDataServiceImpl(DeviceAdminService deviceAdminService, ClientAdapterFactory clientAdapterFactory, ObjectMapper objectMapper) {
         this.deviceAdminService = deviceAdminService;
-        this.okHttpClient = okHttpClient;
+        this.clientAdapterFactory = clientAdapterFactory;
         this.objectMapper = objectMapper;
-        this.clients = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -58,7 +51,7 @@ public class DeviceDataServiceImpl implements DeviceDataService {
         try {
             Optional<DeviceData> deviceDataOptional = deviceAdminService.getDeviceDataById(query.deviceId());
             if (deviceDataOptional.isPresent()) {
-                ClientAdapterWrapper<?> clientAdapterWrapper = getOrCreateAdapterIfNotCreated(deviceDataOptional.get(), query);
+                ClientAdapterWrapper<?> clientAdapterWrapper = clientAdapterFactory.get(deviceDataOptional.get());
                 return getDeviceResponse(clientAdapterWrapper, deviceDataOptional.get(), query);
             } else {
                 LOG.error("Device id={} Not Found !", query.deviceId());
@@ -74,7 +67,7 @@ public class DeviceDataServiceImpl implements DeviceDataService {
         try {
             Optional<DeviceData> deviceDataOptional = deviceAdminService.getDeviceDataById(query.deviceId());
             if (deviceDataOptional.isPresent()) {
-                ClientAdapterWrapper<?> clientAdapterWrapper = getOrCreateAdapterIfNotCreated(deviceDataOptional.get(), query);
+                ClientAdapterWrapper<?> clientAdapterWrapper = clientAdapterFactory.get(deviceDataOptional.get());
                 return getDeviceData(clientAdapterWrapper, deviceDataOptional.get(), query);
             } else {
                 LOG.error("Device id={} Not Found !", query.deviceId());
@@ -82,42 +75,6 @@ public class DeviceDataServiceImpl implements DeviceDataService {
             }
         } catch (Exception e) {
             throw new DeviceException("Device query exception.", e);
-        }
-    }
-
-    private ClientAdapterWrapper getOrCreateAdapterIfNotCreated(DeviceData deviceData, DeviceQuery query) throws MalformedURLException {
-        if (!clients.containsKey(query.deviceId())) {
-            LOG.debug("initializing client deviceId={} type={}", deviceData.getId(), deviceData.getType());
-            if (DeviceType.DEVICE_SIM.getType().equals(deviceData.getType())) {
-                ClientSim clientSim = ClientSimBuilder.builder()
-                        .withDeviceId(query.deviceId())
-                        .build();
-                ClientAdapterWrapper<ClientSim> clientAdapterWrapper = new ClientAdapterWrapper<>(clientSim);
-                clients.put(query.deviceId(), clientAdapterWrapper);
-                return clientAdapterWrapper;
-            } else if (DeviceType.RPI_POWER_CONTROLLER.getType().equals(deviceData.getType())) {
-                PowerControllerClient powerControllerClient = PowerControllerClientBuilder.builder()
-                        .baseUrl(deviceData.getBaseUrl())
-                        .withCredentials(deviceData.getClientId(), deviceData.getClientSecret())
-                        .setHttpClient(okHttpClient)
-                        .build();
-                ClientAdapterWrapper<PowerControllerClient> clientAdapterWrapper = new ClientAdapterWrapper<>(powerControllerClient);
-                clients.put(query.deviceId(), clientAdapterWrapper);
-                return clientAdapterWrapper;
-            } else if (DeviceType.RPI_CAMERA.getType().equals(deviceData.getType())) {
-                CameraClient cameraClient = CameraClientBuilder.builder()
-                        .baseUrl(deviceData.getBaseUrl())
-                        .withCredentials(deviceData.getClientId(), deviceData.getClientSecret())
-                        .setHttpClient(okHttpClient)
-                        .build();
-                ClientAdapterWrapper<CameraClient> clientAdapterWrapper = new ClientAdapterWrapper<>(cameraClient);
-                clients.put(query.deviceId(), clientAdapterWrapper);
-                return clientAdapterWrapper;
-            } else {
-                throw new UnsupportedOperationException("Unknown or unsupported device type " + deviceData.getType());
-            }
-        } else {
-            return clients.get(query.deviceId());
         }
     }
 
