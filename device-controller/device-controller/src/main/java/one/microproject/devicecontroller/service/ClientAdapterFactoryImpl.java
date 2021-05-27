@@ -36,7 +36,7 @@ public class ClientAdapterFactoryImpl implements ClientAdapterFactory {
     }
 
     @Override
-    public void create(DeviceData deviceData) throws MalformedURLException {
+    public ClientAdapterWrapper<?> create(DeviceData deviceData) throws MalformedURLException {
         if (!clients.containsKey(deviceData.getId())) {
             LOG.debug("initializing client deviceId={} type={}", deviceData.getId(), deviceData.getType());
             if (DeviceType.DEVICE_SIM.getType().equals(deviceData.getType())) {
@@ -65,6 +65,7 @@ public class ClientAdapterFactoryImpl implements ClientAdapterFactory {
                 throw new UnsupportedOperationException("Unknown or unsupported device type " + deviceData.getType());
             }
         }
+        return clients.get(deviceData.getId());
     }
 
     @Override

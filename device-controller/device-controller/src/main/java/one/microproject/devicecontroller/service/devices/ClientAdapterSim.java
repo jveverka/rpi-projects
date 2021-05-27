@@ -12,7 +12,7 @@ public class ClientAdapterSim implements ClientAdapterWrapper<ClientSim> {
 
     public ClientAdapterSim(ClientSim clientSim) {
         this.clientSim = clientSim;
-        this.status = DeviceStatus.OFFLINE;
+        this.status = DeviceStatus.ONLINE;
     }
 
     @Override
@@ -22,6 +22,11 @@ public class ClientAdapterSim implements ClientAdapterWrapper<ClientSim> {
 
     @Override
     public DeviceStatus getStatus() {
+        return this.status;
+    }
+
+    @Override
+    public DeviceStatus checkStatus() {
         return this.status;
     }
 

@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface ClientAdapterFactory {
 
-    void create(DeviceData deviceData) throws MalformedURLException;
+    ClientAdapterWrapper<?> create(DeviceData deviceData) throws MalformedURLException;
 
     Optional<ClientAdapterWrapper<?>> get(String id);
 

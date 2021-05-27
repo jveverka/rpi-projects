@@ -26,6 +26,17 @@ public class ClientAdapterPowerController implements ClientAdapterWrapper<PowerC
     }
 
     @Override
+    public DeviceStatus checkStatus() {
+        try {
+            powerControllerClient.getSystemInfo();
+            status = DeviceStatus.ONLINE;
+        } catch (Exception e) {
+            status = DeviceStatus.OFFLINE;
+        }
+        return status;
+    }
+
+    @Override
     public void setStatus(DeviceStatus deviceStatus) {
         this.status = deviceStatus;
     }

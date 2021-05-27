@@ -26,6 +26,17 @@ public class ClientAdapterCamera implements ClientAdapterWrapper<CameraClient> {
     }
 
     @Override
+    public DeviceStatus checkStatus() {
+        try {
+            cameraClient.getSystemInfo();
+            status = DeviceStatus.ONLINE;
+        } catch (Exception e) {
+            status = DeviceStatus.OFFLINE;
+        }
+        return status;
+    }
+
+    @Override
     public void setStatus(DeviceStatus deviceStatus) {
         this.status = deviceStatus;
     }

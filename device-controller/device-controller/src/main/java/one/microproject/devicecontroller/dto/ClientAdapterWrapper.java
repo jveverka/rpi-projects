@@ -6,6 +6,8 @@ public interface ClientAdapterWrapper<T> {
 
     DeviceStatus getStatus();
 
+    DeviceStatus checkStatus();
+
     void setStatus(DeviceStatus deviceStatus);
 
     DeviceType getType();
