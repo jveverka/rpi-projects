@@ -6,6 +6,7 @@ import one.microproject.devicecontroller.service.DeviceAdminService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +30,7 @@ public class DeviceAdminController {
     }
 
     @PostMapping()
+    @PreAuthorize("hasAuthority('device-controller.devices.read') and hasAuthority('device-controller.devices.write')")
     public ResponseEntity<Void> addDevice(@RequestBody DeviceCreateRequest deviceCreateRequest) {
         LOG.debug("addDevice {}", deviceCreateRequest.id());
         deviceAdminService.addDevice(deviceCreateRequest);
@@ -36,6 +38,7 @@ public class DeviceAdminController {
     }
 
     @DeleteMapping("/{device-id}")
+    @PreAuthorize("hasAuthority('device-controller.devices.read') and hasAuthority('device-controller.devices.write')")
     public ResponseEntity<Void> removeDevice(@PathVariable("device-id") String deviceId) {
         LOG.debug("removeDevice {}", deviceId);
         deviceAdminService.removeDevice(deviceId);
@@ -43,18 +46,21 @@ public class DeviceAdminController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('device-controller.devices.read')")
     public ResponseEntity<List<DeviceInfo>> getAll() {
         LOG.debug("getAll");
         return ResponseEntity.ok(deviceAdminService.getAll());
     }
 
     @GetMapping("/{device-id}")
+    @PreAuthorize("hasAuthority('device-controller.devices.read')")
     public ResponseEntity<DeviceInfo> getById(@PathVariable("device-id") String deviceId) {
         LOG.debug("getById {}", deviceId);
         return ResponseEntity.of(deviceAdminService.getById(deviceId));
     }
 
     @GetMapping("/device-types")
+    @PreAuthorize("hasAuthority('device-controller.devices.read')")
     public ResponseEntity<List<String>> getSupportedDeviceTypes() {
         LOG.debug("getSupportedDeviceTypes");
         return ResponseEntity.ok(deviceAdminService.getSupportedDeviceTypes());

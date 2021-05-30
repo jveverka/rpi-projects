@@ -13,6 +13,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,33 +30,23 @@ public class DeviceDataController {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceDataController.class);
 
-    private final DeviceAdminService deviceAdminService;
     private final DeviceDataService deviceDataService;
 
-    public DeviceDataController(DeviceAdminService deviceAdminService, DeviceDataService deviceDataService) {
-        this.deviceAdminService = deviceAdminService;
+    public DeviceDataController(DeviceDataService deviceDataService) {
         this.deviceDataService = deviceDataService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<DeviceInfo>> getAll() {
-        LOG.debug("getAll");
-        return ResponseEntity.ok(deviceAdminService.getAll());
-    }
-
-    @GetMapping("/{device-id}")
-    public ResponseEntity<DeviceInfo> getById(@PathVariable("device-id") String deviceId) {
-        LOG.debug("getById {}", deviceId);
-        return ResponseEntity.of(deviceAdminService.getById(deviceId));
-    }
-
     @PostMapping("/query")
+    @PreAuthorize("hasAuthority('device-controller.data.read') and hasAuthority('device-controller.data.write')")
     public ResponseEntity<DeviceQueryResponse> query(@RequestBody DeviceQuery query) {
+        LOG.info("query {}", query.deviceId());
         return ResponseEntity.ok(deviceDataService.query(query));
     }
 
     @PostMapping("/download")
+    @PreAuthorize("hasAuthority('device-controller.data.read') and hasAuthority('device-controller.data.write')")
     public ResponseEntity<Resource> downloadQuery(@RequestBody DeviceQuery query) {
+        LOG.info("download {}", query.deviceId());
         DataStream dataStream = deviceDataService.download(query);
         InputStreamResource resource = new InputStreamResource(dataStream.is());
         return ResponseEntity.ok()

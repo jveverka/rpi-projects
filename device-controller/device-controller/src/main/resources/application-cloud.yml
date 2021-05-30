@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8090
   shutdown: graceful
 
 spring:
@@ -12,6 +12,14 @@ spring:
       password: ${MONGO_PASSWORD}
       port: ${MONGO_PORT}
       host: ${MONGO_HOST}
+
+app:
+  iam-client:
+    organization-id: ${IAM_ORG_ID}
+    project-id: ${IAM_PROJECT_ID}
+    base-url: ${IAM_URL}
+    polling-interval: 30
+    time-unit: SECONDS
 
 logging:
   level:

@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8090
   shutdown: graceful
 
 spring:
@@ -12,6 +12,14 @@ spring:
       password: secret
       port: 27017
       host: localhost
+
+app:
+  iam-client:
+    organization-id: device-controller
+    project-id: device-controller
+    base-url: http://127.0.0.1:8080
+    polling-interval: 30
+    time-unit: SECONDS
 
 logging:
   level:

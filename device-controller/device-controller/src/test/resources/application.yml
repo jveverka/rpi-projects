@@ -3,6 +3,14 @@ spring:
     mongodb:
       uri: uri
 
+app:
+  iam-client:
+    organization-id: device-controller
+    project-id: device-controller
+    base-url: http://127.0.0.1:8080
+    polling-interval: 30
+    time-unit: SECONDS
+
 logging:
   level:
     root: INFO

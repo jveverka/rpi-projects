@@ -2,6 +2,13 @@ version: '3.1'
 
 services:
 
+  iam-service:
+    image: jurajveverka/iam-service:2.5.5-RELEASE-amd64
+    restart: always
+    network_mode: 'host'
+    ports:
+      - 8080:8080
+
   mongo:
     image: mongo:4.4.4-bionic
     restart: always
@@ -20,7 +27,7 @@ services:
       dockerfile: Dockerfile
     network_mode: 'host'
     ports:
-      - 8080:8080
+      - 8090:8090
     depends_on:
       - mongo
     environment:
