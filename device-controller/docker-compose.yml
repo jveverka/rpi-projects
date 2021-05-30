@@ -25,12 +25,15 @@ services:
     build:
       context: ./device-controller
       dockerfile: Dockerfile
+      args:
+        - ARCH=${ARCH}
     network_mode: 'host'
     ports:
       - 8090:8090
     depends_on:
       - mongo
     environment:
+      SYSTEM_ID: dc-001
       MONGO_DATABASE: admin
       MONGO_USERNAME: root
       MONGO_PASSWORD: secret
@@ -38,3 +41,6 @@ services:
       MONGO_HOST: 127.0.0.1
       LOG_ROOT_LEVEL: INFO
       LOG_APP_LEVEL: DEBUG
+      IAM_URL: http://127.0.0.1:8080
+      IAM_ORG_ID: device-controller
+      IAM_PROJECT_ID: device-controller

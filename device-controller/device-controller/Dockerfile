@@ -1,4 +1,5 @@
-FROM adoptopenjdk/openjdk16:alpine-jre
+ARG ARCH=
+FROM ${ARCH}/adoptopenjdk:16-jre
 COPY build/libs/device-controller-1.0.0-SNAPSHOT.jar /device-controller.jar
 COPY device-controller-start.sh /device-controller-start.sh
 COPY src/main/resources/application.yml /application.yml

@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8090
   shutdown: graceful
 
 spring:
@@ -15,7 +15,7 @@ spring:
 
 app:
   system:
-    id: ${APP_CONFIG}
+    id: ${SYSTEM_ID}
   iam-client:
     organization-id: ${IAM_ORG_ID}
     project-id: ${IAM_PROJECT_ID}
