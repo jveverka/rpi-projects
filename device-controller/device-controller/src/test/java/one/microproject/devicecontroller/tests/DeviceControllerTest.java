@@ -1,6 +1,5 @@
 package one.microproject.devicecontroller.tests;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import one.microproject.clientsim.dto.DataRequest;
@@ -48,8 +47,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MongoDBContainer;
@@ -169,13 +166,29 @@ public class DeviceControllerTest {
 
     @Test
     @Order(10)
+    void getSystemInfoTest() throws IOException {
+        Request request = new Request.Builder()
+                .url(restTemplate.getRootUri() + "/api/system/info")
+                .get()
+                .build();
+        Response response = httpClient.newCall(request).execute();
+        assertEquals(HttpStatus.OK.value(), response.code());
+        one.microproject.devicecontroller.dto.SystemInfo systemInfo = objectMapper.readValue(response.body().string(), one.microproject.devicecontroller.dto.SystemInfo.class);
+        assertNotNull(systemInfo);
+        assertNotNull(systemInfo.id());
+        assertNotNull(systemInfo.version());
+        assertNotNull(systemInfo.name());
+    }
+
+    @Test
+    @Order(11)
     void checkDevices() throws IOException {
         DeviceInfo[] devices = getDevices();
         assertEquals(0, devices.length);
     }
 
     @Test
-    @Order(11)
+    @Order(12)
     void addDevices() throws IOException {
         DeviceCredentials credentials = new DeviceCredentials("admin", "secret");
         DeviceCreateRequest request = new DeviceCreateRequest("device-01", "device-sim", "http://host:8080/data", credentials, "group-001");
@@ -187,14 +200,14 @@ public class DeviceControllerTest {
     }
 
     @Test
-    @Order(12)
+    @Order(13)
     void checkDevicesAgain() throws IOException {
         DeviceInfo[] devices = getDevices();
         assertEquals(2, devices.length);
     }
 
     @Test
-    @Order(13)
+    @Order(14)
     void testQueryDevice() throws IOException {
         DeviceQuery deviceQuery = new DeviceQuery("q-01", "device-01", "system-info", null);
         DeviceQueryResponse response = queryDevice(deviceQuery);
@@ -216,7 +229,7 @@ public class DeviceControllerTest {
     }
 
     @Test
-    @Order(14)
+    @Order(15)
     void deleteDevice() throws IOException {
         assertEquals(HttpStatus.OK.value(), deleteDevice("device-01"));
         DeviceInfo[] devices = getDevices();
@@ -224,7 +237,7 @@ public class DeviceControllerTest {
     }
 
     @Test
-    @Order(15)
+    @Order(16)
     void deleteLastDevice() throws IOException {
         assertEquals(HttpStatus.OK.value(), deleteDevice("device-02"));
         DeviceInfo[] devices = getDevices();
