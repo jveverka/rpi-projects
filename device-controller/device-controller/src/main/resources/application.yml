@@ -14,6 +14,8 @@ spring:
       host: localhost
 
 app:
+  system:
+    id: device-controller-001
   iam-client:
     organization-id: device-controller
     project-id: device-controller

@@ -14,6 +14,8 @@ spring:
       host: ${MONGO_HOST}
 
 app:
+  system:
+    id: ${APP_CONFIG}
   iam-client:
     organization-id: ${IAM_ORG_ID}
     project-id: ${IAM_PROJECT_ID}

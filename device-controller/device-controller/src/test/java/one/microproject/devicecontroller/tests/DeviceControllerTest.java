@@ -178,6 +178,7 @@ public class DeviceControllerTest {
         assertNotNull(systemInfo.id());
         assertNotNull(systemInfo.version());
         assertNotNull(systemInfo.name());
+        assertEquals("device-controller-001", systemInfo.id());
     }
 
     @Test
