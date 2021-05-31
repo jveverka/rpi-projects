@@ -1,6 +1,8 @@
 server:
   port: 8090
   shutdown: graceful
+  servlet:
+    context-path: ${CONTEXT_PATH}
 
 spring:
   lifecycle:
@@ -19,7 +21,7 @@ app:
   iam-client:
     organization-id: ${IAM_ORG_ID}
     project-id: ${IAM_PROJECT_ID}
-    base-url: ${IAM_URL}
+    base-url: ${IAM_BASE_URL}
     polling-interval: 30
     time-unit: SECONDS
 
