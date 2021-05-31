@@ -23,8 +23,75 @@ docker-compose down -v --rmi all --remove-orphans
 
 ## Setup IAM-Service 
 1. Get global admin tokens
+   ```
+   curl --location --request POST 'http://localhost:8080/services/oauth2/iam-admins/iam-admins/token?grant_type=password&username=admin&password=secret&scope=&client_id=admin-client&client_secret=top-secret' \
+   --header 'Content-Type: application/x-www-form-urlencoded'
+   ```
 2. Create device-controller project
+   ```
+   curl --location --request POST 'http://localhost:8080/services/admin/organization/setup' \
+   --header 'Authorization: Bearer <ACCESS_TOKEN>' \
+   --header 'Content-Type: application/json' \
+   --data-raw '{
+        "organizationId": "device-controller",
+        "organizationName": "Device Controller",
+        "projectId": "device-controller",
+        "projectName": "Device Controller",
+        "adminClientId": "acl-001",
+        "adminClientSecret": "client-secret",
+        "adminUserId": "admin",
+        "adminUserPassword": "top-secret",
+        "adminUserEmail": "admin@project-001.com",
+        "projectAudience": [],
+        "redirectURL": "http://localhost:80",
+        "adminUserProperties": {
+        "properties": {}
+        }
+   }'
+   ```
 3. Add device-admin permissions and role
+   ```
+   curl --location --request POST 'http://localhost:8080/services/oauth2/device-controller/device-controller/token?grant_type=password&username=admin&password=top-secret&scope=&client_id=acl-001&client_secret=client-secret' \
+   --header 'Content-Type: application/x-www-form-urlencoded'
+   
+   curl --location --request POST 'http://localhost:8080/services/management/device-controller/device-controller/roles' \
+   --header 'Authorization: Bearer <ACCESS_TOKEN>' \
+   --header 'Content-Type: application/json' \
+   --data-raw '{
+        "id": "device-admin",
+        "name": "Device Admin",
+        "permissions": [
+            {
+                "service": "device-controller",
+                "resource": "devices",
+                "action": "read"
+            },
+            {
+                "service": "device-controller",
+                "resource": "devices",
+                "action": "write"
+            },
+            {
+                "service": "device-controller",
+                "resource": "data",
+                "action": "read"
+            },
+            {
+                "service": "device-controller",
+                "resource": "data",
+                "action": "write"
+            }
+        ]
+   }'
+   
+   curl --location --request PUT 'http://localhost:8080/services/management/device-controller/device-controller/users/admin/roles/device-admin' \
+   --header 'Authorization: Bearer <ACCESS_TOKEN>'
+   ```
+4. Get device admin tokens
+   ```
+   curl --location --request POST 'http://localhost:8080/services/oauth2/device-controller/device-controller/token?grant_type=password&username=admin&password=top-secret&scope=&client_id=acl-001&client_secret=client-secret' \
+   --header 'Content-Type: application/x-www-form-urlencoded'
+   ```
 
 ## Build Dockers for x86_64 and ARM64 
 ```
