@@ -165,6 +165,17 @@ public class DeviceControllerTest {
     }
 
     @Test
+    @Order(4)
+    void testActuatorEndpoint() throws IOException {
+        Request request = new Request.Builder()
+                .url(restTemplate.getRootUri() + "/actuator")
+                .get()
+                .build();
+        Response response = httpClient.newCall(request).execute();
+        assertEquals(HttpStatus.OK.value(), response.code());
+    }
+
+    @Test
     @Order(10)
     void getSystemInfoTest() throws IOException {
         Request request = new Request.Builder()

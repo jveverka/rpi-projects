@@ -13,10 +13,12 @@ repositories {
 }
 
 dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 
     implementation 'org.bouncycastle:bcpg-jdk15on:1.68'
     implementation 'org.bouncycastle:bcpkix-jdk15on:1.68'
