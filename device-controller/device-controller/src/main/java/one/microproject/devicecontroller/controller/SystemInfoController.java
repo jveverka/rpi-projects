@@ -19,7 +19,7 @@ public class SystemInfoController {
 
     @GetMapping
     ResponseEntity<SystemInfo> getSystemInfo() {
-        return ResponseEntity.ok(new SystemInfo(appConfig.getId(), "1.0.0", "Device Controller"));
+        return ResponseEntity.ok(new SystemInfo(appConfig.getId(), "1.1.1", "Device Controller"));
     }
 
 }
