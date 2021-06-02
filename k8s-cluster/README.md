@@ -96,3 +96,29 @@ Running dockerized backend services on Arm64 RPi4 hardware.
   kubectl get --raw='/readyz?verbose'
   kubectl describe ingress
   ```
+  
+### 7. k8s dashboard (Optional)
+* Command below installs [web ui](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/) for k8s cluster.
+  ```
+  kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.2.0/aio/deploy/recommended.yaml
+  ```
+* Create sample user & get access token as described [here](https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md)
+  or use [kubernetes-dashboard-access.yml](kubernetes-dashboard-access.yml)
+  ```
+  kubectl apply -f kubernetes-dashboard-access.yml
+  kubectl -n kubernetes-dashboard get secret $(kubectl -n kubernetes-dashboard get sa/admin-user -o jsonpath="{.secrets[0].name}") -o go-template="{{.data.token | base64decode}}"
+  ```
+* Create ssh tunnel to k8s master node and activate the proxy
+  ```
+  ssh -L localhost:8001:127.0.0.1:8001 <user>@<master_public_IP>  
+  kubectl proxy
+  ```
+* Access the UI
+  ```
+  http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/#/login
+  ```
+* Undeploy kubernetes dashboard
+  ```
+  kubectl delete -f kubernetes-dashboard-access.yml
+  kubectl delete -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.2.0/aio/deploy/recommended.yaml  
+  ```
