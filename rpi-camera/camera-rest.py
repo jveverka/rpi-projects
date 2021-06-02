@@ -62,6 +62,11 @@ def capture():
     file_name='capture-image.jpg'
     default_resolution = '5M'
     args = request.args
+    rotation = 0
+
+    if 'rotation' in args:
+       rotation = int(args['rotation'])
+       print('rotation=' + str(rotation))
 
     if 'shutter-speed' in args:
        shutter_speed = float(args['shutter-speed'])
