@@ -47,9 +47,10 @@ This is simple REST service daemon, which allows access camera on Raspberry PI d
   
   |  parameter    | type   | default | description                             |
   |---------------|--------|---------|-----------------------------------------|
-  | shutter-speed | int    | 0       | float, shutter speed in milliseconds    |
+  | shutter-speed | float  | 0       | float, shutter speed in milliseconds    |
   | format        | string | "jpeg"  | enum, "jpeg", "png"                     | 
   | resolution    | string | "5M"    | enum, "1M", "2M", "5M", "8M" megapixels | 
+  | rotation      | int    | 0       | float, degrees in range 0 - 360         | 
 
 ### Hardware Assembly
 ![image-001](docs/image-001.jpg)
