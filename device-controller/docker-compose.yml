@@ -2,6 +2,15 @@ version: '3.1'
 
 services:
 
+  nginx-proxy:
+    image: nginx-proxy
+    build: ./nginx-docker
+    restart: always
+    network_mode: "host"
+    container_name: nginx-proxy
+    ports:
+      - 8070:8070
+
   iam-service:
     image: jurajveverka/iam-service:2.5.5-RELEASE-amd64
     restart: always

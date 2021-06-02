@@ -1,6 +1,8 @@
 server:
   port: 8090
   shutdown: graceful
+  servlet:
+    context-path: /dc
 
 spring:
   lifecycle:
