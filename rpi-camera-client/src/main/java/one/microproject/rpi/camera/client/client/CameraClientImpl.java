@@ -1,5 +1,6 @@
 package one.microproject.rpi.camera.client.client;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -7,10 +8,10 @@ import okhttp3.Request;
 import okhttp3.Response;
 import one.microproject.rpi.camera.client.CameraClient;
 import one.microproject.rpi.camera.client.ClientException;
+import one.microproject.rpi.camera.client.dto.CaptureRequest;
 import one.microproject.rpi.camera.client.dto.ImageCapture;
-import one.microproject.rpi.camera.client.dto.ImageFormat;
-import one.microproject.rpi.camera.client.dto.Resolution;
-import one.microproject.rpi.camera.client.dto.SystemInfo;
+import one.microproject.rpi.camera.client.dto.CameraInfo;
+import one.microproject.rpi.device.dto.SystemInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +40,7 @@ public class CameraClientImpl implements CameraClient {
     }
 
     @Override
-    public SystemInfo getSystemInfo() {
+    public SystemInfo<CameraInfo> getSystemInfo() {
         try {
             Request request = new Request.Builder()
                     .url(baseURL + "/system/info")
@@ -48,7 +49,7 @@ public class CameraClientImpl implements CameraClient {
                     .build();
             Response response = client.newCall(request).execute();
             if (response.code() == 200) {
-                return mapper.readValue(response.body().string(), SystemInfo.class);
+                return mapper.readValue(response.body().string(), new TypeReference<SystemInfo<CameraInfo>>(){});
             }
             LOG.warn("Http error: {}", response.code());
             throw new ClientException(ERROR_MESSAGE + response.code());
@@ -59,47 +60,24 @@ public class CameraClientImpl implements CameraClient {
 
     @Override
     public ImageCapture captureImage() {
-        return captureImageAction(null, null, null);
+        return captureImage(CaptureRequest.getDefault());
     }
 
     @Override
-    public ImageCapture captureImage(Float shutterSpeed) {
-        return captureImageAction(shutterSpeed, null, null);
-    }
-
-    @Override
-    public ImageCapture captureImage(Float shutterSpeed, ImageFormat imageFormat) {
-        return captureImageAction(shutterSpeed, imageFormat, null);
-    }
-
-    @Override
-    public ImageCapture captureImage(Float shutterSpeed, ImageFormat imageFormat, Resolution resolution) {
-        return captureImageAction(shutterSpeed, imageFormat, resolution);
-    }
-
-    @Override
-    public ImageCapture captureImage(Float shutterSpeed, Resolution resolution) {
-        return captureImageAction(shutterSpeed, null, resolution);
-    }
-
-    public static String createBasicAuthorizationFromCredentials(String clientId, String clientSecret) {
-        String authorization = clientId + ":" + clientSecret;
-        byte[] encodedBytes = Base64.getEncoder().encode(authorization.getBytes());
-        String encodedString = new String(encodedBytes);
-        return "Basic " + encodedString;
-    }
-
-    private ImageCapture captureImageAction(Float shutterSpeed, ImageFormat imageFormat, Resolution resolution) {
+    public ImageCapture captureImage(CaptureRequest captureRequest) {
         try {
             HttpUrl.Builder httpUrlBuilder = HttpUrl.parse(baseURL + "/system/capture").newBuilder();
-            if (shutterSpeed != null) {
-                httpUrlBuilder.addQueryParameter("shutter-speed", shutterSpeed.toString());
+            if (captureRequest.getShutterSpeed() != null) {
+                httpUrlBuilder.addQueryParameter("shutter-speed", captureRequest.getShutterSpeed().toString());
             }
-            if (imageFormat != null) {
-                httpUrlBuilder.addQueryParameter("format", imageFormat.getFormat());
+            if (captureRequest.getImageFormat() != null) {
+                httpUrlBuilder.addQueryParameter("format", captureRequest.getImageFormat().getFormat());
             }
-            if (resolution != null) {
-                httpUrlBuilder.addQueryParameter("resolution", resolution.getResolution());
+            if (captureRequest.getResolution() != null) {
+                httpUrlBuilder.addQueryParameter("resolution", captureRequest.getResolution().getResolution());
+            }
+            if (captureRequest.getRotation() != null) {
+                httpUrlBuilder.addQueryParameter("rotation", captureRequest.getRotation().getDegree().toString());
             }
             Request request = new Request.Builder()
                     .url(httpUrlBuilder.build())
@@ -119,6 +97,13 @@ public class CameraClientImpl implements CameraClient {
         } catch (IOException e) {
             throw new ClientException(e);
         }
+    }
+
+    public static String createBasicAuthorizationFromCredentials(String clientId, String clientSecret) {
+        String authorization = clientId + ":" + clientSecret;
+        byte[] encodedBytes = Base64.getEncoder().encode(authorization.getBytes());
+        String encodedString = new String(encodedBytes);
+        return "Basic " + encodedString;
     }
 
     public static String getFileNameFromHeader(String contentDisposition, String mimeType) {

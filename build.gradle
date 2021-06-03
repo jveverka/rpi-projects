@@ -9,10 +9,19 @@ subprojects {
 project(':rpi-drivers') {
 }
 
+project(':rpi-device') {
+}
+
 project(':rpi-powercontroller-client') {
+    dependencies {
+        implementation (project(':rpi-device'))
+    }
 }
 
 project(':rpi-camera-client') {
+    dependencies {
+        implementation (project(':rpi-device'))
+    }
 }
 
 project(':rpi-powercontroller') {

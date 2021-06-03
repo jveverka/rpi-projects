@@ -1,61 +1,37 @@
 package one.microproject.rpi.camera.client;
 
+import one.microproject.rpi.camera.client.dto.CaptureRequest;
 import one.microproject.rpi.camera.client.dto.ImageCapture;
-import one.microproject.rpi.camera.client.dto.ImageFormat;
-import one.microproject.rpi.camera.client.dto.Resolution;
-import one.microproject.rpi.camera.client.dto.SystemInfo;
+import one.microproject.rpi.camera.client.dto.CameraInfo;
+import one.microproject.rpi.device.RPiDevice;
+import one.microproject.rpi.device.dto.SystemInfo;
 
 
 /**
  * Read data from RPi remote camera.
  * https://github.com/jveverka/rpi-projects/tree/master/rpi-camera
  */
-public interface CameraClient {
+public interface CameraClient extends RPiDevice<CameraInfo> {
 
     /**
-     * Get {@link SystemInfo} for this RPi Power Controller.
+     * Get {@link SystemInfo} for this RPi Camera client.
      * Contains information like unique ID of this device, type, version and description.
-     * @return {@link SystemInfo}
+     * @return {@link CameraInfo}
      */
-    SystemInfo getSystemInfo();
+    SystemInfo<CameraInfo> getSystemInfo();
 
     /**
-     * Capture camera image in JPEG format.
+     * Capture camera image in JPEG format with default parameters.
      * @return JPEG image data as {@link ImageCapture}.
      */
     ImageCapture captureImage();
 
-    /**
-     * Capture camera image in JPEG format.
-     * @param shutterSpeed in milliseconds, 0=automatic.
-     * @return JPEG image data as {@link ImageCapture}.
-     */
-    ImageCapture captureImage(Float shutterSpeed);
 
     /**
      * Capture camera image in selected format.
-     * @param shutterSpeed in milliseconds, 0=automatic.
-     * @param imageFormat selected image format.
+     * @param request image capture parameters.
      * @return image data as {@link ImageCapture}.
      */
-    ImageCapture captureImage(Float shutterSpeed, ImageFormat imageFormat);
-
-
-    /**
-     * Capture camera image in selected format.
-     * @param shutterSpeed in milliseconds, 0=automatic.
-     * @param imageFormat selected image format.
-     * @param resolution image resolution in megapixels: 1M, 2M, 5M, 8M.
-     * @return image data as {@link ImageCapture}.
-     */
-    ImageCapture captureImage(Float shutterSpeed, ImageFormat imageFormat, Resolution resolution);
-
-    /**
-     * Capture camera image in JPEG format.
-     * @param shutterSpeed in milliseconds, 0=automatic.
-     * @param resolution image resolution in megapixels: 1M, 2M, 5M, 8M.
-     * @return JPEG image data as {@link ImageCapture}.
-     */
-    ImageCapture captureImage(Float shutterSpeed, Resolution resolution);
+    ImageCapture captureImage(CaptureRequest request);
 
 }

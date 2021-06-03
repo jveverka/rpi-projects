@@ -1,4 +1,5 @@
 include "rpi-drivers"
+include "rpi-device"
 include "rpi-powercontroller-client"
 include "rpi-powercontroller"
 include "rpi-camera-client"

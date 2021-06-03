@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import time
 import picamera
 import json
 import sys
@@ -15,6 +16,7 @@ app = Flask(__name__)
 auth = HTTPBasicAuth()
 cf = open(sys.argv[1])
 config = json.load(cf)
+started = int(time.time())
 
 camera_resolutions = {
   "8M" : {
@@ -51,7 +53,8 @@ def verify_password(username, password):
 @app.route('/system/info', methods=["GET"])
 @auth.login_required
 def getVersion():
-    version = { "id": config['id'], "type": "camera-rest", "version": "1.3.0", "name": config['name'], "camera-revision": camera.revision }
+    uptime = int(time.time()) - started
+    version = { "id": config['id'], "type": "camera-rest", "version": "1.4.0", "name": config['name'], "timestamp": int(time.time()), "uptime": uptime, "properties": { "revision": camera.revision } }
     return jsonify(version)
 
 @app.route('/system/capture', methods=["GET"])
