@@ -1,22 +1,22 @@
 package one.microproject.devicecontroller.service.devices;
 
-import one.microproject.clientsim.ClientSim;
 import one.microproject.devicecontroller.dto.ClientAdapterWrapper;
 import one.microproject.devicecontroller.dto.DeviceStatus;
 import one.microproject.devicecontroller.dto.DeviceType;
+import one.microproject.rpi.device.sim.DeviceSim;
 
-public class ClientAdapterSim implements ClientAdapterWrapper<ClientSim> {
+public class ClientAdapterSim implements ClientAdapterWrapper<DeviceSim> {
 
-    private final ClientSim clientSim;
+    private final DeviceSim clientSim;
     private DeviceStatus status;
 
-    public ClientAdapterSim(ClientSim clientSim) {
+    public ClientAdapterSim(DeviceSim clientSim) {
         this.clientSim = clientSim;
         this.status = DeviceStatus.ONLINE;
     }
 
     @Override
-    public ClientSim getClient() {
+    public DeviceSim getClient() {
         return clientSim;
     }
 

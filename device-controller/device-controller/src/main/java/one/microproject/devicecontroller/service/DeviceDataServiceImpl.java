@@ -3,10 +3,6 @@ package one.microproject.devicecontroller.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import one.microproject.clientsim.ClientSim;
-import one.microproject.clientsim.dto.DataRequest;
-import one.microproject.clientsim.dto.DataResponse;
-import one.microproject.clientsim.dto.SystemInfo;
 import one.microproject.devicecontroller.dto.ArrayWrapper;
 import one.microproject.devicecontroller.dto.ClientAdapterWrapper;
 import one.microproject.devicecontroller.dto.DataStream;
@@ -17,12 +13,15 @@ import one.microproject.devicecontroller.dto.DeviceType;
 import one.microproject.devicecontroller.dto.ResponseStatus;
 import one.microproject.devicecontroller.dto.ResultId;
 import one.microproject.rpi.camera.client.CameraClient;
+import one.microproject.rpi.camera.client.dto.CameraInfo;
 import one.microproject.rpi.camera.client.dto.ImageCapture;
+import one.microproject.rpi.device.dto.SystemInfo;
+import one.microproject.rpi.device.sim.DeviceSim;
+import one.microproject.rpi.device.sim.dto.DataRequest;
+import one.microproject.rpi.device.sim.dto.DataResponse;
+import one.microproject.rpi.device.sim.dto.SimInfo;
 import one.microproject.rpi.powercontroller.PowerControllerClient;
-import one.microproject.rpi.powercontroller.dto.JobId;
-import one.microproject.rpi.powercontroller.dto.Measurements;
-import one.microproject.rpi.powercontroller.dto.SystemState;
-import one.microproject.rpi.powercontroller.dto.TaskId;
+import one.microproject.rpi.powercontroller.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -78,15 +77,15 @@ public class DeviceDataServiceImpl implements DeviceDataService {
     private DeviceQueryResponse getDeviceResponse(ClientAdapterWrapper<?> clientAdapterWrapper, DeviceQuery query) throws JsonProcessingException {
         DeviceQueryResponse response = new DeviceQueryResponse(query.id(), query.deviceId(), query.queryType(), ResponseStatus.ERROR, null);
         if (DeviceType.DEVICE_SIM.equals(clientAdapterWrapper.getType())) {
-            ClientSim clientSim = (ClientSim) clientAdapterWrapper.getClient();
+            DeviceSim deviceSim = (DeviceSim) clientAdapterWrapper.getClient();
             try {
                 if ("system-info".equals(query.queryType())) {
-                    SystemInfo systemInfo = clientSim.getSystemInfo();
+                    SystemInfo<SimInfo> systemInfo = deviceSim.getSystemInfo();
                     ObjectNode objectNode = objectMapper.valueToTree(systemInfo);
                     response = new DeviceQueryResponse(query.id(), query.deviceId(), query.queryType(), ResponseStatus.OK, objectNode);
                 } else if ("data".equals(query.queryType())) {
                     DataRequest dataRequest = objectMapper.treeToValue(query.payload(), DataRequest.class);
-                    DataResponse dataResponse = clientSim.getData(dataRequest);
+                    DataResponse dataResponse = deviceSim.getData(dataRequest);
                     ObjectNode objectNode = objectMapper.valueToTree(dataResponse);
                     response = new DeviceQueryResponse(query.id(), query.deviceId(), query.queryType(), ResponseStatus.OK, objectNode);
                 } else {
@@ -101,7 +100,7 @@ public class DeviceDataServiceImpl implements DeviceDataService {
             PowerControllerClient powerControllerClient = (PowerControllerClient) clientAdapterWrapper.getClient();
             try {
                 if ("system-info".equals(query.queryType())) {
-                    one.microproject.rpi.powercontroller.dto.SystemInfo systemInfo = powerControllerClient.getSystemInfo();
+                    SystemInfo<ControllerInfo> systemInfo = powerControllerClient.getSystemInfo();
                     ObjectNode objectNode = objectMapper.valueToTree(systemInfo);
                     response = new DeviceQueryResponse(query.id(), query.deviceId(), query.queryType(), ResponseStatus.OK, objectNode);
                 } else if ("measurements".equals(query.queryType())) {
@@ -144,7 +143,7 @@ public class DeviceDataServiceImpl implements DeviceDataService {
             try {
                 CameraClient cameraClient = (CameraClient) clientAdapterWrapper.getClient();
                 if ("system-info".equals(query.queryType())) {
-                    one.microproject.rpi.camera.client.dto.SystemInfo systemInfo = cameraClient.getSystemInfo();
+                    SystemInfo<CameraInfo> systemInfo = cameraClient.getSystemInfo();
                     ObjectNode objectNode = objectMapper.valueToTree(systemInfo);
                     response = new DeviceQueryResponse(query.id(), query.deviceId(), query.queryType(), ResponseStatus.OK, objectNode);
                 } else {
@@ -162,10 +161,10 @@ public class DeviceDataServiceImpl implements DeviceDataService {
 
     private DataStream getDeviceData(ClientAdapterWrapper<?> clientAdapterWrapper, DeviceQuery query) throws JsonProcessingException {
         if (DeviceType.DEVICE_SIM.equals(clientAdapterWrapper.getType())) {
-            ClientSim clientSim = (ClientSim) clientAdapterWrapper.getClient();
+            DeviceSim deviceSim = (DeviceSim) clientAdapterWrapper.getClient();
             if ("download".equals(query.queryType())) {
                 DataRequest dataRequest = objectMapper.treeToValue(query.payload(), DataRequest.class);
-                return new DataStream(clientSim.download(dataRequest), "data.file", "text/plain");
+                return new DataStream(deviceSim.download(dataRequest), "data.file", "text/plain");
             } else {
                 throw new UnsupportedOperationException("Unsupported query type=" + query.queryType() + "  for device type=" + clientAdapterWrapper.getType());
             }

@@ -1,8 +1,6 @@
 package one.microproject.devicecontroller.service;
 
 import okhttp3.OkHttpClient;
-import one.microproject.clientsim.ClientSim;
-import one.microproject.clientsim.ClientSimBuilder;
 import one.microproject.devicecontroller.dto.ClientAdapterWrapper;
 import one.microproject.devicecontroller.dto.DeviceType;
 import one.microproject.devicecontroller.model.DeviceData;
@@ -11,6 +9,8 @@ import one.microproject.devicecontroller.service.devices.ClientAdapterPowerContr
 import one.microproject.devicecontroller.service.devices.ClientAdapterSim;
 import one.microproject.rpi.camera.client.CameraClient;
 import one.microproject.rpi.camera.client.CameraClientBuilder;
+import one.microproject.rpi.device.sim.DeviceSim;
+import one.microproject.rpi.device.sim.DeviceSimBuilder;
 import one.microproject.rpi.powercontroller.PowerControllerClient;
 import one.microproject.rpi.powercontroller.PowerControllerClientBuilder;
 import org.slf4j.Logger;
@@ -40,10 +40,10 @@ public class ClientAdapterFactoryImpl implements ClientAdapterFactory {
         if (!clients.containsKey(deviceData.getId())) {
             LOG.debug("initializing client deviceId={} type={}", deviceData.getId(), deviceData.getType());
             if (DeviceType.DEVICE_SIM.getType().equals(deviceData.getType())) {
-                ClientSim clientSim = ClientSimBuilder.builder()
+                DeviceSim deviceSim = DeviceSimBuilder.builder()
                         .withDeviceId(deviceData.getId())
                         .build();
-                ClientAdapterSim clientAdapterWrapper = new ClientAdapterSim(clientSim);
+                ClientAdapterSim clientAdapterWrapper = new ClientAdapterSim(deviceSim);
                 clients.put(deviceData.getId(), clientAdapterWrapper);
             } else if (DeviceType.RPI_POWER_CONTROLLER.getType().equals(deviceData.getType())) {
                 PowerControllerClient powerControllerClient = PowerControllerClientBuilder.builder()

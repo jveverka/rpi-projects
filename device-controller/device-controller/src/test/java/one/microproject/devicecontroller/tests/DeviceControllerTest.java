@@ -1,10 +1,9 @@
 package one.microproject.devicecontroller.tests;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import one.microproject.clientsim.dto.DataRequest;
-import one.microproject.clientsim.dto.DataResponse;
-import one.microproject.clientsim.dto.SystemInfo;
 import one.microproject.devicecontroller.config.IAMClientConfiguration;
 import one.microproject.devicecontroller.config.security.IAMSecurityFilterConfiguration;
 import one.microproject.devicecontroller.dto.DeviceCreateRequest;
@@ -31,6 +30,10 @@ import one.microproject.iamservice.serviceclient.IAMServiceManagerClient;
 import one.microproject.iamservice.serviceclient.IAMServiceProjectManagerClient;
 import one.microproject.iamservice.serviceclient.IAMServiceUserManagerClient;
 import one.microproject.iamservice.serviceclient.impl.AuthenticationException;
+import one.microproject.rpi.device.dto.SystemInfo;
+import one.microproject.rpi.device.sim.dto.DataRequest;
+import one.microproject.rpi.device.sim.dto.DataResponse;
+import one.microproject.rpi.device.sim.dto.SimInfo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -66,9 +69,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Testcontainers
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -184,12 +185,13 @@ public class DeviceControllerTest {
                 .build();
         Response response = httpClient.newCall(request).execute();
         assertEquals(HttpStatus.OK.value(), response.code());
-        one.microproject.devicecontroller.dto.SystemInfo systemInfo = objectMapper.readValue(response.body().string(), one.microproject.devicecontroller.dto.SystemInfo.class);
+        SystemInfo<Void> systemInfo = objectMapper.readValue(response.body().string(), new TypeReference<SystemInfo<Void>>(){});
         assertNotNull(systemInfo);
-        assertNotNull(systemInfo.id());
-        assertNotNull(systemInfo.version());
-        assertNotNull(systemInfo.name());
-        assertEquals("device-controller-001", systemInfo.id());
+        assertNotNull(systemInfo.getId());
+        assertNotNull(systemInfo.getVersion());
+        assertNotNull(systemInfo.getName());
+        assertEquals("device-controller-001", systemInfo.getId());
+        assertNull(systemInfo.getProperties());
     }
 
     @Test
@@ -224,11 +226,13 @@ public class DeviceControllerTest {
         DeviceQuery deviceQuery = new DeviceQuery("q-01", "device-01", "system-info", null);
         DeviceQueryResponse response = queryDevice(deviceQuery);
         assertNotNull(response);
-        SystemInfo systemInfo = objectMapper.treeToValue(response.payload(), SystemInfo.class);
+
+        SystemInfo<SimInfo> systemInfo = objectMapper.readValue(response.payload().traverse(), new TypeReference<>(){});
         assertNotNull(systemInfo);
-        assertNotNull(systemInfo.id());
-        assertNotNull(systemInfo.type());
-        assertNotNull(systemInfo.version());
+        assertNotNull(systemInfo.getId());
+        assertNotNull(systemInfo.getType());
+        assertNotNull(systemInfo.getVersion());
+        assertEquals("OK", systemInfo.getProperties().getStatus());
 
         ObjectNode objectNode = objectMapper.valueToTree(new DataRequest("hi"));
         deviceQuery = new DeviceQuery("q-01", "device-01", "data", objectNode);
@@ -236,8 +240,8 @@ public class DeviceControllerTest {
         assertNotNull(response);
         DataResponse dataResponse = objectMapper.treeToValue(response.payload(), DataResponse.class);
         assertNotNull(dataResponse);
-        assertNotNull(dataResponse.message());
-        assertEquals("hi", dataResponse.message());
+        assertNotNull(dataResponse.getMessage());
+        assertEquals("hi", dataResponse.getMessage());
     }
 
     @Test

@@ -1,6 +1,3 @@
 
-include "device-client-sim"
-project(":device-client-sim").projectDir = new File("device-client-sim")
-
 include "device-controller"
 project(":device-controller").projectDir = new File("device-controller")
