@@ -1,7 +1,8 @@
 package one.microproject.rpi.powercontroller.services.impl;
 
+import one.microproject.rpi.device.dto.SystemInfo;
 import one.microproject.rpi.powercontroller.config.Configuration;
-import one.microproject.rpi.powercontroller.dto.SystemInfo;
+import one.microproject.rpi.powercontroller.dto.ControllerInfo;
 import one.microproject.rpi.powercontroller.services.SystemInfoService;
 
 import java.util.Date;
@@ -15,11 +16,12 @@ public class SystemInfoServiceImpl implements SystemInfoService {
     }
 
     @Override
-    public SystemInfo getSystemInfo() {
-        long uptime = new Date().getTime() - configuration.getStarted().getTime();
-        return new SystemInfo(configuration.getId(), "power-controller",
-                configuration.getName(), "1.0.0", configuration.isHardware(), configuration.getStarted(), uptime,
-                ServiceUtils.calculateUptimeDays(uptime));
+    public SystemInfo<ControllerInfo> getSystemInfo() {
+        long timeStamp = new Date().getTime();
+        long uptime = timeStamp - configuration.getStarted().getTime();
+        ControllerInfo info = new ControllerInfo(configuration.isHardware(), configuration.getStarted(), ServiceUtils.calculateUptimeDays(uptime));
+        return new SystemInfo<>(configuration.getId(), "power-controller",
+                configuration.getName(), "1.4.0", timeStamp,  uptime, info);
     }
 
 }

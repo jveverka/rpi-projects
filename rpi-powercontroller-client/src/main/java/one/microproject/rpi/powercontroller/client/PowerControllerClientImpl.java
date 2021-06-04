@@ -7,13 +7,14 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import one.microproject.rpi.device.dto.SystemInfo;
 import one.microproject.rpi.powercontroller.ClientException;
 import one.microproject.rpi.powercontroller.PowerControllerClient;
 import one.microproject.rpi.powercontroller.dto.JobId;
 import one.microproject.rpi.powercontroller.dto.JobInfo;
 import one.microproject.rpi.powercontroller.dto.Measurements;
 import one.microproject.rpi.powercontroller.dto.SetPortRequest;
-import one.microproject.rpi.powercontroller.dto.SystemInfo;
+import one.microproject.rpi.powercontroller.dto.ControllerInfo;
 import one.microproject.rpi.powercontroller.dto.SystemState;
 import one.microproject.rpi.powercontroller.dto.TaskFilter;
 import one.microproject.rpi.powercontroller.dto.TaskId;
@@ -50,7 +51,7 @@ public class PowerControllerClientImpl implements PowerControllerClient {
     }
 
     @Override
-    public SystemInfo getSystemInfo() {
+    public SystemInfo<ControllerInfo> getSystemInfo() {
         try {
             Request request = new Request.Builder()
                     .url(baseURL + "/system/info")
@@ -59,7 +60,7 @@ public class PowerControllerClientImpl implements PowerControllerClient {
                     .build();
             Response response = client.newCall(request).execute();
             if (response.code() == 200) {
-                return mapper.readValue(response.body().string(), SystemInfo.class);
+                return mapper.readValue(response.body().string(), new TypeReference<SystemInfo<ControllerInfo>>(){});
             }
             throw new ClientException(ERROR_MESSAGE + response.code());
         } catch (IOException e) {

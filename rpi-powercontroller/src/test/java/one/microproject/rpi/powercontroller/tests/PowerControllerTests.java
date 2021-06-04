@@ -1,6 +1,7 @@
 package one.microproject.rpi.powercontroller.tests;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import one.microproject.rpi.device.dto.SystemInfo;
 import one.microproject.rpi.powercontroller.ClientException;
 import one.microproject.rpi.powercontroller.PowerControllerApp;
 import one.microproject.rpi.powercontroller.PowerControllerClient;
@@ -9,7 +10,7 @@ import one.microproject.rpi.powercontroller.config.Configuration;
 import one.microproject.rpi.powercontroller.dto.JobId;
 import one.microproject.rpi.powercontroller.dto.JobInfo;
 import one.microproject.rpi.powercontroller.dto.Measurements;
-import one.microproject.rpi.powercontroller.dto.SystemInfo;
+import one.microproject.rpi.powercontroller.dto.ControllerInfo;
 import one.microproject.rpi.powercontroller.dto.SystemState;
 import one.microproject.rpi.powercontroller.dto.TaskFilter;
 import one.microproject.rpi.powercontroller.dto.TaskId;
@@ -88,15 +89,16 @@ class PowerControllerTests {
     @Test
     @Order(1)
     void testSystemInfo() {
-        SystemInfo systemInfo = powerControllerClient.getSystemInfo();
+        SystemInfo<ControllerInfo> systemInfo = powerControllerClient.getSystemInfo();
         assertNotNull(systemInfo);
         assertEquals(configuration.getId(), systemInfo.getId());
         assertNotNull(systemInfo.getVersion());
         assertNotNull(systemInfo.getName());
         assertNotNull(systemInfo.getType());
-        assertNotNull(systemInfo.getStarted());
+        assertNotNull(systemInfo.getProperties().getStarted());
         assertTrue(systemInfo.getUptime() > 0);
-        assertNotNull(systemInfo.getUptimeDays());
+        assertTrue(systemInfo.getTimestamp() > 0);
+        assertNotNull(systemInfo.getProperties().getUptimeDays());
     }
 
     @Test

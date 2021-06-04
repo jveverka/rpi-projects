@@ -1,9 +1,11 @@
 package one.microproject.rpi.powercontroller;
 
+import one.microproject.rpi.device.RPiDevice;
+import one.microproject.rpi.device.dto.SystemInfo;
 import one.microproject.rpi.powercontroller.dto.JobId;
 import one.microproject.rpi.powercontroller.dto.JobInfo;
 import one.microproject.rpi.powercontroller.dto.Measurements;
-import one.microproject.rpi.powercontroller.dto.SystemInfo;
+import one.microproject.rpi.powercontroller.dto.ControllerInfo;
 import one.microproject.rpi.powercontroller.dto.SystemState;
 import one.microproject.rpi.powercontroller.dto.TaskFilter;
 import one.microproject.rpi.powercontroller.dto.TaskInfo;
@@ -14,14 +16,14 @@ import java.util.Collection;
  * Read data from RPi Power Controller.
  * https://github.com/jveverka/rpi-projects/tree/master/rpi-powercontroller
  */
-public interface PowerControllerReadClient {
+public interface PowerControllerReadClient extends RPiDevice<ControllerInfo> {
 
     /**
      * Get {@link SystemInfo} for this RPi Power Controller.
      * Contains information like unique ID of this device, type, version and description.
      * @return {@link SystemInfo}
      */
-    SystemInfo getSystemInfo();
+    SystemInfo<ControllerInfo> getSystemInfo();
 
     /**
      * Get {@link SystemState} for this RPi Power Controller.
