@@ -30,7 +30,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: secret
 
   device-controller:
-    image: device-controller:1.4.0-SNAPSHOT
+    image: device-controller:1.4.1-SNAPSHOT
     build:
       context: ./device-controller
       dockerfile: Dockerfile
@@ -43,6 +43,7 @@ services:
       - mongo
     environment:
       SYSTEM_ID: dc-001
+      CONTEXT_PATH: /dc
       MONGO_DATABASE: admin
       MONGO_USERNAME: root
       MONGO_PASSWORD: secret
@@ -50,6 +51,7 @@ services:
       MONGO_HOST: 127.0.0.1
       LOG_ROOT_LEVEL: INFO
       LOG_APP_LEVEL: DEBUG
-      IAM_URL: http://127.0.0.1:8080
+      IAM_BASE_URL: http://127.0.0.1:8080
       IAM_ORG_ID: device-controller
       IAM_PROJECT_ID: device-controller
+      JVM_OPTS: '-Duser.timezone=GMT'

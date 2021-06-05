@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
+import java.util.TimeZone;
 
 @RestController
 @RequestMapping(path = "/api/system/info")
@@ -25,7 +26,8 @@ public class SystemInfoController {
     ResponseEntity<SystemInfo<Void>> getSystemInfo() {
         Long timestamp = Instant.now().getEpochSecond();
         Long uptime = timestamp - started;
-        return ResponseEntity.ok(new SystemInfo<>(appConfig.getId(), "device-controller", "1.1.1", "Device Controller", timestamp, uptime, null));
+        String timeZone = TimeZone.getDefault().getID();
+        return ResponseEntity.ok(new SystemInfo<>(appConfig.getId(), "device-controller", "1.4.1", "Device Controller [" + timeZone + "]", timestamp, uptime, null));
     }
 
 }
