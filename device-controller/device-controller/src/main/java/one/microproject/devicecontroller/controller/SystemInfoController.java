@@ -27,7 +27,7 @@ public class SystemInfoController {
         Long timestamp = Instant.now().getEpochSecond();
         Long uptime = timestamp - started;
         String timeZone = TimeZone.getDefault().getID();
-        return ResponseEntity.ok(new SystemInfo<>(appConfig.getId(), "device-controller", "1.4.1", "Device Controller [" + timeZone + "]", timestamp, uptime, null));
+        return ResponseEntity.ok(new SystemInfo<>(appConfig.getId(), "device-controller", "1.4.2", "Device Controller [" + timeZone + "]", timestamp, uptime, null));
     }
 
 }

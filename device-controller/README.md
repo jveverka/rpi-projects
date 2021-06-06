@@ -12,6 +12,12 @@ Raspberry Pi controller gateway.
 * [__rpi-powercontroller__](../rpi-powercontroller) - Remotely controller power switch. 
 * [__device-client-sim__](device-client-sim) - Test device simulator.
 
+## REST Endpoints
+```
+http://localhost:8090/dc/v3/api-docs
+http://localhost:8090/dc/swagger-ui/index.html?url=/dc/v3/api-docs#/
+```
+
 ## Build and Run
 ```
 gradle clean build test
@@ -96,18 +102,18 @@ docker-compose down -v --rmi all --remove-orphans
 ## Build Dockers for x86_64 and ARM64 
 ```
 # on x86 AMD64 device:
-docker build -t jurajveverka/device-controller:1.4.1-amd64 --build-arg ARCH=amd64 --file ./device-controller/Dockerfile ./device-controller 
-docker push jurajveverka/device-controller:1.4.1-amd64
+docker build -t jurajveverka/device-controller:1.4.2-amd64 --build-arg ARCH=amd64 --file ./device-controller/Dockerfile ./device-controller 
+docker push jurajveverka/device-controller:1.4.2-amd64
 
 # on ARM64 v8 device:
-docker build -t jurajveverka/device-controller:1.4.1-arm64v8 --build-arg ARCH=arm64v8 --file ./device-controller/Dockerfile ./device-controller 
-docker push jurajveverka/device-controller:1.4.1-arm64v8
+docker build -t jurajveverka/device-controller:1.4.2-arm64v8 --build-arg ARCH=arm64v8 --file ./device-controller/Dockerfile ./device-controller 
+docker push jurajveverka/device-controller:1.4.2-arm64v8
 
 # on x86 AMD64 device: 
 docker manifest create \
-jurajveverka/device-controller:1.4.1 \
---amend jurajveverka/device-controller:1.4.1-amd64 \
---amend jurajveverka/device-controller:1.4.1-arm64v8
+jurajveverka/device-controller:1.4.2 \
+--amend jurajveverka/device-controller:1.4.2-amd64 \
+--amend jurajveverka/device-controller:1.4.2-arm64v8
 
-docker manifest push jurajveverka/device-controller:1.4.1
+docker manifest push jurajveverka/device-controller:1.4.2
 ```

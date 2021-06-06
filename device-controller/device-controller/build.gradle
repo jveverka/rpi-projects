@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'one.microproject.devicecontroller'
-version = '1.4.1-SNAPSHOT'
+version = '1.4.2-SNAPSHOT'
 sourceCompatibility = '16'
 targetCompatibility = '16'
 
@@ -20,6 +20,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.5.9'
 
     implementation 'one.microproject.rpi:rpi-device:1.1.0'
     implementation 'one.microproject.rpi:rpi-camera-client:1.4.0'

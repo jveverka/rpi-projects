@@ -52,7 +52,7 @@ public class IAMClientConfiguration {
                 .setProjectId(projectId)
                 .withHttpProxy(new URL(baseUrl), pollingInterval, timeUnit)
                 .build();
-        return new IAMSecurityFilterConfiguration(iamClient, Set.of("/api/system/**", "/actuator/**"));
+        return new IAMSecurityFilterConfiguration(iamClient, Set.of("/api/system/**", "/actuator/**", "/v3/**", "/swagger-ui/**"));
     }
 
     public void setOrganizationId(String organizationId) {
