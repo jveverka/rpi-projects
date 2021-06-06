@@ -95,6 +95,7 @@ def capture():
        camera_resolutions[default_resolution]['image_height']
     )
     camera.framerate = 15
+    camera.rotation = rotation
     camera.start_preview()
     image_buffer = io.BytesIO()
     camera.capture(image_buffer, file_format)
