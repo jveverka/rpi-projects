@@ -1,5 +1,8 @@
 package one.microproject.rpi.camera.client.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class CaptureRequest {
 
     private final Float shutterSpeed;
@@ -7,7 +10,11 @@ public class CaptureRequest {
     private final Resolution resolution;
     private final Rotation rotation;
 
-    public CaptureRequest(Float shutterSpeed, ImageFormat imageFormat, Resolution resolution, Rotation rotation) {
+    @JsonCreator
+    public CaptureRequest(@JsonProperty("shutterSpeed") Float shutterSpeed,
+                          @JsonProperty("imageFormat") ImageFormat imageFormat,
+                          @JsonProperty("resolution") Resolution resolution,
+                          @JsonProperty("rotation") Rotation rotation) {
         this.shutterSpeed = shutterSpeed;
         this.imageFormat = imageFormat;
         this.resolution = resolution;

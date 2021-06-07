@@ -4,7 +4,7 @@ import one.microproject.rpi.device.dto.SystemInfo;
 
 /**
  * Generic RaspberryPi device.
- * @param <T>
+ * @param <T> system info properties type.
  */
 public interface RPiDevice<T> {
 
