@@ -17,6 +17,8 @@ public interface DeviceAdminService {
 
     Optional<DeviceInfo> getById(String deviceId);
 
+    Optional<DeviceData> getDataById(String deviceId);
+
     List<String> getSupportedDeviceTypes();
 
 }

@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.net.MalformedURLException;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -36,7 +35,7 @@ public class ClientAdapterFactoryImpl implements ClientAdapterFactory {
     }
 
     @Override
-    public ClientAdapterWrapper<?> create(DeviceData deviceData) throws MalformedURLException {
+    public ClientAdapterWrapper<?> createOrGet(DeviceData deviceData) throws MalformedURLException {
         if (!clients.containsKey(deviceData.getId())) {
             LOG.debug("initializing client deviceId={} type={}", deviceData.getId(), deviceData.getType());
             if (DeviceType.DEVICE_SIM.getType().equals(deviceData.getType())) {
@@ -44,6 +43,7 @@ public class ClientAdapterFactoryImpl implements ClientAdapterFactory {
                         .withDeviceId(deviceData.getId())
                         .build();
                 ClientAdapterSim clientAdapterWrapper = new ClientAdapterSim(deviceSim);
+                clientAdapterWrapper.checkStatus();
                 clients.put(deviceData.getId(), clientAdapterWrapper);
             } else if (DeviceType.RPI_POWER_CONTROLLER.getType().equals(deviceData.getType())) {
                 PowerControllerClient powerControllerClient = PowerControllerClientBuilder.builder()
@@ -52,6 +52,7 @@ public class ClientAdapterFactoryImpl implements ClientAdapterFactory {
                         .setHttpClient(okHttpClient)
                         .build();
                 ClientAdapterPowerController clientAdapterWrapper = new ClientAdapterPowerController(powerControllerClient);
+                clientAdapterWrapper.checkStatus();
                 clients.put(deviceData.getId(), clientAdapterWrapper);
             } else if (DeviceType.RPI_CAMERA.getType().equals(deviceData.getType())) {
                 CameraClient cameraClient = CameraClientBuilder.builder()
@@ -60,22 +61,15 @@ public class ClientAdapterFactoryImpl implements ClientAdapterFactory {
                         .setHttpClient(okHttpClient)
                         .build();
                 ClientAdapterCamera clientAdapterWrapper = new ClientAdapterCamera(cameraClient);
+                clientAdapterWrapper.checkStatus();
                 clients.put(deviceData.getId(), clientAdapterWrapper);
             } else {
                 throw new UnsupportedOperationException("Unknown or unsupported device type " + deviceData.getType());
             }
+        } else {
+            LOG.debug("reusing client deviceId={} type={}", deviceData.getId(), deviceData.getType());
         }
         return clients.get(deviceData.getId());
-    }
-
-    @Override
-    public Optional<ClientAdapterWrapper<?>> get(String id) {
-        return Optional.ofNullable(clients.get(id));
-    }
-
-    @Override
-    public void remove(String id) {
-        clients.remove(id);
     }
 
 }

@@ -12,6 +12,7 @@ import one.microproject.devicecontroller.dto.DeviceStatus;
 import one.microproject.devicecontroller.dto.DeviceType;
 import one.microproject.devicecontroller.dto.ResponseStatus;
 import one.microproject.devicecontroller.dto.ResultId;
+import one.microproject.devicecontroller.model.DeviceData;
 import one.microproject.rpi.camera.client.CameraClient;
 import one.microproject.rpi.camera.client.dto.CameraInfo;
 import one.microproject.rpi.camera.client.dto.ImageCapture;
@@ -26,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.io.InputStream;
 import java.util.Optional;
 
 @Service
@@ -34,20 +36,22 @@ public class DeviceDataServiceImpl implements DeviceDataService {
     private static final Logger LOG = LoggerFactory.getLogger(DeviceDataServiceImpl.class);
 
     private final ClientAdapterFactory clientAdapterFactory;
+    private final DeviceAdminService deviceAdminService;
     private final ObjectMapper objectMapper;
 
 
-    public DeviceDataServiceImpl(ClientAdapterFactory clientAdapterFactory, ObjectMapper objectMapper) {
+    public DeviceDataServiceImpl(ClientAdapterFactory clientAdapterFactory, DeviceAdminService deviceAdminService, ObjectMapper objectMapper) {
         this.clientAdapterFactory = clientAdapterFactory;
+        this.deviceAdminService = deviceAdminService;
         this.objectMapper = objectMapper;
     }
 
     @Override
     public DeviceQueryResponse query(DeviceQuery query) throws DeviceException {
         try {
-            Optional<ClientAdapterWrapper<?>> clientAdapterOptional = clientAdapterFactory.get(query.deviceId());
-            if (clientAdapterOptional.isPresent()) {
-                ClientAdapterWrapper<?> clientAdapterWrapper = clientAdapterOptional.get();
+            Optional<DeviceData> deviceInfo = deviceAdminService.getDataById(query.deviceId());
+            if (deviceInfo.isPresent()) {
+                ClientAdapterWrapper<?> clientAdapterWrapper = clientAdapterFactory.createOrGet(deviceInfo.get());
                 return getDeviceResponse(clientAdapterWrapper, query);
             } else {
                 LOG.error("Device id={} Not Found !", query.deviceId());
@@ -61,9 +65,9 @@ public class DeviceDataServiceImpl implements DeviceDataService {
     @Override
     public DataStream download(DeviceQuery query) throws DeviceException {
         try {
-            Optional<ClientAdapterWrapper<?>> clientAdapterOptional = clientAdapterFactory.get(query.deviceId());
-            if (clientAdapterOptional.isPresent()) {
-                ClientAdapterWrapper<?> clientAdapterWrapper = clientAdapterOptional.get();
+            Optional<DeviceData> deviceInfo = deviceAdminService.getDataById(query.deviceId());
+            if (deviceInfo.isPresent()) {
+                ClientAdapterWrapper<?> clientAdapterWrapper = clientAdapterFactory.createOrGet(deviceInfo.get());
                 return getDeviceData(clientAdapterWrapper, query);
             } else {
                 LOG.error("Device id={} Not Found !", query.deviceId());
@@ -164,16 +168,21 @@ public class DeviceDataServiceImpl implements DeviceDataService {
             DeviceSim deviceSim = (DeviceSim) clientAdapterWrapper.getClient();
             if ("download".equals(query.queryType())) {
                 DataRequest dataRequest = objectMapper.treeToValue(query.payload(), DataRequest.class);
-                return new DataStream(deviceSim.download(dataRequest), "data.file", "text/plain");
+                InputStream is = deviceSim.download(dataRequest);
+                clientAdapterWrapper.setStatus(DeviceStatus.ONLINE);
+                return new DataStream(is, "data.file", "text/plain");
             } else {
+                clientAdapterWrapper.setStatus(DeviceStatus.OFFLINE);
                 throw new UnsupportedOperationException("Unsupported query type=" + query.queryType() + "  for device type=" + clientAdapterWrapper.getType());
             }
         } else if (DeviceType.RPI_CAMERA.equals(clientAdapterWrapper.getType())) {
             CameraClient cameraClient = (CameraClient) clientAdapterWrapper.getClient();
             if ("capture".equals(query.queryType())) {
                 ImageCapture imageCapture = cameraClient.captureImage();
+                clientAdapterWrapper.setStatus(DeviceStatus.ONLINE);
                 return new DataStream(imageCapture.getIs(), imageCapture.getFileName(), imageCapture.getMimeType());
             } else {
+                clientAdapterWrapper.setStatus(DeviceStatus.OFFLINE);
                 throw new UnsupportedOperationException("Unsupported query type=" + query.queryType() + "  for device type=" + clientAdapterWrapper.getType());
             }
         } else {

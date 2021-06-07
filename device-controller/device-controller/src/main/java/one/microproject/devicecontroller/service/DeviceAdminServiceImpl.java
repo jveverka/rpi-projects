@@ -36,8 +36,7 @@ public class DeviceAdminServiceImpl implements DeviceAdminService {
             Optional<DeviceData> deviceDataOptional = repository.findById(deviceCreateRequest.id());
             if (deviceDataOptional.isEmpty()) {
                 DeviceData deviceData = dataMapper.map(deviceCreateRequest);
-                ClientAdapterWrapper<?> clientAdapterWrapper = clientAdapterFactory.create(deviceData);
-                clientAdapterWrapper.checkStatus();
+                ClientAdapterWrapper<?> clientAdapterWrapper = clientAdapterFactory.createOrGet(deviceData);
                 repository.save(deviceData);
             } else {
                 throw new DeviceException("Device id=" + deviceCreateRequest.id() + " already exists !");
@@ -51,17 +50,16 @@ public class DeviceAdminServiceImpl implements DeviceAdminService {
     @Transactional
     public void removeDevice(String deviceId) {
         repository.deleteById(deviceId);
-        clientAdapterFactory.remove(deviceId);
     }
 
     @Override
     public List<DeviceInfo> getAll() {
         List<DeviceInfo> deviceInfos = new ArrayList<>();
         repository.findAll().forEach(d -> {
-            Optional<ClientAdapterWrapper<?>> clientAdapterWrapper = clientAdapterFactory.get(d.getId());
-            if (clientAdapterWrapper.isPresent()) {
-                deviceInfos.add(dataMapper.map(d, clientAdapterWrapper.get().getStatus()));
-            } else {
+            try {
+                ClientAdapterWrapper<?> clientAdapterWrapper = clientAdapterFactory.createOrGet(d);
+                deviceInfos.add(dataMapper.map(d, clientAdapterWrapper.getStatus()));
+            } catch (MalformedURLException e) {
                 deviceInfos.add(dataMapper.map(d, DeviceStatus.OFFLINE));
             }
         });
@@ -71,13 +69,18 @@ public class DeviceAdminServiceImpl implements DeviceAdminService {
     @Override
     public Optional<DeviceInfo> getById(String deviceId) {
         return repository.findById(deviceId).map(d -> {
-            Optional<ClientAdapterWrapper<?>> clientAdapterWrapper = clientAdapterFactory.get(d.getId());
-            if (clientAdapterWrapper.isPresent()) {
-                return dataMapper.map(d, clientAdapterWrapper.get().getStatus());
-            } else {
+            try {
+                ClientAdapterWrapper<?> clientAdapterWrapper = clientAdapterFactory.createOrGet(d);
+                return dataMapper.map(d, clientAdapterWrapper.getStatus());
+            } catch (MalformedURLException e) {
                 return dataMapper.map(d, DeviceStatus.OFFLINE);
             }
         });
+    }
+
+    @Override
+    public Optional<DeviceData> getDataById(String deviceId) {
+        return repository.findById(deviceId);
     }
 
     @Override

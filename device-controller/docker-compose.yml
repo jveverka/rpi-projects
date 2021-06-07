@@ -30,7 +30,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: secret
 
   device-controller:
-    image: device-controller:1.4.2-SNAPSHOT
+    image: device-controller:1.4.3-SNAPSHOT
     build:
       context: ./device-controller
       dockerfile: Dockerfile
