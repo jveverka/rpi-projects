@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import one.microproject.devicecontroller.config.IAMClientConfiguration;
 import one.microproject.devicecontroller.config.security.IAMSecurityFilterConfiguration;
+import one.microproject.devicecontroller.dto.DCInfo;
 import one.microproject.devicecontroller.dto.DeviceCreateRequest;
 import one.microproject.devicecontroller.dto.DeviceCredentials;
 import one.microproject.devicecontroller.dto.DeviceInfo;
@@ -185,13 +186,14 @@ public class DeviceControllerTest {
                 .build();
         Response response = httpClient.newCall(request).execute();
         assertEquals(HttpStatus.OK.value(), response.code());
-        SystemInfo<Void> systemInfo = objectMapper.readValue(response.body().string(), new TypeReference<SystemInfo<Void>>(){});
+        SystemInfo<DCInfo> systemInfo = objectMapper.readValue(response.body().string(), new TypeReference<SystemInfo<DCInfo>>(){});
         assertNotNull(systemInfo);
         assertNotNull(systemInfo.getId());
         assertNotNull(systemInfo.getVersion());
         assertNotNull(systemInfo.getName());
         assertEquals("device-controller-001", systemInfo.getId());
-        assertNull(systemInfo.getProperties());
+        assertNotNull(systemInfo.getProperties());
+        assertNotNull(systemInfo.getProperties().instanceId());
     }
 
     @Test
