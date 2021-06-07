@@ -12,7 +12,8 @@ public class GlobalControllerExceptionHandler {
 
     @ExceptionHandler(DeviceException.class)
     public ResponseEntity<ExceptionResponse> deviceAdminResponse(DeviceException e) {
-        ExceptionResponse response = new ExceptionResponse(HttpStatus.BAD_REQUEST, e.getMessage());
+        ExceptionResponse response = new ExceptionResponse(HttpStatus.BAD_REQUEST,
+                e.getClass().getCanonicalName(), e.getMessage(), e.getCause().getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 

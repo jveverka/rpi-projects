@@ -21,7 +21,7 @@ public class CodeExample {
 
     public static void main(String[] args) throws IOException {
         CameraClient cameraClient = CameraClientBuilder.builder()
-                .baseUrl("http://192.168.44.164:8080")
+                .baseUrl("http://192.168.44.61:8080")
                 .setTimeout(80L, TimeUnit.SECONDS)
                 .withCredentials("client-001", "ex4oo")
                 .build();

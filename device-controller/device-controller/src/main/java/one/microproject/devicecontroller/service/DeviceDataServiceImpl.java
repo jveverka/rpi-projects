@@ -15,6 +15,7 @@ import one.microproject.devicecontroller.dto.ResultId;
 import one.microproject.devicecontroller.model.DeviceData;
 import one.microproject.rpi.camera.client.CameraClient;
 import one.microproject.rpi.camera.client.dto.CameraInfo;
+import one.microproject.rpi.camera.client.dto.CaptureRequest;
 import one.microproject.rpi.camera.client.dto.ImageCapture;
 import one.microproject.rpi.device.dto.SystemInfo;
 import one.microproject.rpi.device.sim.DeviceSim;
@@ -178,7 +179,8 @@ public class DeviceDataServiceImpl implements DeviceDataService {
         } else if (DeviceType.RPI_CAMERA.equals(clientAdapterWrapper.getType())) {
             CameraClient cameraClient = (CameraClient) clientAdapterWrapper.getClient();
             if ("capture".equals(query.queryType())) {
-                ImageCapture imageCapture = cameraClient.captureImage();
+                CaptureRequest captureRequest = objectMapper.treeToValue(query.payload(), CaptureRequest.class);
+                ImageCapture imageCapture = cameraClient.captureImage(captureRequest);
                 clientAdapterWrapper.setStatus(DeviceStatus.ONLINE);
                 return new DataStream(imageCapture.getIs(), imageCapture.getFileName(), imageCapture.getMimeType());
             } else {

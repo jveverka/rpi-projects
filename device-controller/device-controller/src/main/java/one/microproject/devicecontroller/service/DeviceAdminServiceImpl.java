@@ -36,7 +36,7 @@ public class DeviceAdminServiceImpl implements DeviceAdminService {
             Optional<DeviceData> deviceDataOptional = repository.findById(deviceCreateRequest.id());
             if (deviceDataOptional.isEmpty()) {
                 DeviceData deviceData = dataMapper.map(deviceCreateRequest);
-                ClientAdapterWrapper<?> clientAdapterWrapper = clientAdapterFactory.createOrGet(deviceData);
+                clientAdapterFactory.createOrGet(deviceData);
                 repository.save(deviceData);
             } else {
                 throw new DeviceException("Device id=" + deviceCreateRequest.id() + " already exists !");
