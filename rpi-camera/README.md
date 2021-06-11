@@ -5,8 +5,10 @@ This is simple REST service daemon, which allows access camera on Raspberry PI d
 
 ## Hardware
 * Supported RPi devices: Raspberry Pi Zero WH, 2, 3, 4.
-* Raspberry Pi [Camera Module v2](https://www.raspberrypi.org/products/camera-module-v2/)
-* Raspberry Pi [NoIR Camera v2](https://www.raspberrypi.org/products/pi-noir-camera-v2/)
+* Camera modules:
+  * Raspberry Pi [Camera Module v2](https://www.raspberrypi.org/products/camera-module-v2/)
+  * Raspberry Pi [NoIR Camera v2](https://www.raspberrypi.org/products/pi-noir-camera-v2/)
+  * [Waveshare Camera Modules](https://www.waveshare.com/product/raspberry-pi/cameras.htm).
 
 ## Install on Raspberry PI
 1. Install [Raspberry Pi OS Lite 2021-03-04](https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2021-03-25/2021-03-04-raspios-buster-armhf-lite.zip)
