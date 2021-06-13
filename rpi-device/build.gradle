@@ -9,7 +9,7 @@ targetCompatibility = 1.8
 
 group = 'one.microproject.rpi'
 archivesBaseName = "rpi-device"
-version = '1.1.0'
+version = '1.1.1'
 
 repositories {
    mavenLocal()

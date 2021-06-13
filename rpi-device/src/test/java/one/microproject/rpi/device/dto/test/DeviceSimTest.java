@@ -51,4 +51,19 @@ class DeviceSimTest {
         is.close();
     }
 
+    @Test
+    void testDownloadGet() throws IOException {
+        InputStream is = deviceSim.download();
+        assertNotNull(is);
+        is.close();
+    }
+
+    @Test
+    void testDataGet() {
+        DataResponse response = deviceSim.getData();
+        assertNotNull(response);
+        assertNotNull(response.getMessage());
+        assertEquals("new-data", response.getMessage());
+    }
+
 }

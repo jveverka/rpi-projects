@@ -14,6 +14,10 @@ public interface DeviceSim extends RPiDevice<SimInfo> {
 
     DataResponse getData(DataRequest request);
 
+    DataResponse getData();
+
     InputStream download(DataRequest request);
+
+    InputStream download();
 
 }

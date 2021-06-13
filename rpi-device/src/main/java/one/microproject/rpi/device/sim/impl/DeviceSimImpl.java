@@ -25,7 +25,7 @@ public class DeviceSimImpl implements DeviceSim {
         Long timestamp = Instant.now().getEpochSecond();
         Long uptime = timestamp - started;
         SimInfo info  =  new SimInfo("OK");
-        return new SystemInfo<>(id, "device-sim", "1.0.0", "Rpi Device Simulator", timestamp, uptime, info);
+        return new SystemInfo<>(id, "device-sim", "1.1.1", "Rpi Device Simulator", timestamp, uptime, info);
     }
 
     @Override
@@ -34,8 +34,18 @@ public class DeviceSimImpl implements DeviceSim {
     }
 
     @Override
+    public DataResponse getData() {
+        return new DataResponse("new-data");
+    }
+
+    @Override
     public InputStream download(DataRequest request) {
         return new ByteArrayInputStream(request.getMessage().getBytes());
+    }
+
+    @Override
+    public InputStream download() {
+        return new ByteArrayInputStream("new-data-stream".getBytes());
     }
 
 }
