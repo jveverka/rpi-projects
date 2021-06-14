@@ -54,7 +54,7 @@ def verify_password(username, password):
 @auth.login_required
 def getVersion():
     uptime = int(time.time()) - started
-    version = { "id": config['id'], "type": "camera-rest", "version": "1.4.0", "name": config['name'], "timestamp": int(time.time()), "uptime": uptime, "properties": { "revision": camera.revision } }
+    version = { "id": config['id'], "type": "camera-rest", "version": "1.4.1", "name": config['name'], "timestamp": int(time.time()), "uptime": uptime, "properties": { "revision": camera.revision } }
     return jsonify(version)
 
 @app.route('/system/capture', methods=["GET"])
@@ -65,7 +65,7 @@ def capture():
     file_name='capture-image.jpg'
     default_resolution = '5M'
     args = request.args
-    rotation = 0
+    rotation = int(config['rotation'])
 
     if 'rotation' in args:
        rotation = int(args['rotation'])
@@ -110,6 +110,7 @@ if __name__ == '__main__':
         print('camera-rest init.')
         print('#CONFIG Id: ' + config['id'])
         print('#CONFIG name: ' + config['name'])
+        print('#CONFIG rotation: ' + str(config['rotation']))
         print('camera-rest REST APis')
         app.run(debug=False, host=config['host'], port=config['port'])
     except SystemExit:
