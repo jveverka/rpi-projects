@@ -179,10 +179,16 @@ public class DeviceDataServiceImpl implements DeviceDataService {
         } else if (DeviceType.RPI_CAMERA.equals(clientAdapterWrapper.getType())) {
             CameraClient cameraClient = (CameraClient) clientAdapterWrapper.getClient();
             if ("capture".equals(query.queryType())) {
-                CaptureRequest captureRequest = objectMapper.treeToValue(query.payload(), CaptureRequest.class);
-                ImageCapture imageCapture = cameraClient.captureImage(captureRequest);
-                clientAdapterWrapper.setStatus(DeviceStatus.ONLINE);
-                return new DataStream(imageCapture.getIs(), imageCapture.getFileName(), imageCapture.getMimeType());
+                if (query.payload() == null) {
+                    ImageCapture imageCapture = cameraClient.captureImage();
+                    clientAdapterWrapper.setStatus(DeviceStatus.ONLINE);
+                    return new DataStream(imageCapture.getIs(), imageCapture.getFileName(), imageCapture.getMimeType());
+                } else {
+                    CaptureRequest captureRequest = objectMapper.treeToValue(query.payload(), CaptureRequest.class);
+                    ImageCapture imageCapture = cameraClient.captureImage(captureRequest);
+                    clientAdapterWrapper.setStatus(DeviceStatus.ONLINE);
+                    return new DataStream(imageCapture.getIs(), imageCapture.getFileName(), imageCapture.getMimeType());
+                }
             } else {
                 clientAdapterWrapper.setStatus(DeviceStatus.OFFLINE);
                 throw new UnsupportedOperationException("Unsupported query type=" + query.queryType() + "  for device type=" + clientAdapterWrapper.getType());

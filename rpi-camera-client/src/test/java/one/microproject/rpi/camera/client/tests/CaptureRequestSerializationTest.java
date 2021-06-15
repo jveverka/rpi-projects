@@ -2,7 +2,7 @@ package one.microproject.rpi.camera.client.tests;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import one.microproject.rpi.camera.client.dto.CaptureRequest;
+import one.microproject.rpi.camera.client.dto.CameraConfiguration;
 import one.microproject.rpi.camera.client.dto.ImageFormat;
 import one.microproject.rpi.camera.client.dto.Resolution;
 import one.microproject.rpi.camera.client.dto.Rotation;
@@ -22,13 +22,14 @@ class CaptureRequestSerializationTest {
 
     @Test
     void testSerializationAndDeserialization() throws JsonProcessingException {
-        CaptureRequest captureRequest = new CaptureRequest(0.1F, ImageFormat.JPEG, Resolution.M5, Rotation.D180);
+        CameraConfiguration captureRequest = new CameraConfiguration(0.1F, ImageFormat.JPEG, Resolution.M5, Rotation.D180, 85);
         String data = mapper.writeValueAsString(captureRequest);
-        CaptureRequest deserialized = mapper.readValue(data, CaptureRequest.class);
+        CameraConfiguration deserialized = mapper.readValue(data, CameraConfiguration.class);
         assertEquals(captureRequest.getShutterSpeed(), deserialized.getShutterSpeed());
         assertEquals(captureRequest.getImageFormat(), deserialized.getImageFormat());
         assertEquals(captureRequest.getRotation(), deserialized.getRotation());
         assertEquals(captureRequest.getResolution(), deserialized.getResolution());
+        assertEquals(captureRequest.getQuality(), deserialized.getQuality());
     }
 
 }

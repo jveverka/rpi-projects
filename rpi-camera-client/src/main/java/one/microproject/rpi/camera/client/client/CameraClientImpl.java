@@ -3,12 +3,14 @@ package one.microproject.rpi.camera.client.client;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.HttpUrl;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import one.microproject.rpi.camera.client.CameraClient;
 import one.microproject.rpi.camera.client.ClientException;
-import one.microproject.rpi.camera.client.dto.CaptureRequest;
+import one.microproject.rpi.camera.client.dto.CameraConfiguration;
 import one.microproject.rpi.camera.client.dto.ImageCapture;
 import one.microproject.rpi.camera.client.dto.CameraInfo;
 import one.microproject.rpi.device.dto.SystemInfo;
@@ -59,26 +61,48 @@ public class CameraClientImpl implements CameraClient {
     }
 
     @Override
-    public ImageCapture captureImage() {
-        return captureImage(CaptureRequest.getDefault());
+    public CameraConfiguration getConfiguration() {
+        try {
+            Request request = new Request.Builder()
+                    .url(baseURL + "/system/config")
+                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(clientId, clientSecret))
+                    .get()
+                    .build();
+            Response response = client.newCall(request).execute();
+            if (response.code() == 200) {
+                return mapper.readValue(response.body().string(), CameraConfiguration.class);
+            }
+            LOG.warn("Http error: {}", response.code());
+            throw new ClientException(ERROR_MESSAGE + response.code());
+        } catch (IOException e) {
+            throw new ClientException(e);
+        }
     }
 
     @Override
-    public ImageCapture captureImage(CaptureRequest captureRequest) {
+    public CameraConfiguration setConfiguration(CameraConfiguration configuration) {
+        try {
+            RequestBody body = RequestBody.create(mapper.writeValueAsString(configuration), MediaType.get("application/json"));
+            Request request = new Request.Builder()
+                    .url(baseURL + "/system/config")
+                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(clientId, clientSecret))
+                    .post(body)
+                    .build();
+            Response response = client.newCall(request).execute();
+            if (response.code() == 200) {
+                return mapper.readValue(response.body().string(), CameraConfiguration.class);
+            }
+            LOG.warn("Http error: {}", response.code());
+            throw new ClientException(ERROR_MESSAGE + response.code());
+        } catch (IOException e) {
+            throw new ClientException(e);
+        }
+    }
+
+    @Override
+    public ImageCapture captureImage() {
         try {
             HttpUrl.Builder httpUrlBuilder = HttpUrl.parse(baseURL + "/system/capture").newBuilder();
-            if (captureRequest.getShutterSpeed() != null) {
-                httpUrlBuilder.addQueryParameter("shutter-speed", captureRequest.getShutterSpeed().toString());
-            }
-            if (captureRequest.getImageFormat() != null) {
-                httpUrlBuilder.addQueryParameter("format", captureRequest.getImageFormat().getFormat());
-            }
-            if (captureRequest.getResolution() != null) {
-                httpUrlBuilder.addQueryParameter("resolution", captureRequest.getResolution().getResolution());
-            }
-            if (captureRequest.getRotation() != null) {
-                httpUrlBuilder.addQueryParameter("rotation", captureRequest.getRotation().getDegree().toString());
-            }
             Request request = new Request.Builder()
                     .url(httpUrlBuilder.build())
                     .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(clientId, clientSecret))

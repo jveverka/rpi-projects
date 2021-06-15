@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.InputStream;
@@ -45,7 +46,7 @@ public class DeviceDataController {
 
     @PostMapping("/download")
     @PreAuthorize("hasAuthority('device-controller.data.read') and hasAuthority('device-controller.data.write')")
-    public ResponseEntity<Resource> downloadQuery(@RequestBody DeviceQuery query) {
+    public ResponseEntity<Resource> download(@RequestBody DeviceQuery query) {
         LOG.info("download {}", query.deviceId());
         DataStream dataStream = deviceDataService.download(query);
         InputStreamResource resource = new InputStreamResource(dataStream.is());
@@ -53,6 +54,27 @@ public class DeviceDataController {
                 .contentType(MediaType.parseMediaType(dataStream.mimeType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + dataStream.fileName() + "\"")
                 .body(resource);
+    }
+
+    @GetMapping("/download")
+    @PreAuthorize("hasAuthority('device-controller.data.read') and hasAuthority('device-controller.data.write')")
+    public ResponseEntity<Resource> getDownload(@RequestParam String id, @RequestParam String deviceId,  @RequestParam String queryType) {
+        DeviceQuery query = new DeviceQuery(id, deviceId, queryType, null);
+        LOG.info("get download {}", query.deviceId());
+        DataStream dataStream = deviceDataService.download(query);
+        InputStreamResource resource = new InputStreamResource(dataStream.is());
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(dataStream.mimeType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + dataStream.fileName() + "\"")
+                .body(resource);
+    }
+
+    @GetMapping("/query")
+    @PreAuthorize("hasAuthority('device-controller.data.read') and hasAuthority('device-controller.data.write')")
+    public ResponseEntity<DeviceQueryResponse> getQuery(@RequestParam String id, @RequestParam String deviceId,  @RequestParam String queryType) {
+        DeviceQuery query = new DeviceQuery(id, deviceId, queryType, null);
+        LOG.info("get query {}", query.deviceId());
+        return ResponseEntity.ok(deviceDataService.query(query));
     }
 
 }

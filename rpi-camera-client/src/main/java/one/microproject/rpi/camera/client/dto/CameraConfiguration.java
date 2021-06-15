@@ -3,22 +3,25 @@ package one.microproject.rpi.camera.client.dto;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class CaptureRequest {
+public class CameraConfiguration {
 
     private final Float shutterSpeed;
     private final ImageFormat imageFormat;
     private final Resolution resolution;
     private final Rotation rotation;
+    private final Integer quality;
 
     @JsonCreator
-    public CaptureRequest(@JsonProperty("shutterSpeed") Float shutterSpeed,
-                          @JsonProperty("imageFormat") ImageFormat imageFormat,
-                          @JsonProperty("resolution") Resolution resolution,
-                          @JsonProperty("rotation") Rotation rotation) {
+    public CameraConfiguration(@JsonProperty("shutterSpeed") Float shutterSpeed,
+                               @JsonProperty("imageFormat") ImageFormat imageFormat,
+                               @JsonProperty("resolution") Resolution resolution,
+                               @JsonProperty("rotation") Rotation rotation,
+                               @JsonProperty("quality") Integer quality) {
         this.shutterSpeed = shutterSpeed;
         this.imageFormat = imageFormat;
         this.resolution = resolution;
         this.rotation = rotation;
+        this.quality = quality;
     }
 
     public Float getShutterSpeed() {
@@ -37,15 +40,24 @@ public class CaptureRequest {
         return rotation;
     }
 
-    public static CaptureRequest getDefault() {
-        return new CaptureRequest(null, null, null, null);
+    public Integer getQuality() {
+        return quality;
+    }
+
+    public static CameraConfiguration getDefault() {
+        return new CameraConfiguration(0F, ImageFormat.JPEG, Resolution.M1, Rotation.D0, 85);
+    }
+
+    public static CameraConfiguration getMinimal() {
+        return new CameraConfiguration(0F, ImageFormat.JPEG, Resolution.M03, Rotation.D0, 45);
     }
 
     private static class Builder {
-        private Float shutterSpeed;
-        private ImageFormat imageFormat;
-        private Resolution resolution;
-        private Rotation rotation;
+        private Float shutterSpeed = 0F;
+        private ImageFormat imageFormat = ImageFormat.JPEG;
+        private Resolution resolution = Resolution.M1;
+        private Rotation rotation =  Rotation.D0;
+        private Integer quality = 85;
 
         public Builder setShutterSpeed(Float shutterSpeed) {
             if (shutterSpeed < 0) {
@@ -73,8 +85,19 @@ public class CaptureRequest {
             return this;
         }
 
-        public CaptureRequest build() {
-            return new CaptureRequest(shutterSpeed, imageFormat, resolution, rotation);
+        public Builder setQuality(Integer quality) {
+            if (quality < 0) {
+                throw new UnsupportedOperationException("quality must be greater than 0 !");
+            }
+            if (quality > 100) {
+                throw new UnsupportedOperationException("quality must be less than 100 !");
+            }
+            this.quality = quality;
+            return this;
+        }
+
+        public CameraConfiguration build() {
+            return new CameraConfiguration(shutterSpeed, imageFormat, resolution, rotation, quality);
         }
 
     }

@@ -32,7 +32,7 @@ public class SystemInfoController {
         Long uptime = timestamp - started;
         String timeZone = TimeZone.getDefault().getID();
         DCInfo dcInfo = new DCInfo(instanceId);
-        return ResponseEntity.ok(new SystemInfo<>(appConfig.getId(), "device-controller", "1.4.6", "Device Controller [" + timeZone + "]", timestamp, uptime, dcInfo));
+        return ResponseEntity.ok(new SystemInfo<>(appConfig.getId(), "device-controller", "1.4.8", "Device Controller [" + timeZone + "]", timestamp, uptime, dcInfo));
     }
 
 }

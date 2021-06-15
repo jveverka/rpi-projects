@@ -1,6 +1,6 @@
 package one.microproject.rpi.camera.client;
 
-import one.microproject.rpi.camera.client.dto.CaptureRequest;
+import one.microproject.rpi.camera.client.dto.CameraConfiguration;
 import one.microproject.rpi.camera.client.dto.ImageCapture;
 import one.microproject.rpi.camera.client.dto.CameraInfo;
 import one.microproject.rpi.device.RPiDevice;
@@ -21,17 +21,22 @@ public interface CameraClient extends RPiDevice<CameraInfo> {
     SystemInfo<CameraInfo> getSystemInfo();
 
     /**
-     * Capture camera image in JPEG format with default parameters.
-     * @return JPEG image data as {@link ImageCapture}.
+     * Get current camera configuration.
+     * @return {@link CameraConfiguration}
      */
-    ImageCapture captureImage();
-
+    CameraConfiguration getConfiguration();
 
     /**
-     * Capture camera image in selected format.
-     * @param request image capture parameters.
+     * Set current camera capture configuration.
+     * @param configuration - new required {@link CameraConfiguration}.
+     * @return actual effective {@link CameraConfiguration}.
+     */
+    CameraConfiguration setConfiguration(CameraConfiguration configuration);
+
+    /**
+     * Capture camera image using current {@link CameraConfiguration}.
      * @return image data as {@link ImageCapture}.
      */
-    ImageCapture captureImage(CaptureRequest request);
+    ImageCapture captureImage();
 
 }

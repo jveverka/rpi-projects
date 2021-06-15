@@ -42,17 +42,25 @@ This is simple REST service daemon, which allows access camera on Raspberry PI d
 * Get info about RPi Camera device.  
   __GET__ ``/system/info``  
   ``curl -u client-001:ex4oo http://<ip-address>:<port>/system/info``
+* Get current configuration  
+  __GET__ ``/system/config``  
+  ``curl -u client-001:ex4oo http://<ip-address>:<port>/system/config``
+* Set camera capture configuration   
+  __POST__ ``/system/config``  
+  Supported config parameters  
+
+  |  parameter    | type   | default | description                                   |
+  |---------------|--------|---------|-----------------------------------------------|
+  | shutter-speed | float  | 0       | float, shutter speed in milliseconds          |
+  | format        | string | "jpeg"  | enum, "JPEG", "PNG"                           |
+  | resolution    | string | "5M"    | enum, "M03", M1", "M2", "M5", "M8" megapixels |
+  | rotation      | int    | 0       | enum, degrees "D0", "D90", "D180", "D270"     |
+  | quality       | int    | 85      | int in range 0-100                            |
+
 * Capture single image and download it as attachment.   
   __GET__ ``/system/capture``  
   ``curl -u client-001:ex4oo http://<ip-address>:<port>/system/capture --output snapshot.jpg``  
-  Supported query parameters:
   
-  |  parameter    | type   | default | description                             |
-  |---------------|--------|---------|-----------------------------------------|
-  | shutter-speed | float  | 0       | float, shutter speed in milliseconds    |
-  | format        | string | "jpeg"  | enum, "jpeg", "png"                     | 
-  | resolution    | string | "5M"    | enum, "1M", "2M", "5M", "8M" megapixels | 
-  | rotation      | int    | 0       | float, degrees in range 0, 90, 180, 270 | 
 
 ### Hardware Assembly
 ![image-001](docs/image-001.jpg)
