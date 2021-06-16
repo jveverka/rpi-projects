@@ -14,8 +14,8 @@ import one.microproject.devicecontroller.dto.ResponseStatus;
 import one.microproject.devicecontroller.dto.ResultId;
 import one.microproject.devicecontroller.model.DeviceData;
 import one.microproject.rpi.camera.client.CameraClient;
+import one.microproject.rpi.camera.client.dto.CameraConfiguration;
 import one.microproject.rpi.camera.client.dto.CameraInfo;
-import one.microproject.rpi.camera.client.dto.CaptureRequest;
 import one.microproject.rpi.camera.client.dto.ImageCapture;
 import one.microproject.rpi.device.dto.SystemInfo;
 import one.microproject.rpi.device.sim.DeviceSim;
@@ -151,6 +151,15 @@ public class DeviceDataServiceImpl implements DeviceDataService {
                     SystemInfo<CameraInfo> systemInfo = cameraClient.getSystemInfo();
                     ObjectNode objectNode = objectMapper.valueToTree(systemInfo);
                     response = new DeviceQueryResponse(query.id(), query.deviceId(), query.queryType(), ResponseStatus.OK, objectNode);
+                } else if ("set-config".equals(query.queryType())) {
+                    CameraConfiguration requestedConfiguration = objectMapper.treeToValue(query.payload(), CameraConfiguration.class);
+                    CameraConfiguration effectiveConfiguration = cameraClient.setConfiguration(requestedConfiguration);
+                    ObjectNode objectNode = objectMapper.valueToTree(effectiveConfiguration);
+                    response = new DeviceQueryResponse(query.id(), query.deviceId(), query.queryType(), ResponseStatus.OK, objectNode);
+                } else if ("get-config".equals(query.queryType())) {
+                    CameraConfiguration effectiveConfiguration = cameraClient.getConfiguration();
+                    ObjectNode objectNode = objectMapper.valueToTree(effectiveConfiguration);
+                    response = new DeviceQueryResponse(query.id(), query.deviceId(), query.queryType(), ResponseStatus.OK, objectNode);
                 } else {
                     throw new UnsupportedOperationException("Unsupported query type=" + query.queryType() + "  for device type=" + clientAdapterWrapper.getType());
                 }
@@ -179,16 +188,9 @@ public class DeviceDataServiceImpl implements DeviceDataService {
         } else if (DeviceType.RPI_CAMERA.equals(clientAdapterWrapper.getType())) {
             CameraClient cameraClient = (CameraClient) clientAdapterWrapper.getClient();
             if ("capture".equals(query.queryType())) {
-                if (query.payload() == null) {
-                    ImageCapture imageCapture = cameraClient.captureImage();
-                    clientAdapterWrapper.setStatus(DeviceStatus.ONLINE);
-                    return new DataStream(imageCapture.getIs(), imageCapture.getFileName(), imageCapture.getMimeType());
-                } else {
-                    CaptureRequest captureRequest = objectMapper.treeToValue(query.payload(), CaptureRequest.class);
-                    ImageCapture imageCapture = cameraClient.captureImage(captureRequest);
-                    clientAdapterWrapper.setStatus(DeviceStatus.ONLINE);
-                    return new DataStream(imageCapture.getIs(), imageCapture.getFileName(), imageCapture.getMimeType());
-                }
+                 ImageCapture imageCapture = cameraClient.captureImage();
+                 clientAdapterWrapper.setStatus(DeviceStatus.ONLINE);
+                 return new DataStream(imageCapture.getIs(), imageCapture.getFileName(), imageCapture.getMimeType());
             } else {
                 clientAdapterWrapper.setStatus(DeviceStatus.OFFLINE);
                 throw new UnsupportedOperationException("Unsupported query type=" + query.queryType() + "  for device type=" + clientAdapterWrapper.getType());
