@@ -5,9 +5,9 @@
   "name": "Raspberry PI camera device",
   "defaults": {
     "imageFormat": "JPEG",
-    "rotation": "D180",
-    "quality": 85,
-    "resolution": "M2",
+    "rotation": "D0",
+    "quality": 65,
+    "resolution": "M1",
     "shutterSpeed": 0
   },
   "credentials": {
