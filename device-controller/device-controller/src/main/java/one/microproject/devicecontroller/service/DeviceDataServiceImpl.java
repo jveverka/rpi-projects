@@ -121,9 +121,18 @@ public class DeviceDataServiceImpl implements DeviceDataService {
                     ObjectNode objectNode = objectMapper.valueToTree(wrapper);
                     response = new DeviceQueryResponse(query.id(), query.deviceId(), query.queryType(), ResponseStatus.OK, objectNode);
                 } else if ("tasks".equals(query.queryType())) {
-                    ArrayWrapper wrapper = new ArrayWrapper(powerControllerClient.getAllTasks());
-                    ObjectNode objectNode = objectMapper.valueToTree(wrapper);
-                    response = new DeviceQueryResponse(query.id(), query.deviceId(), query.queryType(), ResponseStatus.OK, objectNode);
+                    if (query.payload() !=  null) {
+                        //get filtered tasks
+                        TaskFilter filter = objectMapper.treeToValue(query.payload(), TaskFilter.class);
+                        ArrayWrapper wrapper = new ArrayWrapper(powerControllerClient.getTasks(filter));
+                        ObjectNode objectNode = objectMapper.valueToTree(wrapper);
+                        response = new DeviceQueryResponse(query.id(), query.deviceId(), query.queryType(), ResponseStatus.OK, objectNode);
+                    } else {
+                        //get all tasks
+                        ArrayWrapper wrapper = new ArrayWrapper(powerControllerClient.getAllTasks());
+                        ObjectNode objectNode = objectMapper.valueToTree(wrapper);
+                        response = new DeviceQueryResponse(query.id(), query.deviceId(), query.queryType(), ResponseStatus.OK, objectNode);
+                    }
                 } else if ("submit-task".equals(query.queryType())) {
                     JobId jobId = objectMapper.treeToValue(query.payload(), JobId.class);
                     Optional<TaskId> taskId = powerControllerClient.submitTask(jobId);
