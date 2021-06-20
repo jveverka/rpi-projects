@@ -18,6 +18,14 @@ http://localhost:8090/dc/v3/api-docs
 http://localhost:8090/dc/swagger-ui/index.html?url=/dc/v3/api-docs#/
 ```
 
+### Device management
+* __GET__ ``/api/admin/devices`` - get connected devices.  
+* __GET__ ``/api/admin/devices/device-types`` - supported device types.  
+* __POST__ ``/api/admin/devices`` - connect new device.   
+* __DELETE__ ``/api/admin/devices/{device-id}`` - delete connected device.  
+
+### Device queries
+
 ## Build and Run
 ```
 gradle clean build test
