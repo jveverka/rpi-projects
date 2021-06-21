@@ -13,18 +13,27 @@ Raspberry Pi controller gateway.
 * [__device-client-sim__](device-client-sim) - Test device simulator.
 
 ## REST Endpoints
+Discover available APIs and service status.
 ```
-http://localhost:8090/dc/v3/api-docs
-http://localhost:8090/dc/swagger-ui/index.html?url=/dc/v3/api-docs#/
+/dc/v3/api-docs
+/dc/swagger-ui/index.html?url=/dc/v3/api-docs#/
+/dc/api/system/info
+/dc/actuator
 ```
 
-### Device management
-* __GET__ ``/api/admin/devices`` - get connected devices.  
-* __GET__ ``/api/admin/devices/device-types`` - supported device types.  
-* __POST__ ``/api/admin/devices`` - connect new device.   
-* __DELETE__ ``/api/admin/devices/{device-id}`` - delete connected device.  
+### Device Administration
+APIs to manage connected devices.
+* __GET__ ``/dc/api/admin/devices`` - get connected devices.  
+* __GET__ ``/dc/api/admin/devices/device-types`` - supported device types.  
+* __POST__ ``/dc/api/admin/devices`` - connect new device.   
+* __DELETE__ ``/dc/api/admin/devices/{device-id}`` - delete connected device.  
+* __GET__ ``/dc/api/admin/devices/{device-id}`` - get connected device by ID.
 
-### Device queries
+### Device Data Queries
+* __POST__ ``/api/data/devices/query``
+* __GET__ ``/api/data/devices/query``
+* __POST__ ``/api/data/devices/download``
+* __GET__ ``/api/data/devices/download``
 
 ## Build and Run
 ```
