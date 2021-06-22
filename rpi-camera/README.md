@@ -11,7 +11,7 @@ This is simple REST service daemon, which allows access camera on Raspberry PI d
   * [Waveshare Camera Modules](https://www.waveshare.com/product/raspberry-pi/cameras.htm).
 
 ## Install on Raspberry PI
-1. Install [Raspberry Pi OS Lite 2021-03-04](https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2021-03-25/2021-03-04-raspios-buster-armhf-lite.zip)
+1. Install [Raspberry Pi OS Lite 2021-05-28](https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2021-05-28/)
 2. Enable camera using ``sudo raspi-config``
 3. Install software dependencies
    ```
