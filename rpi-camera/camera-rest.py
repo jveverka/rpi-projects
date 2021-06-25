@@ -136,7 +136,7 @@ def set_camera(body):
        camera_resolutions[defaults['resolution']]['image_width'],
        camera_resolutions[defaults['resolution']]['image_height']
     )
-    camera.framerate = 15
+    camera.framerate = 30
     camera.rotation = camera_rotations[defaults['rotation']]
     print('set_camera: starting preview ...')
     camera.start_preview()
