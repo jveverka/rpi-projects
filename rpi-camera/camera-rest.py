@@ -73,7 +73,7 @@ def verify_password(username, password):
 @auth.login_required
 def getVersion():
     uptime = int(time.time()) - started
-    version = { "id": config['id'], "type": "camera-rest", "version": "1.5.0", "name": config['name'], "timestamp": int(time.time()), "uptime": uptime, "properties": { "revision": camera.revision } }
+    version = { "id": config['id'], "type": "camera-rest", "version": "1.5.1", "name": config['name'], "timestamp": int(time.time()), "uptime": uptime, "properties": { "revision": camera.revision } }
     return jsonify(version)
 
 @app.route('/system/config', methods=["POST"])
