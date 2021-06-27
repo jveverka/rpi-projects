@@ -6,9 +6,10 @@ This is simple REST service daemon, which allows access camera on Raspberry PI d
 ## Hardware
 * Supported RPi devices: Raspberry Pi Zero WH, 2, 3, 4.
 * Camera modules:
-  * Raspberry Pi [Camera Module v2](https://www.raspberrypi.org/products/camera-module-v2/)
-  * Raspberry Pi [NoIR Camera v2](https://www.raspberrypi.org/products/pi-noir-camera-v2/)
-  * [Waveshare Camera Modules](https://www.waveshare.com/product/raspberry-pi/cameras.htm).
+  * Raspberry Pi [Camera Module v2](https://www.raspberrypi.org/products/camera-module-v2/).
+  * Raspberry Pi [NoIR Camera v2](https://www.raspberrypi.org/products/pi-noir-camera-v2/).
+  * Waveshare [Camera Modules](https://www.waveshare.com/product/raspberry-pi/cameras.htm).
+  * Waveshare [Camera Scheduler](https://www.waveshare.com/wiki/Camera_Scheduler).
 
 ## Install on Raspberry PI
 1. Install [Raspberry Pi OS Lite 2021-05-28](https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2021-05-28/)
@@ -41,10 +42,16 @@ This is simple REST service daemon, which allows access camera on Raspberry PI d
 * [HTTP basic authentication](https://en.wikipedia.org/wiki/Basic_access_authentication) is required.
 * Get info about RPi Camera device.  
   __GET__ ``/system/info``  
-  ``curl -u client-001:ex4oo http://<ip-address>:<port>/system/info``
+  ```
+  curl -u client-001:ex4oo \
+  http://<ip-address>:<port>/system/info
+  ```
 * Get current configuration  
   __GET__ ``/system/config``  
-  ``curl -u client-001:ex4oo http://<ip-address>:<port>/system/config``
+  ```
+  curl -u client-001:ex4oo \ 
+  http://<ip-address>:<port>/system/config
+  ```
 * Set camera capture configuration   
   __POST__ ``/system/config``  
   Supported config parameters  
@@ -57,9 +64,36 @@ This is simple REST service daemon, which allows access camera on Raspberry PI d
   | rotation      | int    | 0       | enum, degrees "D0", "D90", "D180", "D270"     |
   | quality       | int    | 85      | int in range 0-100                            |
 
+  ```
+  curl -u client-001:ex4oo \
+  --request POST \
+  --url http://<ip-address>:<port>/system/config \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "fileFormat": "jpeg",
+  "quality": 65,
+  "resolution": "M03",
+  "rotation": "D180",
+  "shutterSpeed": 0
+  }' 
+  ```
+
+* Select connected camera for capture. This endpoint is only effective if camera controller uses hardware 
+  [Camera Scheduler](https://www.waveshare.com/wiki/Camera_Scheduler). Supported camera indexes: 0, 1.  
+  __POST__ ``/system/camera``
+  ```
+  curl -u client-001:ex4oo \
+  --request POST \
+  --url http://<ip-address>:<port>/system/camera \
+  --header 'Content-Type: application/json' \
+  --data '{  "camera": 1 }'
+  ```
 * Capture single image and download it as attachment.   
   __GET__ ``/system/capture``  
-  ``curl -u client-001:ex4oo http://<ip-address>:<port>/system/capture --output snapshot.jpg``  
+  ```
+  curl -u client-001:ex4oo \
+  http://<ip-address>:<port>/system/capture --output snapshot.jpg
+  ```  
   
 
 ### Hardware Assembly
@@ -69,4 +103,8 @@ This is simple REST service daemon, which allows access camera on Raspberry PI d
 
 ![image-003](docs/image-003.jpg)
    
+### References
+* [picamera docs](https://picamera.readthedocs.io/en/latest/index.html)
+* [Web streaming](http://picamera.readthedocs.io/en/latest/recipes2.html#web-streaming)
+
 *Enjoy !*

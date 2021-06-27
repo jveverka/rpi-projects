@@ -11,6 +11,7 @@ import okhttp3.Response;
 import one.microproject.rpi.camera.client.CameraClient;
 import one.microproject.rpi.camera.client.ClientException;
 import one.microproject.rpi.camera.client.dto.CameraConfiguration;
+import one.microproject.rpi.camera.client.dto.CameraSelectRequest;
 import one.microproject.rpi.camera.client.dto.ImageCapture;
 import one.microproject.rpi.camera.client.dto.CameraInfo;
 import one.microproject.rpi.device.dto.SystemInfo;
@@ -115,6 +116,26 @@ public class CameraClientImpl implements CameraClient {
                 String fileName = getFileNameFromHeader(response.header("Content-Disposition"), mimeType);
                 LOG.debug("Http OK: {} {}", mimeType, fileName);
                 return new ImageCapture(response.body().byteStream(), fileName, mimeType);
+            }
+            LOG.warn("Http error: {}", response.code());
+            throw new ClientException(ERROR_MESSAGE + response.code());
+        } catch (IOException e) {
+            throw new ClientException(e);
+        }
+    }
+
+    @Override
+    public Integer selectCamera(CameraSelectRequest cameraSelectRequest) {
+        try {
+            RequestBody body = RequestBody.create(mapper.writeValueAsString(cameraSelectRequest), MediaType.get("application/json"));
+            Request request = new Request.Builder()
+                    .url(baseURL + "/system/camera")
+                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(clientId, clientSecret))
+                    .post(body)
+                    .build();
+            Response response = client.newCall(request).execute();
+            if (response.code() == 200) {
+                return mapper.readValue(response.body().string(), CameraSelectRequest.class).getCamera();
             }
             LOG.warn("Http error: {}", response.code());
             throw new ClientException(ERROR_MESSAGE + response.code());

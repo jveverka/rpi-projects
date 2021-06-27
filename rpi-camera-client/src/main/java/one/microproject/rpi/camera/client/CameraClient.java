@@ -1,6 +1,7 @@
 package one.microproject.rpi.camera.client;
 
 import one.microproject.rpi.camera.client.dto.CameraConfiguration;
+import one.microproject.rpi.camera.client.dto.CameraSelectRequest;
 import one.microproject.rpi.camera.client.dto.ImageCapture;
 import one.microproject.rpi.camera.client.dto.CameraInfo;
 import one.microproject.rpi.device.RPiDevice;
@@ -38,5 +39,12 @@ public interface CameraClient extends RPiDevice<CameraInfo> {
      * @return image data as {@link ImageCapture}.
      */
     ImageCapture captureImage();
+
+    /**
+     * Select connected camera. This method is only effective if camera controller uses hardware "camera scheduler" https://www.waveshare.com/wiki/Camera_Scheduler.
+     * @param cameraSelectRequest select camera request.
+     * @return index of selected camera.
+     */
+    Integer selectCamera(CameraSelectRequest cameraSelectRequest);
 
 }
