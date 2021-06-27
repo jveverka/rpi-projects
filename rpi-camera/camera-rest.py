@@ -8,6 +8,7 @@ import io
 from flask import Flask, request, jsonify, send_file
 from flask_httpauth import HTTPBasicAuth
 from werkzeug.security import generate_password_hash, check_password_hash
+import RPi.GPIO as GPIO
 
 print('RPi Camera REST')
 print('app initialization started')
@@ -20,6 +21,7 @@ cf = open(sys.argv[1])
 config = json.load(cf)
 defaults = config['defaults']
 file_name = 'capture-image.jpg'
+gpio_switch_port = 26
 
 camera_resolutions = {
   "M8" : {
@@ -73,7 +75,7 @@ def verify_password(username, password):
 @auth.login_required
 def getVersion():
     uptime = int(time.time()) - started
-    version = { "id": config['id'], "type": "camera-rest", "version": "1.5.1", "name": config['name'], "timestamp": int(time.time()), "uptime": uptime, "properties": { "revision": camera.revision } }
+    version = { "id": config['id'], "type": "camera-rest", "version": "1.5.3", "name": config['name'], "timestamp": int(time.time()), "uptime": uptime, "properties": { "revision": camera.revision } }
     return jsonify(version)
 
 @app.route('/system/config', methods=["POST"])
@@ -83,6 +85,17 @@ def set_config():
     body = request.json
     set_camera(body)
     return jsonify(defaults)
+
+@app.route('/system/camera', methods=["POST"])
+@auth.login_required
+def set_camera():
+    body = request.json
+    print('select capture camera: ' + str(body['camera']))
+    if body['camera'] == 0:
+       GPIO.output(gpio_switch_port, GPIO.LOW)
+    else:
+       GPIO.output(gpio_switch_port, GPIO.HIGH)
+    return body
 
 @app.route('/system/config', methods=["GET"])
 @auth.login_required
@@ -136,7 +149,7 @@ def set_camera(body):
        camera_resolutions[defaults['resolution']]['image_width'],
        camera_resolutions[defaults['resolution']]['image_height']
     )
-    camera.framerate = 30
+    camera.framerate = 15
     camera.rotation = camera_rotations[defaults['rotation']]
     print('set_camera: starting preview ...')
     camera.start_preview()
@@ -153,8 +166,12 @@ if __name__ == '__main__':
         print('#CONFIG defaults.resolution: ' + str(defaults['resolution']))
         print('#CONFIG defaults.shutterSpeed: ' + str(defaults['shutterSpeed']))
         set_camera(defaults)
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(gpio_switch_port,GPIO.OUT)
+        GPIO.output(gpio_switch_port, GPIO.LOW)
         app.run(debug=False, host=config['host'], port=config['port'])
     except SystemExit:
         camera.close()
+        GPIO.cleanup()
         print('camera-rest shutdown.')
         pass
