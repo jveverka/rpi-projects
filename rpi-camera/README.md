@@ -20,6 +20,7 @@ This is simple REST service daemon, which allows access camera on Raspberry PI d
    sudo apt install python3-pip
    pip3 install Flask 
    pip3 install flask_httpauth
+   pip3 install RPi.GPIO
    ```
 4. Copy files on Raspberry Pi device into directory ``/opt/camera`` 
 5. Edit configuration file ``camera-rest.json``, 
