@@ -75,7 +75,7 @@ def verify_password(username, password):
 @auth.login_required
 def getVersion():
     uptime = int(time.time()) - started
-    version = { "id": config['id'], "type": "camera-rest", "version": "1.5.3", "name": config['name'], "timestamp": int(time.time()), "uptime": uptime, "properties": { "revision": camera.revision } }
+    version = { "id": config['id'], "type": "camera-rest", "version": "1.5.4", "name": config['name'], "timestamp": int(time.time()), "uptime": uptime, "properties": { "revision": camera.revision } }
     return jsonify(version)
 
 @app.route('/system/config', methods=["POST"])
@@ -168,7 +168,10 @@ if __name__ == '__main__':
         set_camera(defaults)
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(gpio_switch_port,GPIO.OUT)
-        GPIO.output(gpio_switch_port, GPIO.LOW)
+        if config['camera'] == 0:
+           GPIO.output(gpio_switch_port, GPIO.LOW)
+        else:
+           GPIO.output(gpio_switch_port, GPIO.HIGH)
         app.run(debug=False, host=config['host'], port=config['port'])
     except SystemExit:
         camera.close()
