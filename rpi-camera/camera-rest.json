@@ -9,7 +9,8 @@
     "rotation": "D0",
     "quality": 65,
     "resolution": "M1",
-    "shutterSpeed": 0
+    "shutterSpeed": 0,
+    "framerate": 24
   },
   "credentials": {
     "client-001": "ex4oo",

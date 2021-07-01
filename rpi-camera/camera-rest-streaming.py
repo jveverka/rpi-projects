@@ -16,7 +16,7 @@ import RPi.GPIO as GPIO
 #------------------------------------------------------------------------------
 # INIT SECTION - BEGIN
 #------------------------------------------------------------------------------
-logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
+logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 
 logging.info('RPi Camera REST')
 logging.info('app initialization started')
@@ -25,6 +25,7 @@ started = int(time.time())
 cf = open(sys.argv[1])
 config = json.load(cf)
 defaults = config['defaults']
+gpio_switch_port = 26
 
 camera_rotations = {
   "D0": 0,
@@ -33,7 +34,38 @@ camera_rotations = {
   "D270": 270
 }
 
+camera_resolutions = {
+  "M8" : {
+     "image_width": 3280,
+     "image_height": 2464
+  },
+  "M5" : {
+     "image_width": 2592,
+     "image_height": 1944
+  },
+  "M2" : {
+     "image_width": 1920,
+     "image_height": 1440
+  },
+  "M1" : {
+     "image_width": 1280,
+     "image_height": 960
+  },
+  "M03" : {
+     "image_width": 720,
+     "image_height": 480
+  },
+  "M02" : {
+     "image_width": 640,
+     "image_height": 480
+  }
+}
+
+resolution=str(camera_resolutions[defaults['resolution']]['image_width']) + 'x' +  str(camera_resolutions[defaults['resolution']]['image_height'])
+
 logging.info('app initialization done.')
+logging.info('resolution: %s', resolution)
+logging.info('framerate : %s', defaults['framerate'])
 #------------------------------------------------------------------------------
 # INIT SECTION - DONE
 #------------------------------------------------------------------------------
@@ -106,9 +138,50 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(frame)
             self.wfile.write(b'\r\n')
+        elif self.path == '/system/config':
+            content = json.dumps(defaults).encode('utf-8')
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Content-Length', len(content))
+            self.end_headers()
+            self.wfile.write(content)
+        elif self.path == '/system/camera':
+            content = json.dumps({ "camera": config['camera'] }).encode('utf-8')
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Content-Length', len(content))
+            self.end_headers()
+            self.wfile.write(content)
         else:
             self.send_error(404)
             self.end_headers()
+    def do_POST(self):
+        authorization = self.headers['authorization']
+        logging.debug("authorization: %s", str(authorization))
+        if not isAuthorized(authorization, config['credentials']):
+            self.send_response(401)
+            self.send_header('WWW-Authenticate', 'Basic realm="Access to RPi camera"')
+            self.send_header('Proxy-Authenticate', 'Basic realm="Access to RPi camera"')
+            self.end_headers()
+        elif self.path == '/system/camera':
+            content_len = int(self.headers.get('content-length'))
+            post_body = self.rfile.read(content_len)
+            body_data = json.loads(post_body)
+            logging.info("activating camera %s", body_data['camera'])
+            if body_data['camera'] == 0:
+               GPIO.output(gpio_switch_port, GPIO.LOW)
+            else:
+               GPIO.output(gpio_switch_port, GPIO.HIGH)
+            content = json.dumps({ "camera": body_data['camera'] }).encode('utf-8')
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Content-Length', len(content))
+            self.end_headers()
+            self.wfile.write(content)
+        else:
+            self.send_error(404)
+            self.end_headers()
+
 
 class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
     allow_reuse_address = True
@@ -116,23 +189,29 @@ class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
 
 def isAuthorized(authorization, credentials):
     if authorization == None:
-       logging.error("authorization header is missing !"); 
+       logging.error("authorization header is missing !");
        return False
-    if not authorization.startswith( 'Basic ' ):   
-       logging.error("authorization Basic is expected !"); 
+    if not authorization.startswith( 'Basic ' ):
+       logging.error("authorization Basic is expected !");
        return False
     decoded = str(base64.b64decode(authorization.split()[1]),'utf-8')
-    logging.info("decoded %s", decoded);
     auth_split = decoded.split(":")
     if auth_split[0] in credentials:
        password = credentials[auth_split[0]]
        if password == auth_split[1]:
-          logging.info("user and password match !");
-          return True   
-    logging.error("authorization failed !");
+          logging.info("user and password match !")
+          return True
+    logging.error("authorization failed !")
     return False
 
-with picamera.PiCamera(resolution='640x480', framerate=24) as camera:
+with picamera.PiCamera(resolution=resolution, framerate=defaults['framerate']) as camera:
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(gpio_switch_port,GPIO.OUT)
+    logging.info("selected camera: %s", config['camera'])
+    if config['camera'] == 0:
+       GPIO.output(gpio_switch_port, GPIO.LOW)
+    else:
+       GPIO.output(gpio_switch_port, GPIO.HIGH)
     output = StreamingOutput()
     camera.rotation = camera_rotations[defaults['rotation']]
     camera.start_recording(output, format='mjpeg')
@@ -142,8 +221,9 @@ with picamera.PiCamera(resolution='640x480', framerate=24) as camera:
         server = StreamingServer(address, StreamingHandler)
         server.serve_forever()
     finally:
-        logging.info("app stopped")
+        logging.info("app shutting down ...")
         camera.stop_recording()
-        sys.exit(0)    
+        GPIO.cleanup()
+        logging.info("app stopped.")
+        sys.exit(0)
         pass
-
