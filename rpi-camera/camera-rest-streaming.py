@@ -4,6 +4,7 @@ import io
 import sys
 import time
 import json
+import signal
 import base64
 import picamera
 import logging
@@ -28,37 +29,37 @@ defaults = config['defaults']
 gpio_switch_port = 26
 
 camera_rotations = {
-  "D0": 0,
-  "D90": 90,
-  "D180": 180,
-  "D270": 270
+    "D0": 0,
+    "D90": 90,
+    "D180": 180,
+    "D270": 270
 }
 
 camera_resolutions = {
-  "M8" : {
-     "image_width": 3280,
-     "image_height": 2464
-  },
-  "M5" : {
-     "image_width": 2592,
-     "image_height": 1944
-  },
-  "M2" : {
-     "image_width": 1920,
-     "image_height": 1440
-  },
-  "M1" : {
-     "image_width": 1280,
-     "image_height": 960
-  },
-  "M03" : {
-     "image_width": 720,
-     "image_height": 480
-  },
-  "M02" : {
-     "image_width": 640,
-     "image_height": 480
-  }
+    "M8" : {
+        "image_width": 3280,
+        "image_height": 2464
+    },
+    "M5" : {
+        "image_width": 2592,
+        "image_height": 1944
+    },
+    "M2" : {
+        "image_width": 1920,
+        "image_height": 1440
+    },
+    "M1" : {
+        "image_width": 1280,
+        "image_height": 960
+    },
+    "M03" : {
+        "image_width": 720,
+        "image_height": 480
+    },
+    "M02" : {
+        "image_width": 640,
+        "image_height": 480
+    }
 }
 
 resolution = str(camera_resolutions[defaults['resolution']]['image_width']) + 'x' +  str(camera_resolutions[defaults['resolution']]['image_height'])
@@ -135,8 +136,8 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
         elif self.path == '/system/capture':
             self.send_response(200)
             with output.condition:
-                 output.condition.wait()
-                 frame = output.frame
+                output.condition.wait()
+                frame = output.frame
             self.send_header('Content-Type', 'image/jpeg')
             self.send_header('Content-Length', len(frame))
             self.end_headers()
@@ -173,9 +174,9 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             body_data = json.loads(post_body)
             logging.info("activating camera %s", body_data['camera'])
             if body_data['camera'] == 0:
-               GPIO.output(gpio_switch_port, GPIO.LOW)
+                GPIO.output(gpio_switch_port, GPIO.LOW)
             else:
-               GPIO.output(gpio_switch_port, GPIO.HIGH)
+                GPIO.output(gpio_switch_port, GPIO.HIGH)
             content = json.dumps({ "camera": body_data['camera'] }).encode('utf-8')
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')
@@ -220,46 +221,55 @@ class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
 
 
 def isAuthorized(authorization, credentials):
-    if authorization == None:
-       logging.error("authorization header is missing !")
-       return False
+    if authorization is None:
+        logging.error("authorization header is missing !")
+        return False
     if not authorization.startswith( 'Basic ' ):
-       logging.error("authorization Basic is expected !")
-       return False
+        logging.error("authorization Basic is expected !")
+        return False
     decoded = str(base64.b64decode(authorization.split()[1]),'utf-8')
     auth_split = decoded.split(":")
     if auth_split[0] in credentials:
-       password = credentials[auth_split[0]]
-       if password == auth_split[1]:
-          logging.info("user and password match !")
-          return True
+        password = credentials[auth_split[0]]
+        if password == auth_split[1]:
+            logging.info("user and password match !")
+            return True
     logging.error("authorization failed !")
     return False
 
+def signal_term_handler(signal, frame):
+    logging.info("SIGTERM received")
+    shutdown_action()
+    return
+
+def shutdown_action():
+    logging.info("app shutting down ...")
+    camera.stop_recording()
+    camera.close()
+    GPIO.cleanup()
+    logging.info("app stopped.")
+    sys.exit(0)
+    return
 
 
 if __name__ == '__main__':
-   try:
-      camera = picamera.PiCamera(resolution=resolution, framerate=defaults['framerate'])
-      output = StreamingOutput()
-      GPIO.setmode(GPIO.BCM)
-      GPIO.setup(gpio_switch_port,GPIO.OUT)
-      logging.info("selected camera: %s", config['camera'])
-      if config['camera'] == 0:
-         GPIO.output(gpio_switch_port, GPIO.LOW)
-      else:
-         GPIO.output(gpio_switch_port, GPIO.HIGH)
-      camera.rotation = camera_rotations[defaults['rotation']]
-      camera.start_recording(output, format='mjpeg')
-      address = (config['host'], config['port'])
-      logging.info("starting server at: %s", str(address))
-      server = StreamingServer(address, StreamingHandler)
-      server.serve_forever()
-   except (KeyboardInterrupt, SystemExit):
-      logging.info("app shutting down ...")
-      camera.stop_recording()
-      camera.close()
-      GPIO.cleanup()
-      logging.info("app stopped.")
-      sys.exit(0)
-      pass
+    try:
+        signal.signal(signal.SIGTERM, signal_term_handler)
+        camera = picamera.PiCamera(resolution=resolution, framerate=defaults['framerate'])
+        output = StreamingOutput()
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(gpio_switch_port,GPIO.OUT)
+        logging.info("selected camera: %s", config['camera'])
+        if config['camera'] == 0:
+            GPIO.output(gpio_switch_port, GPIO.LOW)
+        else:
+            GPIO.output(gpio_switch_port, GPIO.HIGH)
+        camera.rotation = camera_rotations[defaults['rotation']]
+        camera.start_recording(output, format='mjpeg')
+        address = (config['host'], config['port'])
+        logging.info("starting server at: %s", str(address))
+        server = StreamingServer(address, StreamingHandler)
+        server.serve_forever()
+    except (KeyboardInterrupt):
+        shutdown_action()
+        pass
