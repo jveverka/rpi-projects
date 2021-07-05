@@ -9,7 +9,7 @@
     "resolution": "R1",
     "framerate": 24
   },
-  "camera_resolutions": {
+  "cameraRsesolutions": {
     "R5" : {
       "image_width": 2592,
       "image_height": 1944
@@ -30,6 +30,12 @@
       "image_width": 640,
       "image_height": 480
     }
+  },
+  "cameraRotations": {
+    "D0": 0,
+    "D90": 90,
+    "D180": 180,
+    "D270": 270
   },
   "credentials": {
     "client-001": "ex4oo",

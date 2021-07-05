@@ -25,17 +25,11 @@ logging.info('app initialization started')
 started = int(time.time())
 cf = open(sys.argv[1])
 config = json.load(cf)
-defaults = config['defaults']
 gpio_switch_port = 26
 
-camera_rotations = {
-    "D0": 0,
-    "D90": 90,
-    "D180": 180,
-    "D270": 270
-}
-
-camera_resolutions = config['camera_resolutions']
+defaults = config['defaults']
+camera_rotations = config['cameraRotations']
+camera_resolutions = config['cameraRsesolutions']
 
 resolution = str(camera_resolutions[defaults['resolution']]['image_width']) + 'x' +  str(camera_resolutions[defaults['resolution']]['image_height'])
 
