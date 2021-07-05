@@ -21,6 +21,7 @@ logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 
 logging.info('RPi Camera REST')
 logging.info('app initialization started')
+logging.info('loading config file: %s', sys.argv[1])
 
 started = int(time.time())
 cf = open(sys.argv[1])
