@@ -11,14 +11,17 @@ import okhttp3.Response;
 import one.microproject.rpi.camera.client.CameraClient;
 import one.microproject.rpi.camera.client.ClientException;
 import one.microproject.rpi.camera.client.dto.CameraConfiguration;
-import one.microproject.rpi.camera.client.dto.CameraSelectRequest;
+import one.microproject.rpi.camera.client.dto.CameraSelect;
 import one.microproject.rpi.camera.client.dto.ImageCapture;
 import one.microproject.rpi.camera.client.dto.CameraInfo;
+import one.microproject.rpi.camera.client.dto.Resolutions;
+import one.microproject.rpi.camera.client.dto.Rotations;
 import one.microproject.rpi.device.dto.SystemInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Base64;
 
@@ -63,21 +66,7 @@ public class CameraClientImpl implements CameraClient {
 
     @Override
     public CameraConfiguration getConfiguration() {
-        try {
-            Request request = new Request.Builder()
-                    .url(baseURL + "/system/config")
-                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(clientId, clientSecret))
-                    .get()
-                    .build();
-            Response response = client.newCall(request).execute();
-            if (response.code() == 200) {
-                return mapper.readValue(response.body().string(), CameraConfiguration.class);
-            }
-            LOG.warn("Http error: {}", response.code());
-            throw new ClientException(ERROR_MESSAGE + response.code());
-        } catch (IOException e) {
-            throw new ClientException(e);
-        }
+        return getData("/system/config", CameraConfiguration.class);
     }
 
     @Override
@@ -125,7 +114,31 @@ public class CameraClientImpl implements CameraClient {
     }
 
     @Override
-    public Integer selectCamera(CameraSelectRequest cameraSelectRequest) {
+    public InputStream captureVideo() {
+        try {
+            HttpUrl.Builder httpUrlBuilder = HttpUrl.parse(baseURL + "/system/stream.mjpg").newBuilder();
+            Request request = new Request.Builder()
+                    .url(httpUrlBuilder.build())
+                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(clientId, clientSecret))
+                    .get()
+                    .build();
+
+            Response response = client.newCall(request).execute();
+            if (response.code() == 200) {
+                String mimeType = response.header("Content-Type");
+                String fileName = getFileNameFromHeader(response.header("Content-Disposition"), mimeType);
+                LOG.debug("Http OK: {} {}", mimeType, fileName);
+                return response.body().byteStream();
+            }
+            LOG.warn("Http error: {}", response.code());
+            throw new ClientException(ERROR_MESSAGE + response.code());
+        } catch (IOException e) {
+            throw new ClientException(e);
+        }
+    }
+
+    @Override
+    public CameraSelect selectCamera(CameraSelect cameraSelectRequest) {
         try {
             RequestBody body = RequestBody.create(mapper.writeValueAsString(cameraSelectRequest), MediaType.get("application/json"));
             Request request = new Request.Builder()
@@ -135,13 +148,28 @@ public class CameraClientImpl implements CameraClient {
                     .build();
             Response response = client.newCall(request).execute();
             if (response.code() == 200) {
-                return mapper.readValue(response.body().string(), CameraSelectRequest.class).getCamera();
+                return mapper.readValue(response.body().string(), CameraSelect.class);
             }
             LOG.warn("Http error: {}", response.code());
             throw new ClientException(ERROR_MESSAGE + response.code());
         } catch (IOException e) {
             throw new ClientException(e);
         }
+    }
+
+    @Override
+    public CameraSelect getSelectedCamera() {
+        return getData("/system/camera", CameraSelect.class);
+    }
+
+    @Override
+    public Resolutions getResolutions() {
+        return getData("/system/resolutions", Resolutions.class);
+    }
+
+    @Override
+    public Rotations getRotations() {
+        return getData("/system/rotations", Rotations.class);
     }
 
     public static String createBasicAuthorizationFromCredentials(String clientId, String clientSecret) {
@@ -161,6 +189,24 @@ public class CameraClientImpl implements CameraClient {
             }
         } catch (Exception e) {
             return "capture-image.jpg";
+        }
+    }
+
+    private <T> T getData(String path,  Class<T> type) {
+        try {
+            Request request = new Request.Builder()
+                    .url(baseURL + path)
+                    .addHeader(AUTHORIZATION, createBasicAuthorizationFromCredentials(clientId, clientSecret))
+                    .get()
+                    .build();
+            Response response = client.newCall(request).execute();
+            if (response.code() == 200) {
+                return mapper.readValue(response.body().string(), type);
+            }
+            LOG.warn("Http error: {}", response.code());
+            throw new ClientException(ERROR_MESSAGE + response.code());
+        } catch (IOException e) {
+            throw new ClientException(e);
         }
     }
 

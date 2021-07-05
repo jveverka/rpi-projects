@@ -22,7 +22,7 @@ This is simple REST service daemon, which allows access camera on Raspberry PI d
    ```
 4. Copy files on Raspberry Pi device into directory ``/opt/camera`` 
 5. Edit configuration file ``camera-rest.json``, 
-   set http listening port, user credentials. 
+   set http listening port, user credentials, camera resolutions and default settings. 
 6. Install and enable ``camera-rest`` as systemd service.
    ```
    sudo cp camera-rest.service /etc/systemd/system/

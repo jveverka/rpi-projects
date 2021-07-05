@@ -1,11 +1,15 @@
 package one.microproject.rpi.camera.client;
 
 import one.microproject.rpi.camera.client.dto.CameraConfiguration;
-import one.microproject.rpi.camera.client.dto.CameraSelectRequest;
+import one.microproject.rpi.camera.client.dto.CameraSelect;
 import one.microproject.rpi.camera.client.dto.ImageCapture;
 import one.microproject.rpi.camera.client.dto.CameraInfo;
+import one.microproject.rpi.camera.client.dto.Resolutions;
+import one.microproject.rpi.camera.client.dto.Rotations;
 import one.microproject.rpi.device.RPiDevice;
 import one.microproject.rpi.device.dto.SystemInfo;
+
+import java.io.InputStream;
 
 
 /**
@@ -35,16 +39,40 @@ public interface CameraClient extends RPiDevice<CameraInfo> {
     CameraConfiguration setConfiguration(CameraConfiguration configuration);
 
     /**
-     * Capture camera image using current {@link CameraConfiguration}.
+     * Capture image using current {@link CameraConfiguration}.
      * @return image data as {@link ImageCapture}.
      */
     ImageCapture captureImage();
+
+    /**
+     * Capture video using current {@link CameraConfiguration}.
+     * @return video data stream.
+     */
+    InputStream captureVideo();
 
     /**
      * Select connected camera. This method is only effective if camera controller uses hardware "camera scheduler" https://www.waveshare.com/wiki/Camera_Scheduler.
      * @param cameraSelectRequest select camera request.
      * @return index of selected camera.
      */
-    Integer selectCamera(CameraSelectRequest cameraSelectRequest);
+    CameraSelect selectCamera(CameraSelect cameraSelectRequest);
+
+    /**
+     * Get selected connected camera.
+     * @return index of selected camera.
+     */
+    CameraSelect getSelectedCamera();
+
+    /**
+     * Get available camera resolutions.
+     * @return available camera resolutions.
+     */
+    Resolutions getResolutions();
+
+    /**
+     * Get available camera rotations.
+     * @return available camera rotations.
+     */
+    Rotations getRotations();
 
 }

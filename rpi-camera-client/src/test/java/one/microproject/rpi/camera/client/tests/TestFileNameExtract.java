@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class TestFileNameExtract {
+class TestFileNameExtract {
 
     private static Stream<Arguments> provideTestData() {
         return Stream.of(

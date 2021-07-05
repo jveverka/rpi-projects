@@ -3,12 +3,12 @@ package one.microproject.rpi.camera.client.dto;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class CameraSelectRequest {
+public class CameraSelect {
 
     private final Integer camera;
 
     @JsonCreator
-    public CameraSelectRequest(@JsonProperty("camera") Integer camera) {
+    public CameraSelect(@JsonProperty("camera") Integer camera) {
         this.camera = camera;
     }
 

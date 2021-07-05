@@ -30,7 +30,7 @@ gpio_switch_port = 26
 
 defaults = config['defaults']
 camera_rotations = config['cameraRotations']
-camera_resolutions = config['cameraRsesolutions']
+camera_resolutions = config['cameraResolutions']
 
 resolution = str(camera_resolutions[defaults['resolution']]['image_width']) + 'x' +  str(camera_resolutions[defaults['resolution']]['image_height'])
 
