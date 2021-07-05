@@ -36,27 +36,23 @@ camera_rotations = {
 }
 
 camera_resolutions = {
-    "M8" : {
-        "image_width": 3280,
-        "image_height": 2464
-    },
-    "M5" : {
+    "R5" : {
         "image_width": 2592,
         "image_height": 1944
     },
-    "M2" : {
+    "R4" : {
         "image_width": 1920,
-        "image_height": 1440
+        "image_height": 1080
     },
-    "M1" : {
-        "image_width": 1280,
-        "image_height": 960
+    "R3" : {
+        "image_width": 1296,
+        "image_height": 972
     },
-    "M03" : {
-        "image_width": 720,
-        "image_height": 480
+    "R2" : {
+        "image_width": 1296,
+        "image_height": 730
     },
-    "M02" : {
+    "R1" : {
         "image_width": 640,
         "image_height": 480
     }
@@ -152,6 +148,20 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             self.wfile.write(content)
         elif self.path == '/system/camera':
             content = json.dumps({ "camera": config['camera'] }).encode('utf-8')
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Content-Length', len(content))
+            self.end_headers()
+            self.wfile.write(content)
+        elif self.path == '/system/resolutions':
+            content = json.dumps(camera_resolutions).encode('utf-8')
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Content-Length', len(content))
+            self.end_headers()
+            self.wfile.write(content)
+        elif self.path == '/system/rotations':
+            content = json.dumps(camera_rotations).encode('utf-8')
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')
             self.send_header('Content-Length', len(content))

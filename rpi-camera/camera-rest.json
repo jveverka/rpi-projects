@@ -3,13 +3,10 @@
   "host": "0.0.0.0",
   "port": 8080,
   "name": "Raspberry PI camera device",
-  "camera": 0,
+  "camera": 1,
   "defaults": {
-    "imageFormat": "JPEG",
-    "rotation": "D0",
-    "quality": 65,
-    "resolution": "M1",
-    "shutterSpeed": 0,
+    "rotation": "D180",
+    "resolution": "R1",
     "framerate": 24
   },
   "credentials": {
