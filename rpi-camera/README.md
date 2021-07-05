@@ -18,8 +18,6 @@ This is simple REST service daemon, which allows access camera on Raspberry PI d
    ```
    sudo apt install python-picamera python3-picamera
    sudo apt install python3-pip
-   pip3 install Flask 
-   pip3 install flask_httpauth
    pip3 install RPi.GPIO
    ```
 4. Copy files on Raspberry Pi device into directory ``/opt/camera`` 
@@ -58,12 +56,10 @@ This is simple REST service daemon, which allows access camera on Raspberry PI d
   Supported config parameters  
 
   |  parameter    | type   | default | description                                   |
-  |---------------|--------|---------|-----------------------------------------------|
-  | shutter-speed | float  | 0       | float, shutter speed in milliseconds          |
-  | format        | string | "jpeg"  | enum, "JPEG", "PNG"                           |
-  | resolution    | string | "5M"    | enum, "M03", M1", "M2", "M5", "M8" megapixels |
-  | rotation      | int    | 0       | enum, degrees "D0", "D90", "D180", "D270"     |
-  | quality       | int    | 85      | int in range 0-100                            |
+  |---------------|--------|---------|-------------------------------------------|
+  | resolution    | string | "R1"    | enum, "R1", R2", "R3", ...                |
+  | rotation      | int    | 0       | enum, degrees "D0", "D90", "D180", "D270" |
+  | framerate     | int    | 24      | framerate                                 |
 
   ```
   curl -u client-001:ex4oo \
@@ -71,11 +67,9 @@ This is simple REST service daemon, which allows access camera on Raspberry PI d
   --url http://<ip-address>:<port>/system/config \
   --header 'Content-Type: application/json' \
   --data '{
-  "fileFormat": "jpeg",
-  "quality": 65,
-  "resolution": "M03",
-  "rotation": "D180",
-  "shutterSpeed": 0
+    "resolution": "R1",
+    "rotation": "D180",
+    "framerate": 24
   }' 
   ```
 
@@ -89,13 +83,36 @@ This is simple REST service daemon, which allows access camera on Raspberry PI d
   --header 'Content-Type: application/json' \
   --data '{  "camera": 1 }'
   ```
+* Get connected camera for capture.   
+  __GET__ ``/system/camera``
+  ```
+  curl -u client-001:ex4oo \
+  http://<ip-address>:<port>/system/camera 
+  ```
+* Get available camera resolutions.   
+  __GET__ ``/system/resolutions``
+  ```
+  curl -u client-001:ex4oo \
+  http://<ip-address>:<port>/system/resolutions 
+  ```
+* Get available camera rotations.   
+  __GET__ ``/system/rotations``
+  ```
+  curl -u client-001:ex4oo \
+  http://<ip-address>:<port>/system/resolutions 
+  ```
 * Capture single image and download it as attachment.   
   __GET__ ``/system/capture``  
   ```
   curl -u client-001:ex4oo \
   http://<ip-address>:<port>/system/capture --output snapshot.jpg
   ```  
-  
+* Capture video stream and download it as attachment.   
+  __GET__ ``/system/stream.mjpg``
+  ```
+  curl -u client-001:ex4oo \
+  http://<ip-address>:<port>/system/stream.mjpg --output video.mjpg
+  ```    
 
 ### Hardware Assembly
 ![image-001](docs/image-001.jpg)
