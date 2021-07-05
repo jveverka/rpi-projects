@@ -35,28 +35,7 @@ camera_rotations = {
     "D270": 270
 }
 
-camera_resolutions = {
-    "R5" : {
-        "image_width": 2592,
-        "image_height": 1944
-    },
-    "R4" : {
-        "image_width": 1920,
-        "image_height": 1080
-    },
-    "R3" : {
-        "image_width": 1296,
-        "image_height": 972
-    },
-    "R2" : {
-        "image_width": 1296,
-        "image_height": 730
-    },
-    "R1" : {
-        "image_width": 640,
-        "image_height": 480
-    }
-}
+camera_resolutions = config['camera_resolutions']
 
 resolution = str(camera_resolutions[defaults['resolution']]['image_width']) + 'x' +  str(camera_resolutions[defaults['resolution']]['image_height'])
 
