@@ -119,18 +119,18 @@ docker-compose down -v --rmi all --remove-orphans
 ## Build Dockers for x86_64 and ARM64 
 ```
 # on x86 AMD64 device:
-docker build -t jurajveverka/device-controller:1.4.10-amd64 --build-arg ARCH=amd64 --file ./device-controller/Dockerfile ./device-controller 
-docker push jurajveverka/device-controller:1.4.10-amd64
+docker build -t jurajveverka/device-controller:1.4.11-amd64 --build-arg ARCH=amd64 --file ./device-controller/Dockerfile ./device-controller 
+docker push jurajveverka/device-controller:1.4.11-amd64
 
 # on ARM64 v8 device:
-docker build -t jurajveverka/device-controller:1.4.10-arm64v8 --build-arg ARCH=arm64v8 --file ./device-controller/Dockerfile ./device-controller 
-docker push jurajveverka/device-controller:1.4.10-arm64v8
+docker build -t jurajveverka/device-controller:1.4.11-arm64v8 --build-arg ARCH=arm64v8 --file ./device-controller/Dockerfile ./device-controller 
+docker push jurajveverka/device-controller:1.4.11-arm64v8
 
 # on x86 AMD64 device: 
 docker manifest create \
-jurajveverka/device-controller:1.4.10 \
---amend jurajveverka/device-controller:1.4.10-amd64 \
---amend jurajveverka/device-controller:1.4.10-arm64v8
+jurajveverka/device-controller:1.4.11 \
+--amend jurajveverka/device-controller:1.4.11-amd64 \
+--amend jurajveverka/device-controller:1.4.11-arm64v8
 
-docker manifest push jurajveverka/device-controller:1.4.10
+docker manifest push jurajveverka/device-controller:1.4.11
 ```

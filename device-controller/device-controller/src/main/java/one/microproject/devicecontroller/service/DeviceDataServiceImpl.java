@@ -16,7 +16,10 @@ import one.microproject.devicecontroller.model.DeviceData;
 import one.microproject.rpi.camera.client.CameraClient;
 import one.microproject.rpi.camera.client.dto.CameraConfiguration;
 import one.microproject.rpi.camera.client.dto.CameraInfo;
+import one.microproject.rpi.camera.client.dto.CameraSelect;
 import one.microproject.rpi.camera.client.dto.ImageCapture;
+import one.microproject.rpi.camera.client.dto.Resolutions;
+import one.microproject.rpi.camera.client.dto.Rotations;
 import one.microproject.rpi.device.dto.SystemInfo;
 import one.microproject.rpi.device.sim.DeviceSim;
 import one.microproject.rpi.device.sim.dto.DataRequest;
@@ -168,6 +171,23 @@ public class DeviceDataServiceImpl implements DeviceDataService {
                 } else if ("get-config".equals(query.queryType())) {
                     CameraConfiguration effectiveConfiguration = cameraClient.getConfiguration();
                     ObjectNode objectNode = objectMapper.valueToTree(effectiveConfiguration);
+                    response = new DeviceQueryResponse(query.id(), query.deviceId(), query.queryType(), ResponseStatus.OK, objectNode);
+                } else if ("get-resolutions".equals(query.queryType())) {
+                    Resolutions resolutions = cameraClient.getResolutions();
+                    ObjectNode objectNode = objectMapper.valueToTree(resolutions);
+                    response = new DeviceQueryResponse(query.id(), query.deviceId(), query.queryType(), ResponseStatus.OK, objectNode);
+                } else if ("get-rotations".equals(query.queryType())) {
+                    Rotations rotations = cameraClient.getRotations();
+                    ObjectNode objectNode = objectMapper.valueToTree(rotations);
+                    response = new DeviceQueryResponse(query.id(), query.deviceId(), query.queryType(), ResponseStatus.OK, objectNode);
+                } else if ("get-selected-camera".equals(query.queryType())) {
+                    CameraSelect selectedCamera = cameraClient.getSelectedCamera();
+                    ObjectNode objectNode = objectMapper.valueToTree(selectedCamera);
+                    response = new DeviceQueryResponse(query.id(), query.deviceId(), query.queryType(), ResponseStatus.OK, objectNode);
+                } else if ("select-camera".equals(query.queryType())) {
+                    CameraSelect requestedSelectedCamera = objectMapper.treeToValue(query.payload(), CameraSelect.class);
+                    CameraSelect selectedCamera = cameraClient.selectCamera(requestedSelectedCamera);
+                    ObjectNode objectNode = objectMapper.valueToTree(selectedCamera);
                     response = new DeviceQueryResponse(query.id(), query.deviceId(), query.queryType(), ResponseStatus.OK, objectNode);
                 } else {
                     throw new UnsupportedOperationException("Unsupported query type=" + query.queryType() + "  for device type=" + clientAdapterWrapper.getType());
