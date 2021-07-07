@@ -1,5 +1,5 @@
 # Device Controller
-Raspberry Pi controller gateway.
+Raspberry Pi device controller gateway.
 
 ![architecture](docs/device-controller.svg)
 
@@ -10,7 +10,7 @@ Raspberry Pi controller gateway.
 ## Compatible devices
 * [__rpi-camera__](../rpi-camera) - RPi Camera project.
 * [__rpi-powercontroller__](../rpi-powercontroller) - Remotely controller power switch. 
-* [__device-client-sim__](device-client-sim) - Test device simulator.
+* [__rpi-device__](../rpi-device) - Test device base APIs and simulator.
 
 ## REST Endpoints
 Discover available APIs and service status.
