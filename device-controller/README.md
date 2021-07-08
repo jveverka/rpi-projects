@@ -1,5 +1,9 @@
 # Device Controller
-Raspberry Pi device controller gateway.
+Raspberry Pi device controller gateway. 
+This microservice is a proxy between IoT Raspberry PI devices. Features listed below are implemented.
+* Proxy between  IoT RPi devices and client applications.
+* Connected device management  and monitoring.
+* Security based on user roles and permissions.
 
 ![architecture](docs/device-controller.svg)
 
