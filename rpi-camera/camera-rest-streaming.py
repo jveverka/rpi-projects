@@ -112,7 +112,6 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             self.send_header('Content-Length', len(frame))
             self.end_headers()
             self.wfile.write(frame)
-            self.wfile.write(b'\r\n')
         elif self.path == '/system/config':
             content = json.dumps(defaults).encode('utf-8')
             self.send_response(200)
