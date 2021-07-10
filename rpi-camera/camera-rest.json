@@ -5,7 +5,7 @@
   "name": "Raspberry PI camera device",
   "camera": 1,
   "defaults": {
-    "rotation": "D180",
+    "rotation": "D0",
     "resolution": "R1",
     "framerate": 24
   },
