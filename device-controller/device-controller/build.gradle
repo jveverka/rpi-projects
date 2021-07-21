@@ -1,11 +1,11 @@
 plugins {
-    id 'org.springframework.boot' version '2.5.0'
+    id 'org.springframework.boot' version '2.5.2'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
 }
 
 group = 'one.microproject.devicecontroller'
-version = '1.4.12-SNAPSHOT'
+version = '1.4.14-SNAPSHOT'
 sourceCompatibility = '16'
 targetCompatibility = '16'
 
@@ -23,18 +23,18 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-ui:1.5.9'
 
     implementation 'one.microproject.rpi:rpi-device:1.1.1'
-    implementation 'one.microproject.rpi:rpi-camera-client:1.6.0'
-    implementation 'one.microproject.rpi:rpi-powercontroller-client:1.4.0'
+    implementation 'one.microproject.rpi:rpi-camera-client:1.6.1'
+    implementation 'one.microproject.rpi:rpi-powercontroller-client:1.4.1'
 
-    implementation 'org.bouncycastle:bcpg-jdk15on:1.68'
-    implementation 'org.bouncycastle:bcpkix-jdk15on:1.68'
-    implementation 'one.microproject.iamservice:iam-model:2.5.5-RELEASE'
-    implementation 'one.microproject.iamservice:iam-client:2.5.5-RELEASE'
-    implementation 'one.microproject.iamservice:iam-core:2.5.5-RELEASE'
+    implementation 'org.bouncycastle:bcpg-jdk15on:1.69'
+    implementation 'org.bouncycastle:bcpkix-jdk15on:1.69'
+    implementation 'one.microproject.iamservice:iam-model:2.5.7-RELEASE'
+    implementation 'one.microproject.iamservice:iam-client:2.5.7-RELEASE'
+    implementation 'one.microproject.iamservice:iam-core:2.5.7-RELEASE'
     implementation 'com.squareup.okhttp3:okhttp:4.9.1'
     implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
 
-    testImplementation 'one.microproject.iamservice:iam-service-client:2.5.5-RELEASE'
+    testImplementation 'one.microproject.iamservice:iam-service-client:2.5.7-RELEASE'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.testcontainers:testcontainers:1.15.3'
     testImplementation 'org.testcontainers:junit-jupiter:1.15.3'
