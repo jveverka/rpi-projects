@@ -1,4 +1,4 @@
 #!/bin/bash
 
-/opt/camera/camera-rest.py /opt/camera/camera-rest-streaming.json
+/opt/camera/camera-rest-streaming.py /opt/camera/camera-rest.json
 
