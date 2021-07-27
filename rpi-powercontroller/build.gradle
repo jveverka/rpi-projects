@@ -8,7 +8,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 group = 'one.microproject.rpi'
-version = '1.4.1'
+version = '1.4.2'
 mainClassName = 'one.microproject.rpi.powercontroller.PowerControllerApp'
 applicationDefaultJvmArgs = ['-Xms32m', '-Xmx32m', '-XX:MaxMetaspaceSize=32m']
 
@@ -19,12 +19,12 @@ repositories {
 
 dependencies {
     implementation 'com.pi4j:pi4j-core:1.2'
-    implementation 'io.undertow:undertow-core:2.2.8.Final'
-    implementation 'org.slf4j:slf4j-api:1.7.31'
-    implementation 'org.slf4j:slf4j-simple:1.7.31'
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.12.3'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
-    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.12.3'
+    implementation 'io.undertow:undertow-core:2.2.9.Final'
+    implementation 'org.slf4j:slf4j-api:1.7.32'
+    implementation 'org.slf4j:slf4j-simple:1.7.32'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.12.4'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.4'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.12.4'
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
     testImplementation 'com.squareup.okhttp3:okhttp:4.9.1'
