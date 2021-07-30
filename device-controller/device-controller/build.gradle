@@ -1,11 +1,11 @@
 plugins {
-    id 'org.springframework.boot' version '2.5.2'
+    id 'org.springframework.boot' version '2.5.3'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
 }
 
 group = 'one.microproject.devicecontroller'
-version = '1.4.14-SNAPSHOT'
+version = '1.4.20-SNAPSHOT'
 sourceCompatibility = '16'
 targetCompatibility = '16'
 
@@ -22,15 +22,15 @@ dependencies {
     runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
     implementation 'org.springdoc:springdoc-openapi-ui:1.5.9'
 
-    implementation 'one.microproject.rpi:rpi-device:1.1.1'
-    implementation 'one.microproject.rpi:rpi-camera-client:1.6.1'
-    implementation 'one.microproject.rpi:rpi-powercontroller-client:1.4.1'
+    implementation 'one.microproject.rpi:rpi-device:1.1.2'
+    implementation 'one.microproject.rpi:rpi-camera-client:1.6.2'
+    implementation 'one.microproject.rpi:rpi-powercontroller-client:1.4.2'
 
     implementation 'org.bouncycastle:bcpg-jdk15on:1.69'
     implementation 'org.bouncycastle:bcpkix-jdk15on:1.69'
-    implementation 'one.microproject.iamservice:iam-model:2.5.7-RELEASE'
-    implementation 'one.microproject.iamservice:iam-client:2.5.7-RELEASE'
-    implementation 'one.microproject.iamservice:iam-core:2.5.7-RELEASE'
+    implementation 'one.microproject.iamservice:iam-model:2.5.8-RELEASE'
+    implementation 'one.microproject.iamservice:iam-client:2.5.8-RELEASE'
+    implementation 'one.microproject.iamservice:iam-core:2.5.8-RELEASE'
     implementation 'com.squareup.okhttp3:okhttp:4.9.1'
     implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
 
