@@ -122,7 +122,7 @@ docker-compose down -v --rmi all --remove-orphans
 
 ## Build Dockers for x86_64 and ARM64 
 ```
-export VERSION=1.4.20
+export VERSION=1.4.21
 # on x86 AMD64 device:
 docker build -t jurajveverka/device-controller:${VERSION}-amd64 --build-arg ARCH=amd64 --file ./device-controller/Dockerfile ./device-controller 
 docker push jurajveverka/device-controller:${VERSION}-amd64
