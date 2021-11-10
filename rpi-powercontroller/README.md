@@ -116,7 +116,7 @@ gradle clean build test installDist distZip
 3. Install I2C tools and [wiringpi](http://wiringpi.com/download-and-install/)  
    ```
    sudo apt-get install -y python-smbus i2c-tools
-   sudo apt-get install wiringpi
+   sudo apt-get install -y wiringpi
    ```
 4. Check gpio and connected I2C devices
    ```
