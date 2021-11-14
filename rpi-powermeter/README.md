@@ -1,7 +1,7 @@
 # RPi Power Meter
 This project describes how to build single phase AC power meter and 
 send meter data to central database (ElasticSearch). Power meter used in this project is
-digital __DDS-1Y-18L__ single phase type equipped with __DIN 43864__ compatible pulse interface.
+digital __DDS-1Y-18L__ single phase DIN rail type equipped with __DIN 43864__ compatible pulse interface.
 
 
 ![architecture](docs/rpi-powermeter-architecture.svg)
