@@ -1,8 +1,19 @@
 # RPi Power Meter
-This project describes how to build AC power meter. 
-![hardware](docs/rpi-powermeter.svg)
+This project describes how to build single phase AC power meter and 
+send meter data to central database (ElasticSearch). Power meter used in this project is
+digital __DDS-1Y-18L__ single phase type equipped with __DIN 43864__ compatible pulse interface.
 
-Detailed [hardware bill of material](docs/hardware-bom.md).
+
+![architecture](docs/rpi-powermeter-architecture.svg)
+
+## Hardware Architecture
+Detailed [hardware bill of material](docs/hardware-bom.md). Raspberry Pi is connected to 
+digital power meter output (S0- and S0+) via GPIO pins. Digital power meter produces one 
+pulse per power consumption unit (usually one pulse per 1Wh, ot 1000 pulses per 1kWh). Pulse 
+from digital power meter is detected by GPIO input pin [15] and triggers data calculation and 
+upload to elasticsearch. For details see [powermeter.py](powermeter.py) implementation.
+
+![hardware](docs/rpi-powermeter-hardware.svg)
 
 ## Install on Raspberry PI
 1. Install [Raspberry Pi OS Lite 2021-05-28](https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2021-11-08/)
@@ -20,6 +31,39 @@ Detailed [hardware bill of material](docs/hardware-bom.md).
    sudo systemctl start powermeter
    sudo systemctl stop powermeter
    sudo systemctl status powermeter
+   ```
+
+### Configuration
+| parameter          | description |
+|--------------------|-------------|
+| device-id          | Unique device id for better power meter indentification. |
+| pulse-value        | Value of one meter pulse in kWh. |
+| voltage-ac         | Standard AC voltage. |
+| cost-kwh           | Cost of one kWh. |
+| data-store/elastic | Hostname and port of ElasticSearch Server. Example: "192.168.44.101:9200" |
+| data-store/index   | Index name in ElasticSearch used to store power meter data. |
+
+## ElasticSearch setup
+1. Create index to store powermeter data. How to start [Elasticsearch in docker](https://github.com/jveverka/guildelines-and-procedures/tree/master/docker/elastic-monitoring-stack).
+   ```
+   curl --request PUT \
+     --url http://<elastic-host>:9200/power-meter \
+     --header 'Content-Type: application/json' \
+     --data '{
+     "mappings": {
+       "properties": {
+         "timestamp": {
+           "type": "date",
+           "format": "epoch_millis"
+         }
+       }
+     }
+   }'
+   ```
+2. Check data written into ``power-meter`` index.
+   ```
+   curl --request GET \
+     --url http://<elastic-host>:9200/power-meter/_search
    ```
 
 ### References
