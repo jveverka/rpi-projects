@@ -67,6 +67,8 @@ Check [this](powermeter.json) configuration example.
    curl --request GET \
      --url http://<elastic-host>:9200/power-meter/_search
    ```
+3. Check data in ``power-meter`` index. Create dashboard in Kibana.
+   ![kibana-dashboard](docs/rpi-powermeter-kibana-dashboard-example.png)
 
 ### References
 * __DIN 43864__ - Electricity meters; current interface for transmitting pulses from a pulsing meter to a tariff metering device
