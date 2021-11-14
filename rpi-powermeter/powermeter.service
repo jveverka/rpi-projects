@@ -1,0 +1,20 @@
+[Unit]
+Description=RPi Powermeter
+After=network.target
+After=systemd-user-sessions.service
+After=network-online.target
+
+[Service]
+User=pi
+Type=simple
+WorkingDirectory=/opt/powermeter
+ExecStart=/opt/powermeter/powermeter-start.sh
+ExecStop=/opt/powermeter/powermeter-stop.sh
+TimeoutSec=30
+Restart=on-failure
+RestartSec=30
+StartLimitInterval=350
+StartLimitBurst=10
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,10 @@
+{
+  "device-id": "power-meter-001",
+  "pulse-value": 0.001,
+  "voltage-ac": 230,
+  "cost-kwh": 0.1354436,
+  "data-store": {
+    "elastic": "192.168.44.101:9200",
+    "index": "power-meter"
+  }
+}
