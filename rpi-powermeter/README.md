@@ -67,7 +67,7 @@ Check [this](powermeter.json) configuration example.
    curl --request GET \
      --url http://<elastic-host>:9200/power-meter/_search
    ```
-3. Check data in ``power-meter`` index. Create dashboard in Kibana.
+3. Use Kibana to check data in ``power-meter`` index. Dashboard example in Kibana:
    ![kibana-dashboard](docs/rpi-powermeter-kibana-dashboard-example.png)
 
 ### References
