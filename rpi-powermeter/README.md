@@ -34,6 +34,8 @@ upload to elasticsearch. For details see [powermeter.py](powermeter.py) implemen
    ```
 
 ### Configuration
+Check [this](powermeter.json) configuration example.
+
 | parameter          | description |
 |--------------------|-------------|
 | device-id          | Unique device id for better power meter indentification. |
