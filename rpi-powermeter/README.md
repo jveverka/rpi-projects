@@ -42,6 +42,9 @@ Check [this](powermeter.json) configuration example.
 | pulse-value        | Value of one meter pulse in kWh. |
 | voltage-ac         | Standard AC voltage. |
 | cost-kwh           | Cost of one kWh. |
+| co2g-per-kwh       | Average CO2 grams produced per kWh. |
+| max-power-kw       | Max power daw of connected load in kW. Used to filter/ignore false meter pulses or interference. |
+| meter-pin          | GPIO pin number connected to powermeter |
 | data-store/elastic | Hostname and port of ElasticSearch Server. Example: "192.168.44.101:9200" |
 | data-store/index   | Index name in ElasticSearch used to store power meter data. |
 
@@ -73,3 +76,4 @@ Check [this](powermeter.json) configuration example.
 ### References
 * __DIN 43864__ - Electricity meters; current interface for transmitting pulses from a pulsing meter to a tariff metering device
 * [Reading PNP pulse output directly to the GPIO](https://forums.raspberrypi.com/viewtopic.php?t=284916)
+* [Electricity production emissions by country](https://www.nowtricity.com/)
