@@ -1,8 +1,13 @@
 # RPi Power Meter
 This project describes how to build single phase AC power meter and 
-send meter data to central database (ElasticSearch). Power meter used in this project is
-digital __DDS-1Y-18L__ single phase DIN rail type equipped with __DIN 43864__ compatible pulse interface.
+store meter data in central database (ElasticSearch). Power meter utilizes 
+digital __DDS-1Y-18L__ single phase DIN rail type equipped with __DIN 43864__ compatible pulse interface 
+to record regular meter pulses, attach timestamp and calculate power consumption, price and other data. Each meter 
+pulse with timestamp, power consumption, price and other data is stored in ElasticSearch index for later 
+visualizations with Kibana.
 
+![banner](docs/photos/rpi-powermeter-banner.png)
+[more photos](docs/hardware-bom.md)
 
 ![architecture](docs/rpi-powermeter-architecture.svg)
 
@@ -18,7 +23,7 @@ upload to elasticsearch. For details see [powermeter.py](powermeter.py) implemen
 ## Install on Raspberry PI
 1. Install [Raspberry Pi OS Lite 2021-05-28](https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2021-11-08/)
 2. Copy files on Raspberry Pi device into directory ``/opt/powermeter``
-5. Edit configuration file ``powermeter.json``.
+5. Edit configuration file [``powermeter.json``](powermeter.json).
 6. Install and enable ``powermeter`` as systemd service.
    ```
    sudo cp powermeter.service /etc/systemd/system/
@@ -95,7 +100,7 @@ Check [this](powermeter.json) configuration example.
      --url http://<elastic-host>:9200/power-meter/_search
    ```
 3. Use Kibana to check data in ``power-meter`` index. Dashboard example in Kibana:
-   ![kibana-dashboard](docs/rpi-powermeter-kibana-dashboard-example.png)
+   ![kibana-dashboard](docs/photos/05-rpi-power-controller-chart.png)
 
 ### References
 * __DIN 43864__ - Electricity meters; current interface for transmitting pulses from a pulsing meter to a tariff metering device
