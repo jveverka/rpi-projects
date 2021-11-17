@@ -60,7 +60,31 @@ Check [this](powermeter.json) configuration example.
          "timestamp": {
            "type": "date",
            "format": "epoch_millis"
-         }
+         },
+         "deviceId": {
+           "type": "keyword"
+         },
+         "interval": {
+           "type": "float"
+         },
+         "voltage": {
+           "type": "double"
+         },
+         "consumed": {
+           "type": "double"
+         },
+         "price": {
+           "type": "double"
+         },
+         "co2gProduced": {
+           "type": "double"
+         },
+         "calculated.power": {
+           "type": "double"
+         },   
+         "calculated.current": {
+           "type": "double"
+         }   
        }
      }
    }'
