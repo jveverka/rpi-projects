@@ -41,7 +41,6 @@ logging.info('co2g_per_kwh: %s', co2g_per_kwh)
 logging.info('max-power-kw: %s', max_power_kw)
 logging.info('meter_pin: %s', meter_pin)
 
-consumed_power = 0
 last_timestamp = 0
 
 def write_to_elastic(device_id, now_timestamp, interval, voltage, consumed, price, power, current, co2_produced):
@@ -72,19 +71,19 @@ while True:
     current = 0
     delta_time = 0
     co2_produced = 0
+    price = 0
     if (last_timestamp > 0):
         delta_time = now_timestamp - last_timestamp
         power   = 1000 * ((pulse_value*3600) / delta_time)
         current = power / voltage_ac
         co2_produced = co2g_per_kwh * pulse_value
+        price = cost_kwh * pulse_value
     local_time = time.localtime(now_timestamp)
     time_str = time.strftime("%Y-%m-%d %H:%M:%S", local_time)
     if ((power / 1000) < max_power_kw):
-        consumed_power = consumed_power + pulse_value
-        cost = consumed_power * cost_kwh
         last_timestamp = now_timestamp
-        logging.info('Meter pulse: ' + time_str + ' [' + str(now_timestamp) + '] | P=' + str(power) + ' W | I=' + str(current) + ' A | consumed: ' + str(consumed_power) + ' kWh | delta time: ' + str(delta_time) + ' s | cost: ' + str(cost) + ' Eur | CO2: ' + str(co2_produced) + 'g')
-        write_to_elastic(device_id, now_timestamp, delta_time, voltage_ac, pulse_value, cost_kwh, power, current, co2_produced)
+        logging.info('Meter pulse: ' + time_str + ' [' + str(now_timestamp) + '] | P=' + str(power) + ' W | I=' + str(current) + ' A | delta time: ' + str(delta_time) + ' s | price: ' + str(price) + ' Eur | CO2: ' + str(co2_produced) + 'g')
+        write_to_elastic(device_id, now_timestamp, delta_time, voltage_ac, pulse_value, price, power, current, co2_produced)
     else:
         logging.info('ERROR: Meter pulse exceeded MAX power limit ! ' + time_str + ' [' + str(now_timestamp) + '] | MAX P=' + str(max_power_kw) + ' kW | P=' + str(power) + ' W | I=' + str(current) + ' A | delta time: ' + str(delta_time) + ' s')
 
