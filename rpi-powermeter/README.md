@@ -49,9 +49,9 @@ Check [this](powermeter.json) configuration example.
 | cost-kwh           | Cost of one kWh. |
 | co2g-per-kwh       | Average CO2 grams produced per kWh. |
 | max-power-kw       | Max power daw of connected load in kW. Used to filter/ignore false meter pulses or interference. |
-| meter-pin          | GPIO pin number connected to powermeter |
-| data-store/elastic | Hostname and port of ElasticSearch Server. Example: "192.168.44.101:9200" |
-| data-store/index   | Index name in ElasticSearch used to store power meter data. |
+| meter-pin          | GPIO pin number connected to powermeter S0+ and S0- interface. |
+| data-store/elastic | Hostname and port of ElasticSearch Server. Example: ``192.168.1.101:9200`` |
+| data-store/index   | Index name in ElasticSearch used to store power meter data. Example: ``power-meter`` |
 
 ## ElasticSearch setup
 1. Create index to store powermeter data. How to start [Elasticsearch in docker](https://github.com/jveverka/guildelines-and-procedures/tree/master/docker/elastic-monitoring-stack).

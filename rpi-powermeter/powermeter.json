@@ -7,7 +7,7 @@
   "max-power-kw": 9.5,
   "meter-pin": 15,
   "data-store": {
-    "elastic": "192.168.44.101:9200",
+    "elastic": "192.168.1.101:9200",
     "index": "power-meter"
   }
 }
