@@ -8,6 +8,8 @@
   "meter-pin": 15,
   "data-store": {
     "elastic": "192.168.1.101:9200",
-    "index": "power-meter"
+    "index": "power-meter",
+    "user": "elastic",
+    "password": "supersecret"
   }
 }
