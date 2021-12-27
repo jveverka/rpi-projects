@@ -1,9 +1,9 @@
 # RPi Power Meter
-This project describes how to build single phase AC power meter and 
-store meter data in central database (ElasticSearch). Power meter utilizes 
-digital __DDS-1Y-18L__ single phase DIN rail type equipped with __DIN 43864__ compatible pulse interface 
+This project describes how to build a single phase AC power meter and 
+store meter data in database (ElasticSearch). Power meter utilizes 
+digital __DDS-1Y-18L__ single phase DIN rail type meter equipped with __DIN 43864__ compatible pulse interface 
 to record regular meter pulses, attach timestamp and calculate power consumption, price and other data. Each meter 
-pulse with timestamp, power consumption, price and other data is stored in ElasticSearch index for later 
+pulse with timestamp, power consumption, price and other data. Records are stored in ElasticSearch index for later 
 visualizations with Kibana.
 
 ![banner](docs/photos/rpi-powermeter-banner.png)
@@ -41,17 +41,17 @@ upload to elasticsearch. For details see [powermeter.py](powermeter.py) implemen
 ### Configuration
 Check [this](powermeter.json) configuration example.
 
-| parameter          | description |
-|--------------------|-------------|
-| device-id          | Unique device id for better power meter indentification. |
-| pulse-value        | Value of one meter pulse in kWh. |
-| voltage-ac         | Standard AC voltage. |
-| cost-kwh           | Cost of one kWh. |
-| co2g-per-kwh       | Average CO2 grams produced per kWh. |
+| Parameter          | Description                                                                                      |
+|--------------------|--------------------------------------------------------------------------------------------------|
+| device-id          | Unique device id for better power meter indentification.                                         |
+| pulse-value        | Value of one meter pulse in kWh.                                                                 |
+| voltage-ac         | Standard AC voltage.                                                                             |
+| cost-kwh           | Cost of one kWh.                                                                                 |
+| co2g-per-kwh       | Average CO2 grams produced per kWh.                                                              |
 | max-power-kw       | Max power daw of connected load in kW. Used to filter/ignore false meter pulses or interference. |
-| meter-pin          | GPIO pin number connected to powermeter S0+ and S0- interface. |
-| data-store/elastic | Hostname and port of ElasticSearch Server. Example: ``192.168.1.101:9200`` |
-| data-store/index   | Index name in ElasticSearch used to store power meter data. Example: ``power-meter`` |
+| meter-pin          | GPIO pin number connected to powermeter S0+ and S0- interface.                                   |
+| data-store/elastic | Hostname and port of ElasticSearch Server. Example: ``192.168.1.101:9200``                       |
+| data-store/index   | Index name in ElasticSearch used to store power meter data. Example: ``power-meter``             |
 
 ## ElasticSearch setup
 1. Create index to store powermeter data. How to start [Elasticsearch in docker](https://github.com/jveverka/guildelines-and-procedures/tree/master/docker/elastic-monitoring-stack).
