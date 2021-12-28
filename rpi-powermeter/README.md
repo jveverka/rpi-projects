@@ -1,8 +1,8 @@
 # RPi Power Meter
 This project describes how to build a single phase AC power meter and 
-store meter data in database (ElasticSearch). Power meter utilizes 
-digital __DDS-1Y-18L__ single phase DIN rail type meter equipped with __DIN 43864__ compatible pulse interface 
-to record regular meter pulses, attach timestamp and calculate power consumption, price and other data. Each meter 
+store power consumption data in database (ElasticSearch). Power meter utilizes 
+digital __DDS-1Y-18L__ single phase DIN rail type unit equipped with __DIN 43864__ compatible pulse interface 
+to record regular meter pulses. RPi device will attach timestamp and calculate power consumption, price and other data. Each meter 
 pulse with timestamp, power consumption, price and other data. Records are stored in ElasticSearch index for later 
 visualizations with Kibana.
 
@@ -12,7 +12,7 @@ visualizations with Kibana.
 ![architecture](docs/rpi-powermeter-architecture.svg)
 
 ## Hardware Architecture
-Detailed [hardware bill of material](docs/hardware-bom.md). Raspberry Pi is connected to 
+Check detailed [hardware bill of material](docs/hardware-bom.md). Raspberry Pi is connected to 
 digital power meter output (S0- and S0+) via GPIO pins. Digital power meter produces one 
 pulse per power consumption unit (usually one pulse per 1Wh, ot 1000 pulses per 1kWh). Pulse 
 from digital power meter is detected by GPIO input pin [15] and triggers data calculation and 
