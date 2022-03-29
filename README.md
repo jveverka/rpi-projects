@@ -18,8 +18,9 @@ This project contains various DYI projects, hardware drivers, schematics and cod
 * __[rpi-powercontroller](rpi-powercontroller)__ - Control relay power switch via HTTP/REST APIs.
 * __[rpi-powercontroller-client](rpi-powercontroller-client)__ - Java Client for [rpi-powercontroller](rpi-powercontroller).
 
-### RPi Power Meter
-* __[rpi-powermeter](rpi-powermeter)__ - Single phase power consumption meter.
+### RPi Power Meters
+* __[rpi-powermeter](rpi-powermeter)__ - Single phase AC power consumption meter.
+* __[rpi-voltage-current](rpi-voltage-current)__ - DC voltage, current and power metering.
 
 ### RPi Camera
 * __[rpi-camera](rpi-camera)__ - Capture images via HTTP/REST APIs. 
