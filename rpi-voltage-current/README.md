@@ -9,7 +9,8 @@ This projects shows how to use some of AD converters and current sensors with ra
    ```
 2. Install gpio and i2c packages.   
    ```
-   sudo apt-get install python3-smbus python3-dev i2c-tools
+   sudo apt-get install python3-smbus python3-dev i2c-tools python3-pip
+   pip3 install adafruit-circuitpython-ads1x15
    sudo i2cdetect -y 1
    ```
    
@@ -21,4 +22,7 @@ This projects shows how to use some of AD converters and current sensors with ra
 
 ### ADS1115 4CH 16-Bit A/D Converter
 * [Datasheet](docs/ads1115.pdf)
-* [Sample Code](https://github.com/adafruit/Adafruit_Python_ADS1x15)
+* [Library](https://github.com/adafruit/Adafruit_Python_ADS1x15)
+* [Sample Code](ads1115.py)
+ 
+![ADS1115](docs/ads1115.jpg)
