@@ -13,10 +13,10 @@ public class PCF8591 implements AutoCloseable {
 
     public static final int ADDRESS = 0x48;
     private static final double MAX_VOLTAGE = 3.3;
-    private static final byte A0 = 0x40;
-    private static final byte A1 = 0x41;
-    private static final byte A2 = 0x42;
-    private static final byte A3 = 0x43;
+    private static final byte RA0 = 0x45;
+    private static final byte RA1 = 0x46;
+    private static final byte RA2 = 0x47;
+    private static final byte RA3 = 0x44;
 
     private final I2C i2c;
     private final double maxVoltage;
@@ -44,26 +44,25 @@ public class PCF8591 implements AutoCloseable {
     }
 
     public double readAIn0() {
-        return readAIn(A0);
+        return readAIn(RA0);
     }
 
     public double readAIn1() {
-        return readAIn(A1);
+        return readAIn(RA1);
     }
 
     public double readAIn2() {
-        return readAIn(A2);
+        return readAIn(RA2);
     }
 
     public double readAIn3() {
-        return readAIn(A3);
+        return readAIn(RA3);
     }
 
-    public double readAIn(byte inAddress) {
-        i2c.write(inAddress);
-        int value = i2c.read();
-        double voltage = ( 3.3 / 255 ) * value;
-        LOG.debug("Input {}, raw: {}, {} V", inAddress, value, voltage);
+    public double readAIn(byte register) {
+        int value = i2c.readRegister(register);
+        double voltage = ( maxVoltage / 255 ) * value;
+        LOG.debug("Input {}, raw: {}, {} V", register, value, voltage);
         return voltage;
     }
 
