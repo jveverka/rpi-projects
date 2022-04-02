@@ -19,9 +19,9 @@ chan1 = AnalogIn(ads, ADS.P1)
 # Create differential input between channel 0 and 1
 #chan = AnalogIn(ads, ADS.P0, ADS.P1)
 
-print("{:>5}\t{:>5}".format('raw', 'v'))
+print("{:>5}\t{:>5}".format('raw', 'voltage'))
 
 while True:
-    print("CH0: {:>5}\t{:>5.3f}".format(chan0.value, chan0.voltage))
-    print("CH1: {:>5}\t{:>5.3f}".format(chan1.value, chan1.voltage))
+    print("CH0: {:>5}\t{:>5.3f} V".format(chan0.value, chan0.voltage))
+    print("CH1: {:>5}\t{:>5.3f} V".format(chan1.value, chan1.voltage))
     time.sleep(0.5)
