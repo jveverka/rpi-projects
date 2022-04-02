@@ -83,7 +83,7 @@ public class ADS1115 implements AutoCloseable {
     private int readIn(int config) {
         i2c.writeRegisterWord(CONFIG_REGISTER, config);
         try {
-            Thread.sleep(25);
+            Thread.sleep(15);
         } catch (InterruptedException e) {
             LOG.error("Error: ", e);
         }

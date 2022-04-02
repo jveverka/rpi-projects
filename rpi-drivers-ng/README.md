@@ -6,10 +6,10 @@ Written in Java using [pi4j](http://pi4j.com/).
 RaspberryPi compatibility: 3, 4, zero
 
 ## Supported chips:
-* __BMP180__ - bosch I2C temperature and pressure sensor
-* __HTU21D__ - I2C relative humidity and temperature sensor
-* __PCF8591__ - I2C 8-bit 4-channel ADC
-* __ADS1115__ - I2C 16-bit 4-channel ADC
+* [__BMP180__](https://www.adafruit.com/product/1603) - bosch I2C temperature and pressure sensor
+* [__HTU21D__](https://www.adafruit.com/product/3515) - I2C relative humidity and temperature sensor
+* [__PCF8591__](https://www.adafruit.com/product/4648) - I2C 8-bit 4-channel ADC
+* [__ADS1115__](https://www.adafruit.com/product/1085) - I2C 16-bit 4-channel ADC
 
 ### Use with maven
 ```
@@ -35,7 +35,7 @@ implementation 'one.microproject.rpi:rpi-drivers:2.0.0'
    ```
    i2cdetect -y 1
    ```
-   Check reference test schema for I2C sensors.
+   Check reference documentation for I2C sensors.
 4. Build driver library locally (on PC):
    ```
    gradle clean build test publishToMavenLocal installDist distZip
@@ -48,5 +48,5 @@ implementation 'one.microproject.rpi:rpi-drivers:2.0.0'
    ```
    unzip rpi-drivers-ng-2.0.0.zip
    cd rpi-drivers-ng-2.0.0/bin
-   ./rpi-drivers-ng ALL, ADS1115, BMP180, HTU21D, PCF8591 
+   ./rpi-drivers-ng ALL | ADS1115 | BMP180 | HTU21D | PCF8591 
    ```
