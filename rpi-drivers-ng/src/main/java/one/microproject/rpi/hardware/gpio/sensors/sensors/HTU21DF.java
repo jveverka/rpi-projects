@@ -17,7 +17,7 @@ public class HTU21DF implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(HTU21DF.class);
 
-    public static final int HTU21DF_ADDRESS = 0x40;
+    public static final int ADDRESS = 0x40;
     // HTU21DF Registers
     public static final int HTU21DF_READTEMP = 0xE3;
     public static final int HTU21DF_READHUM = 0xE5;
@@ -32,7 +32,7 @@ public class HTU21DF implements AutoCloseable {
     private I2C htu21df;
 
     public HTU21DF(Context pi4j) {
-        this(pi4j, HTU21DF_ADDRESS);
+        this(pi4j, ADDRESS);
     }
 
     public HTU21DF(Context pi4j, int address) {
@@ -120,7 +120,7 @@ public class HTU21DF implements AutoCloseable {
         try {
             Thread.sleep(howMuch);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOG.error("Error: ", e);
         }
     }
 

@@ -22,7 +22,7 @@ public class BMP180 implements AutoCloseable {
     public static final int BIG_ENDIAN = 1;
     private static final int BMP180_ENDIANNESS = BIG_ENDIAN;
 
-    public static final int BMP180_ADDRESS = 0x77;
+    public static final int ADDRESS = 0x77;
     // Operating Modes
     public static final int BMP180_ULTRALOWPOWER = 0;
     public static final int BMP180_STANDARD = 1;
@@ -59,12 +59,12 @@ public class BMP180 implements AutoCloseable {
     private int calMB = 0;
     private int calMC = 0;
     private int calMD = 0;
-
-    private final I2C bmp180;
     private int mode = BMP180_STANDARD;
 
+    private final I2C bmp180;
+
     public BMP180(Context pi4j) {
-        this(pi4j, BMP180_ADDRESS);
+        this(pi4j, ADDRESS);
     }
 
     public BMP180(Context pi4j, int address) {
@@ -77,28 +77,18 @@ public class BMP180 implements AutoCloseable {
 
     private int readU8(int reg) {
         // "Read an unsigned byte from the I2C device"
-        int result = 0;
-        try {
-            result = this.bmp180.readRegister(reg);
-            LOG.debug("I2C: Device {} returned {} from reg {}", BMP180_ADDRESS, result, reg);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        int result = bmp180.readRegister(reg);
+        LOG.debug("I2C: Device returned {} from reg {}", result, reg);
         return result;
     }
 
     private int readS8(int reg) {
         // "Reads a signed byte from the I2C device"
-        int result = 0;
-        try {
-            result = this.bmp180.readRegister(reg);
-            if (result > 127) {
-                result -= 256;
-            }
-            LOG.debug("I2C: Device {} returned {} from reg {}", BMP180_ADDRESS, result, reg);
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        int result = bmp180.readRegister(reg);
+        if (result > 127) {
+            result -= 256;
         }
+        LOG.debug("I2C: Device returned {} from reg {}", result, reg);
         return result;
     }
 
@@ -286,8 +276,8 @@ public class BMP180 implements AutoCloseable {
     protected static void waitfor(long howMuch) {
         try {
             Thread.sleep(howMuch);
-        } catch (InterruptedException ie) {
-            ie.printStackTrace();
+        } catch (InterruptedException e) {
+            LOG.error("Error: ", e);
         }
     }
 
