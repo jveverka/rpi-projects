@@ -17,11 +17,17 @@ public class ADS1115 implements AutoCloseable {
     private static final int LO_THRESH_REGISTER = 0x02;
     private static final int HI_THRESH_REGISTER = 0x03;
 
-    private static final int CONFIG_REGISTER_VALUE_A0 = 0b1100010110000011;
-    private static final int CONFIG_REGISTER_VALUE_A1 = 0b1101010110000011;
-    private static final int CONFIG_REGISTER_VALUE_A2 = 0b1110010110000011;
-    private static final int CONFIG_REGISTER_VALUE_A3 = 0b1111010110000011;
-    private static final double GAIN_PER_BITE = 62.5/1_000_000;
+    private static final int CONFIG_REGISTER_VALUE_A0 = 0b1100001110000011;
+    private static final int CONFIG_REGISTER_VALUE_A1 = 0b1101001110000011;
+    private static final int CONFIG_REGISTER_VALUE_A2 = 0b1110001110000011;
+    private static final int CONFIG_REGISTER_VALUE_A3 = 0b1111001110000011;
+
+    private static final double GAIN_PER_BITE_000 = 187.5/1_000_000;
+    private static final double GAIN_PER_BITE_001 = 125.0/1_000_000;
+    private static final double GAIN_PER_BITE_010 = 62.5/1_000_000;
+    private static final double GAIN_PER_BITE_011 = 31.25/1_000_000;
+    private static final double GAIN_PER_BITE_100 = 15.625/1_000_000;
+    private static final double GAIN_PER_BITE_111 = 7.8125/1_000_000;
 
     private final I2C i2c;
 
@@ -37,19 +43,19 @@ public class ADS1115 implements AutoCloseable {
     }
 
     public double readAIn0() {
-        return GAIN_PER_BITE * readIn(CONFIG_REGISTER_VALUE_A0);
+        return GAIN_PER_BITE_001 * readIn(CONFIG_REGISTER_VALUE_A0);
     }
 
     public double readAIn1() {
-        return GAIN_PER_BITE * readIn(CONFIG_REGISTER_VALUE_A1);
+        return GAIN_PER_BITE_001 * readIn(CONFIG_REGISTER_VALUE_A1);
     }
 
     public double readAIn2() {
-        return GAIN_PER_BITE * readIn(CONFIG_REGISTER_VALUE_A2);
+        return GAIN_PER_BITE_001 * readIn(CONFIG_REGISTER_VALUE_A2);
     }
 
     public double readAIn3() {
-        return GAIN_PER_BITE * readIn(CONFIG_REGISTER_VALUE_A3);
+        return GAIN_PER_BITE_001 * readIn(CONFIG_REGISTER_VALUE_A3);
     }
 
     private int readIn(int address) {
@@ -60,7 +66,7 @@ public class ADS1115 implements AutoCloseable {
             LOG.error("Error: ", e);
         }
         int result = i2c.readRegisterWord(CONVERSION_REGISTER);
-        LOG.info("readIn: {}, raw {}", address, result);
+        LOG.debug("readIn: {}, raw {}", address, result);
         return result;
     }
 
