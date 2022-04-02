@@ -1,0 +1,134 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'signing'
+    id 'application'
+}
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
+group = 'one.microproject.rpi'
+archivesBaseName = "rpi-drivers"
+version = '2.0.0'
+
+application {
+    mainClass = 'one.microproject.rpi.hardware.gpio.sensors.Main'
+}
+
+repositories {
+   mavenLocal()
+   mavenCentral()
+}
+
+dependencies {
+    implementation 'org.slf4j:slf4j-api:1.7.36'
+    implementation 'org.slf4j:slf4j-simple:1.7.36'
+    implementation 'com.pi4j:pi4j-core:2.1.1'
+    implementation 'com.pi4j:pi4j-plugin-raspberrypi:2.1.1'
+    implementation 'com.pi4j:pi4j-plugin-linuxfs:2.1.1'
+    implementation 'com.pi4j:pi4j-plugin-pigpio:2.1.1'
+}
+
+ext.isSnapshot = version.endsWith("-SNAPSHOT")
+if (!project.hasProperty('ossrhUsername') || !project.hasProperty('ossrhPassword')) {
+    ext.ossrhUsername = "none";
+    ext.ossrhPassword = "****";
+    ext.isPublishVersion = false;
+} else {
+    ext.isPublishVersion = true;
+}
+
+task sourceJar(type: Jar) {
+    classifier "sources"
+    from sourceSets.main.allJava
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier "javadoc"
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives jar
+    archives sourceJar
+    archives javadocJar
+}
+
+tasks.withType(Sign) {
+    onlyIf { isPublishVersion }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+
+            groupId = 'one.microproject.rpi'
+            artifactId = 'rpi-drivers'
+            //version = ...
+
+            from components.java
+            artifact(sourceJar) {
+                classifier = 'sources'
+            }
+            artifact(javadocJar) {
+                classifier = 'javadoc'
+            }
+
+            pom {
+                name = 'RPI Drivers for Java'
+                description = 'Collection of drivers for various chips for Raspberry PI Written in Java using pi4j.'
+                url = 'https://github.com/jveverka/rpi-projects/tree/master/rpi-drivers'
+                licenses {
+                    license {
+                        name = 'Apache License 2.0'
+                        url = 'https://github.com/jveverka/rpi-projects/blob/master/LICENSE'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'jveverka'
+                        name = 'Juraj Veverka'
+                        email = 'gergej123@gmail.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git@github.com:jveverka/rpi-projects.git'
+                    developerConnection = 'scm:git:git@github.com:jveverka/rpi-projects.git'
+                    url = 'https://github.com/jveverka/rpi-projects'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            if (isSnapshot) {
+                url "https://oss.sonatype.org/content/repositories/snapshots"
+            } else {
+                url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+            }
+            credentials {
+                username ossrhUsername
+                password ossrhPassword
+            }
+        }
+    }
+}
+
+signing {
+    sign configurations.archives
+    sign publishing.publications.mavenJava
+}
+
+model {
+    tasks.generatePomFileForMavenJavaPublication {
+        destination = file("$buildDir/generated-pom.xml")
+    }
+    tasks.publishMavenJavaPublicationToMavenLocal {
+        dependsOn project.tasks.signArchives
+    }
+    tasks.publishMavenJavaPublicationToMavenRepository {
+        dependsOn project.tasks.signArchives
+    }
+}
+
