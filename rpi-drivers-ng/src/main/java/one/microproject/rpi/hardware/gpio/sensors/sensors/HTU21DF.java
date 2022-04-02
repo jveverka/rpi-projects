@@ -39,6 +39,7 @@ public class HTU21DF implements AutoCloseable {
         I2CProvider i2CProvider = pi4j.provider("linuxfs-i2c");
         I2CConfig i2cConfig = I2C.newConfigBuilder(pi4j).id("HTU21DF").bus(1).device(address).build();
         htu21df = i2CProvider.create(i2cConfig);
+        LOG.info("HTU21DF Connected to bus {}. OK.", address);
     }
 
     public boolean begin() {
@@ -46,14 +47,14 @@ public class HTU21DF implements AutoCloseable {
         int r = 0;
         htu21df.write((byte) HTU21DF_READREG);
         r = htu21df.read();
-        LOG.info("DBG: Begin: 0x{}", lpad(Integer.toHexString(r), "0", 2));
+        LOG.debug("DBG: Begin: 0x{}", lpad(Integer.toHexString(r), "0", 2));
         return (r == 0x02);
     }
 
     public void reset() {
         try {
             htu21df.write((byte) HTU21DF_RESET);
-            LOG.info("DBG: Reset OK");
+            LOG.debug("DBG: Reset OK");
         } finally {
             waitfor(15); // Wait 15ms
         }
@@ -66,7 +67,7 @@ public class HTU21DF implements AutoCloseable {
 
     public float readTemperature() {
         // Reads the raw temperature from the sensor
-        LOG.info("Read Temp: Written 0x{}", lpad(Integer.toHexString((HTU21DF_READTEMP & 0xff)), "0", 2));
+        LOG.debug("Read Temp: Written 0x{}", lpad(Integer.toHexString((HTU21DF_READTEMP & 0xff)), "0", 2));
         htu21df.write((byte) (HTU21DF_READTEMP)); //  & 0xff));
         waitfor(50); // Wait 50ms
         byte[] buf = new byte[3];
@@ -77,16 +78,16 @@ public class HTU21DF implements AutoCloseable {
         int crc = buf[2] & 0xFF;
         int raw = ((msb << 8) + lsb) & 0xFFFC;
 
-        LOG.info("Temp -> 0x{} 0x{} 0x{}", lpad(Integer.toHexString(msb), "0", 2),
+        LOG.debug("Temp -> 0x{} 0x{} 0x{}", lpad(Integer.toHexString(msb), "0", 2),
                 lpad(Integer.toHexString(lsb), "0", 2), lpad(Integer.toHexString(crc), "0", 2));
-        LOG.info("DBG: Raw Temp: {} {}", (raw & 0xFFFF), raw);
+        LOG.debug("DBG: Raw Temp: {} {}", (raw & 0xFFFF), raw);
 
         float temp = raw; // t;
         temp *= 175.72;
         temp /= 65536;
         temp -= 46.85;
 
-        LOG.info("DBG: Temp: {}", temp);
+        LOG.debug("DBG: Temp: {}", temp);
         return temp;
     }
 
@@ -102,16 +103,16 @@ public class HTU21DF implements AutoCloseable {
         int crc = buf[2] & 0xFF;
         int raw = ((msb << 8) + lsb) & 0xFFFC;
 
-        LOG.info("Hum -> 0x{} 0x{} 0x{}", lpad(Integer.toHexString(msb), "0", 2),
+        LOG.debug("Hum -> 0x{} 0x{} 0x{}", lpad(Integer.toHexString(msb), "0", 2),
                 lpad(Integer.toHexString(lsb), "0", 2), lpad(Integer.toHexString(crc), "0", 2));
-        LOG.info("DBG: Raw Humidity: {} {}", (raw & 0xFFFF), raw);
+        LOG.debug("DBG: Raw Humidity: {} {}", (raw & 0xFFFF), raw);
 
         float hum = raw;
         hum *= 125;
         hum /= 65536;
         hum -= 6;
 
-        LOG.info("DBG: Humidity: {}", hum);
+        LOG.debug("DBG: Humidity: {}", hum);
         return hum;
     }
 

@@ -27,6 +27,7 @@ public class PCF8591 implements AutoCloseable {
         I2CProvider i2CProvider = pi4j.provider("linuxfs-i2c");
         I2CConfig i2cConfig = I2C.newConfigBuilder(pi4j).id("PCF8591").bus(1).device(address).build();
         i2c = i2CProvider.create(i2cConfig);
+        LOG.info("PCF8591 Connected to bus {}. OK.", address);
     }
 
     public double readAIn0() {
@@ -48,7 +49,7 @@ public class PCF8591 implements AutoCloseable {
     public double readAIn(byte inAddress) {
         i2c.write(inAddress);
         int value = i2c.read();
-        LOG.info("raw: {}", value);
+        LOG.debug("raw: {}", value);
         return ( 3.3 / 255 ) * value;
     }
 

@@ -71,7 +71,7 @@ public class BMP180 implements AutoCloseable {
 		I2CProvider i2CProvider = pi4j.provider("linuxfs-i2c");
 		I2CConfig i2cConfig = I2C.newConfigBuilder(pi4j).id("BMP180").bus(1).device(address).build();
 		bmp180 = i2CProvider.create(i2cConfig);
-        LOG.info("Connected to bus. OK.");
+        LOG.info("BMP180 Connected to bus {}. OK.", address);
         readCalibrationData();
     }
 
@@ -80,7 +80,7 @@ public class BMP180 implements AutoCloseable {
         int result = 0;
         try {
             result = this.bmp180.readRegister(reg);
-            LOG.info("I2C: Device {} returned {} from reg {}", BMP180_ADDRESS, result, reg);
+            LOG.debug("I2C: Device {} returned {} from reg {}", BMP180_ADDRESS, result, reg);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -95,7 +95,7 @@ public class BMP180 implements AutoCloseable {
             if (result > 127) {
                 result -= 256;
             }
-            LOG.info("I2C: Device {} returned {} from reg {}", BMP180_ADDRESS, result, reg);
+            LOG.debug("I2C: Device {} returned {} from reg {}", BMP180_ADDRESS, result, reg);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -138,17 +138,17 @@ public class BMP180 implements AutoCloseable {
 
     private void showCalibrationData() {
         // Displays the calibration values for debugging purposes
-        LOG.info("DBG: AC1 = {}", calAC1);
-        LOG.info("DBG: AC2 = {}", calAC2);
-        LOG.info("DBG: AC3 = {}", calAC3);
-        LOG.info("DBG: AC4 = {}", calAC4);
-        LOG.info("DBG: AC5 = {}", calAC5);
-        LOG.info("DBG: AC6 = {}", calAC6);
-        LOG.info("DBG: B1  = {}", calB1);
-        LOG.info("DBG: B2  = {}", calB2);
-        LOG.info("DBG: MB  = {}", calMB);
-        LOG.info("DBG: MC  = {}", calMC);
-        LOG.info("DBG: MD  = {}", calMD);
+        LOG.debug("DBG: AC1 = {}", calAC1);
+        LOG.debug("DBG: AC2 = {}", calAC2);
+        LOG.debug("DBG: AC3 = {}", calAC3);
+        LOG.debug("DBG: AC4 = {}", calAC4);
+        LOG.debug("DBG: AC5 = {}", calAC5);
+        LOG.debug("DBG: AC6 = {}", calAC6);
+        LOG.debug("DBG: B1  = {}", calB1);
+        LOG.debug("DBG: B2  = {}", calB2);
+        LOG.debug("DBG: MB  = {}", calMB);
+        LOG.debug("DBG: MC  = {}", calMC);
+        LOG.debug("DBG: MD  = {}", calMD);
     }
 
     public int readRawTemp() {
@@ -156,7 +156,7 @@ public class BMP180 implements AutoCloseable {
         bmp180.write((byte)BMP180_CONTROL, (byte) BMP180_READTEMPCMD);
         waitfor(5);  // Wait 5ms
         int raw = readU16(BMP180_TEMPDATA);
-        LOG.info("DBG: Raw Temp: {}, {}", (raw & 0xFFFF), raw);
+        LOG.debug("DBG: Raw Temp: {}, {}", (raw & 0xFFFF), raw);
         return raw;
     }
 
@@ -176,7 +176,7 @@ public class BMP180 implements AutoCloseable {
         int lsb = bmp180.readRegister(BMP180_PRESSUREDATA + 1);
         int xlsb = bmp180.readRegister(BMP180_PRESSUREDATA + 2);
         int raw = ((msb << 16) + (lsb << 8) + xlsb) >> (8 - this.mode);
-        LOG.info("DBG: Raw Pressure: {}, {}", (raw & 0xFFFF), raw);
+        LOG.debug("DBG: Raw Pressure: {}, {}", (raw & 0xFFFF), raw);
         return raw;
     }
 
@@ -194,7 +194,7 @@ public class BMP180 implements AutoCloseable {
         X2 = (this.calMC << 11) / (X1 + this.calMD);
         B5 = X1 + X2;
         temp = ((B5 + 8) >> 4) / 10.0f;
-        LOG.info("DBG: Calibrated temperature = {} C", temp);
+        LOG.debug("DBG: Calibrated temperature = {} C", temp);
         return temp;
     }
 
@@ -270,7 +270,7 @@ public class BMP180 implements AutoCloseable {
         } else {
             p = (B7 / B4) * 2;
         }
-        LOG.info("DBG: X1 = {}", X1);
+        LOG.debug("DBG: X1 = {}", X1);
 
         X1 = (p >> 8) * (p >> 8);
         X1 = (X1 * 3038) >> 16;
@@ -279,7 +279,7 @@ public class BMP180 implements AutoCloseable {
         LOG.debug("DBG: X1 = {}", X1);
         LOG.debug("DBG: X2 = {}", X2);
         p = p + ((X1 + X2 + 3791) >> 4);
-        LOG.info("DBG: Pressure = {} Pa", p);
+        LOG.debug("DBG: Pressure = {} Pa", p);
         return p;
     }
 
