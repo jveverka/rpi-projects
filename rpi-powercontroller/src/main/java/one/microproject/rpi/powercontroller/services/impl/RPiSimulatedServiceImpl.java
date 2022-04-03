@@ -1,6 +1,7 @@
 package one.microproject.rpi.powercontroller.services.impl;
 
 import one.microproject.rpi.powercontroller.config.Configuration;
+import one.microproject.rpi.powercontroller.dto.PortMapping;
 import one.microproject.rpi.powercontroller.dto.PortType;
 import one.microproject.rpi.powercontroller.dto.Measurements;
 import one.microproject.rpi.powercontroller.dto.SystemState;
@@ -19,14 +20,14 @@ public class RPiSimulatedServiceImpl implements RPiService {
     private static final Logger LOG = LoggerFactory.getLogger(RPiSimulatedServiceImpl.class);
 
     private final Map<Integer, Boolean> ports;
-    private final Map<Integer, PortType> portTypes;
+    private final Map<Integer, PortMapping> portMapping;
     private final PortListener portListener;
 
     public RPiSimulatedServiceImpl(PortListener portListener, Configuration configuration) {
         this.portListener = portListener;
-        this.portTypes = configuration.getPortsTypes();
+        this.portMapping = configuration.getPortsMapping();
         this.ports = new ConcurrentHashMap<>();
-        this.portTypes.forEach((k,v) -> this.ports.put(k, false));
+        this.portMapping.forEach((k,v) -> this.ports.put(k, false));
     }
 
     @Override
@@ -36,12 +37,12 @@ public class RPiSimulatedServiceImpl implements RPiService {
 
     @Override
     public SystemState getSystemState() {
-        return new SystemState(new Date(), ports, portTypes);
+        return new SystemState(new Date(), ports, portMapping);
     }
 
     @Override
     public Optional<Boolean> setPortState(Integer port, Boolean state) {
-        if (ports.containsKey(port) && PortType.OUTPUT.equals(portTypes.get(port))) {
+        if (ports.containsKey(port) && PortType.OUTPUT.equals(portMapping.get(port).getType())) {
             ports.put(port, state);
             portListener.onStateChange(port, state);
             return Optional.of(state);

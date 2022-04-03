@@ -12,3 +12,6 @@ This is detailed HW equipment Bill of Material for RPi Power Controller.
 ## Example Assembly
 This assembly uses only two output power ports __(Port 0, Port 1)__ and only one input key __(Key 0)__.  
 ![hw01](hardware-image-01.svg)
+
+## Reference device
+![reference-device](reference-device.png)

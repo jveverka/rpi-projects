@@ -121,7 +121,7 @@ class PowerControllerTests {
         SystemState systemState = powerControllerClient.getSystemState();
         assertNotNull(systemState);
         assertNotNull(systemState.getTimeStamp());
-        assertNotNull(systemState.getPortTypes());
+        assertNotNull(systemState.getPortMapping());
         assertNotNull(systemState.getPorts());
     }
 

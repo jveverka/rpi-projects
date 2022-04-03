@@ -9,6 +9,7 @@ import com.pi4j.io.gpio.digital.DigitalStateChangeListener;
 import one.microproject.rpi.hardware.gpio.sensors.sensors.BMP180;
 import one.microproject.rpi.hardware.gpio.sensors.sensors.HTU21DF;
 import one.microproject.rpi.powercontroller.config.Configuration;
+import one.microproject.rpi.powercontroller.dto.PortMapping;
 import one.microproject.rpi.powercontroller.dto.PortType;
 import one.microproject.rpi.powercontroller.dto.Measurements;
 import one.microproject.rpi.powercontroller.dto.SystemState;
@@ -31,41 +32,47 @@ public class RPiHardwareServiceImpl implements RPiService {
     private final HTU21DF htu21DF;
     private final Map<Integer, DigitalOutput> outPorts;
     private final Map<Integer, DigitalInput> inPorts;
-    private final Map<Integer, PortType> portTypes;
+    private final Map<Integer, PortMapping> portMapping;
 
     public RPiHardwareServiceImpl(PortListener portListener, Configuration configuration) {
-        LOG.info("initializing hardware ...");
+        LOG.info("Initializing RPi hardware ...");
         Context context = Pi4J.newAutoContext();
         this.bmp180 = new BMP180(context);
         this.htu21DF = new HTU21DF(context);
         this.outPorts = new ConcurrentHashMap<>();
         this.inPorts = new ConcurrentHashMap<>();
-        this.portTypes = configuration.getPortsTypes();
-        this.portTypes.forEach((k, v) -> {
-            int pinId = mapPin(k);
-            LOG.info("initializing port {} pinId={} as {}", k, pinId, v);
-            if (PortType.OUTPUT.equals(v)) {
+        this.portMapping = configuration.getPortsMapping();
+        this.portMapping.forEach((k, v) -> {
+            int pinId = v.getAddress();
+            LOG.info("Initializing port {} pinId={} as {}", k, pinId, v);
+            if (PortType.OUTPUT.equals(v.getType())) {
                 DigitalOutput digitalOutput = context.dout().create(pinId);
                 digitalOutput.low();
                 outPorts.put(k, digitalOutput);
+                LOG.info("OUTPUT port created");
             }
-            if (PortType.INPUT.equals(v)) {
+            if (PortType.INPUT.equals(v.getType())) {
                 DigitalInput digitalInput = context.din().create(pinId);
                 digitalInput.addListener(new PinListener(k, portListener));
                 inPorts.put(k, digitalInput);
+                LOG.info("INPUT port created");
             }
         });
-        LOG.info("hardware initialization done.");
+        LOG.info("INPUT  {}", inPorts.size());
+        LOG.info("OUTPUT {}", outPorts.size());
+        LOG.info("Hardware initialization done.");
     }
 
     @Override
     public Measurements getMeasurements() {
         try {
+            LOG.debug("getMeasurements");
             float temperature = bmp180.readTemperature();
             float pressure = bmp180.readPressure() / 1000f;
             float relHumidity = htu21DF.readHumidity();
             return new Measurements(new Date(), temperature, "celsius", relHumidity, "percent", pressure, "kPa");
         } catch (Exception e) {
+            LOG.error("ERROR: ", e);
             return new Measurements(new Date(),null, "celsius", null, "percent", null, "kPa");
         }
     }
@@ -79,7 +86,7 @@ public class RPiHardwareServiceImpl implements RPiService {
         inPorts.forEach((k,v) ->
             result.put(k, v.isHigh())
         );
-        return new SystemState(new Date(), result, portTypes);
+        return new SystemState(new Date(), result, portMapping);
     }
 
     @Override
@@ -102,28 +109,6 @@ public class RPiHardwareServiceImpl implements RPiService {
         htu21DF.close();
     }
 
-    public static Integer mapPin(Integer port) {
-        if (port == 0) {
-            return 0;
-        } else if (port == 1) {
-            return 1;
-        } else if (port == 2) {
-            return 2;
-        } else if (port == 3) {
-            return 3;
-        } else if (port == 4) {
-            return 4;
-        } else if (port == 5) {
-            return 5;
-        } else if (port == 6) {
-            return 6;
-        } else if (port == 7) {
-            return 7;
-        } else {
-            throw new UnsupportedOperationException("Invalid Pin number " + port);
-        }
-    }
-
     private class PinListener implements DigitalStateChangeListener {
 
         private final Integer port;
@@ -136,6 +121,7 @@ public class RPiHardwareServiceImpl implements RPiService {
 
         @Override
         public void onDigitalStateChange(DigitalStateChangeEvent event) {
+            LOG.info("onDigitalStateChange: {} {}", event.state().getName(), event.state().getValue());
             portListener.onStateChange(port, event.state().isHigh());
         }
 

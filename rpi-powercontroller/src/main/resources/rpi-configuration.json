@@ -4,15 +4,15 @@
   "host": "0.0.0.0",
   "port": 8080,
   "hardware": false,
-  "portTypes": {
-    "0": "OUTPUT",
-    "1": "OUTPUT",
-    "2": "OUTPUT",
-    "3": "OUTPUT",
-    "4": "INPUT",
-    "5": "INPUT",
-    "6": "INPUT",
-    "7": "INPUT"
+  "portMapping": {
+    "0": { "address": 17, "type": "OUTPUT" },
+    "1": { "address": 27, "type": "OUTPUT" },
+    "2": { "address": 22, "type": "OUTPUT" },
+    "3": { "address": 12, "type": "OUTPUT" },
+    "4": { "address":  4, "type": "INPUT"  },
+    "5": { "address": 23, "type": "INPUT"  },
+    "6": { "address": 24, "type": "INPUT"  },
+    "7": { "address": 25, "type": "INPUT"  }
   },
   "credentials": {
     "client-001": "ex4ooNgexoo2aeSho7del8caiPh8iegi",

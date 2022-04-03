@@ -10,23 +10,23 @@ public class SystemState {
 
     private final Date timeStamp;
     private final Map<Integer, Boolean> ports;
-    private final Map<Integer, PortType> portTypes;
+    private final Map<Integer, PortMapping> portMapping;
 
     @JsonCreator
     public SystemState(@JsonProperty("timeStamp") Date timeStamp,
                        @JsonProperty("ports") Map<Integer, Boolean> ports,
-                       @JsonProperty("portTypes") Map<Integer, PortType> portTypes) {
+                       @JsonProperty("portMapping") Map<Integer, PortMapping> portMapping) {
         this.timeStamp = timeStamp;
         this.ports = ports;
-        this.portTypes = portTypes;
+        this.portMapping = portMapping;
     }
 
     public Map<Integer, Boolean> getPorts() {
         return ports;
     }
 
-    public Map<Integer, PortType> getPortTypes() {
-        return portTypes;
+    public Map<Integer, PortMapping> getPortMapping() {
+        return portMapping;
     }
 
     public Date getTimeStamp() {
