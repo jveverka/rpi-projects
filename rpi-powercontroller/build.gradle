@@ -8,7 +8,7 @@ sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
 group = 'one.microproject.rpi'
-version = '1.4.2'
+version = '2.0.0'
 mainClassName = 'one.microproject.rpi.powercontroller.PowerControllerApp'
 applicationDefaultJvmArgs = ['-Xms32m', '-Xmx32m', '-XX:MaxMetaspaceSize=32m']
 

@@ -20,7 +20,7 @@ Detailed [hardware bill of material](docs/hardware-bom.md).
 ![sw-arch](docs/rpi-powercontroller-software-architecture.svg)
 
 * Tiny software stack, 32 MB of heap space to run.
-* Java 8 and Java 11 compatible.
+* Java 11 compatible.
 * [undertow.io](http://undertow.io/) as web server.
 * [com.fasterxml.jackson](https://github.com/FasterXML/jackson) for JSON processing.
 * [Raspbian Lite](https://www.raspberrypi.org/downloads/raspbian/), [WiringPi](http://wiringpi.com/), [pi4j](https://pi4j.com/1.2/index.html)
@@ -100,8 +100,8 @@ curl -u <client-id>:<client-secret> http://<server>:<port>/uri
 RPi Power Controller is designed to be build and tested on PC. In this case  
 ``RPiSimulatedServiceImpl`` is used instead of real RPi hardware.
 ### Development Environment
-* [OpenJDK 8 or 11](https://adoptopenjdk.net/).
-* [Gradle 6.0](https://gradle.org/install/) or later.
+* [OpenJDK 11](https://adoptopenjdk.net/).
+* [Gradle 7.0](https://gradle.org/install/) or later.
 ```
 # build and test
 gradle clean build test installDist distZip
@@ -134,14 +134,14 @@ gradle clean build test installDist distZip
 7. Build distribution zip and copy the zip and init scripts to target RPi device.
    ```
    gradle clean build test installDist distZip
-   scp build/distributions/rpi-powercontroller-1.4.0.zip pi@<ip-address>:/opt/rpi-powercontroller/
+   scp build/distributions/rpi-powercontroller-2.0.0.zip pi@<ip-address>:/opt/rpi-powercontroller/
    scp -r scripts/* pi@<ip-address>:/opt/rpi-powercontroller/
    scp src/main/resources/rpi-configuration.json pi@<ip-address>:/opt/rpi-powercontroller/
    ```
 8. Finish installation on target RPi device.
    ```
    cd /opt/rpi-powercontroller
-   unzip rpi-powercontroller-1.4.0.zip
+   unzip rpi-powercontroller-2.0.0.zip
    chmod 755 controller-start.sh
    chmod 755 controller-stop.sh
    sudo cp rpi-powercontroller.service /etc/systemd/system/

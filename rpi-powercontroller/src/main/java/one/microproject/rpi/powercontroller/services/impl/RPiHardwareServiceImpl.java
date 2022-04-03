@@ -2,6 +2,10 @@ package one.microproject.rpi.powercontroller.services.impl;
 
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
+import com.pi4j.io.gpio.digital.DigitalInput;
+import com.pi4j.io.gpio.digital.DigitalOutput;
+import com.pi4j.io.gpio.digital.DigitalStateChangeEvent;
+import com.pi4j.io.gpio.digital.DigitalStateChangeListener;
 import one.microproject.rpi.hardware.gpio.sensors.sensors.BMP180;
 import one.microproject.rpi.hardware.gpio.sensors.sensors.HTU21DF;
 import one.microproject.rpi.powercontroller.config.Configuration;
@@ -25,7 +29,8 @@ public class RPiHardwareServiceImpl implements RPiService {
 
     private final BMP180 bmp180;
     private final HTU21DF htu21DF;
-    private final Map<Integer, GpioPinDigitalMultipurpose> ports;
+    private final Map<Integer, DigitalOutput> outPorts;
+    private final Map<Integer, DigitalInput> inPorts;
     private final Map<Integer, PortType> portTypes;
 
     public RPiHardwareServiceImpl(PortListener portListener, Configuration configuration) {
@@ -33,20 +38,22 @@ public class RPiHardwareServiceImpl implements RPiService {
         Context context = Pi4J.newAutoContext();
         this.bmp180 = new BMP180(context);
         this.htu21DF = new HTU21DF(context);
-        this.ports = new ConcurrentHashMap<>();
+        this.outPorts = new ConcurrentHashMap<>();
+        this.inPorts = new ConcurrentHashMap<>();
         this.portTypes = configuration.getPortsTypes();
         this.portTypes.forEach((k, v) -> {
-            LOG.info("initializing port {} as {}", k, v);
-            Pin pin = mapPin(k);
-            GpioPinDigitalMultipurpose gpioPinDigitalMultipurpose = gpio.provisionDigitalMultipurposePin(pin, mapPinMode(v));
-            gpioPinDigitalMultipurpose.addListener(new PinListener(k, portListener));
+            int pinId = mapPin(k);
+            LOG.info("initializing port {} pinId={} as {}", k, pinId, v);
             if (PortType.OUTPUT.equals(v)) {
-                gpioPinDigitalMultipurpose.setState(false);
+                DigitalOutput digitalOutput = context.dout().create(pinId);
+                digitalOutput.low();
+                outPorts.put(k, digitalOutput);
             }
             if (PortType.INPUT.equals(v)) {
-
+                DigitalInput digitalInput = context.din().create(pinId);
+                digitalInput.addListener(new PinListener(k, portListener));
+                inPorts.put(k, digitalInput);
             }
-            ports.put(k, gpioPinDigitalMultipurpose);
         });
         LOG.info("hardware initialization done.");
     }
@@ -66,7 +73,10 @@ public class RPiHardwareServiceImpl implements RPiService {
     @Override
     public SystemState getSystemState() {
         Map<Integer, Boolean> result = new HashMap<>();
-        ports.forEach((k,v) ->
+        outPorts.forEach((k,v) -> {
+            result.put(k, v.isHigh());
+        });
+        inPorts.forEach((k,v) ->
             result.put(k, v.isHigh())
         );
         return new SystemState(new Date(), result, portTypes);
@@ -76,8 +86,8 @@ public class RPiHardwareServiceImpl implements RPiService {
     public Optional<Boolean> setPortState(Integer port, Boolean state) {
         try {
             LOG.info("setting state port={}  state={}", port, state);
-            GpioPinDigitalMultipurpose gpioPinDigitalMultipurpose = ports.get(port);
-            gpioPinDigitalMultipurpose.setState(state);
+            DigitalOutput digitalOutput = outPorts.get(port);
+            digitalOutput.setState(state);
             return Optional.of(state);
         } catch (Exception e) {
             LOG.error("Exception: ", e);
@@ -92,39 +102,29 @@ public class RPiHardwareServiceImpl implements RPiService {
         htu21DF.close();
     }
 
-    public static Pin mapPin(Integer port) {
+    public static Integer mapPin(Integer port) {
         if (port == 0) {
-            return RaspiPin.GPIO_00;
+            return 0;
         } else if (port == 1) {
-            return RaspiPin.GPIO_01;
+            return 1;
         } else if (port == 2) {
-            return RaspiPin.GPIO_02;
+            return 2;
         } else if (port == 3) {
-            return RaspiPin.GPIO_03;
+            return 3;
         } else if (port == 4) {
-            return RaspiPin.GPIO_04;
+            return 4;
         } else if (port == 5) {
-            return RaspiPin.GPIO_05;
+            return 5;
         } else if (port == 6) {
-            return RaspiPin.GPIO_06;
+            return 6;
         } else if (port == 7) {
-            return RaspiPin.GPIO_07;
+            return 7;
         } else {
             throw new UnsupportedOperationException("Invalid Pin number " + port);
         }
     }
 
-    public static PinMode mapPinMode(PortType portType) {
-        if (PortType.INPUT.equals(portType)) {
-            return PinMode.DIGITAL_INPUT;
-        } else if (PortType.OUTPUT.equals(portType)) {
-            return PinMode.DIGITAL_OUTPUT;
-        } else {
-            throw new UnsupportedOperationException("Invalid PortType number " + portType);
-        }
-    }
-
-    private class PinListener implements GpioPinListenerDigital {
+    private class PinListener implements DigitalStateChangeListener {
 
         private final Integer port;
         private final PortListener portListener;
@@ -135,8 +135,8 @@ public class RPiHardwareServiceImpl implements RPiService {
         }
 
         @Override
-        public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
-            portListener.onStateChange(port, event.getState().isHigh());
+        public void onDigitalStateChange(DigitalStateChangeEvent event) {
+            portListener.onStateChange(port, event.state().isHigh());
         }
 
     }

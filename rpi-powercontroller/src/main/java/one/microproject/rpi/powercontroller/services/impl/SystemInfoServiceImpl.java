@@ -21,7 +21,7 @@ public class SystemInfoServiceImpl implements SystemInfoService {
         long uptime = timeStamp - configuration.getStarted().getTime();
         ControllerInfo info = new ControllerInfo(configuration.isHardware(), configuration.getStarted(), ServiceUtils.calculateUptimeDays(uptime));
         return new SystemInfo<>(configuration.getId(), "power-controller",
-                configuration.getName(), "1.4.0", timeStamp,  uptime, info);
+                configuration.getName(), "2.0.0", timeStamp,  uptime, info);
     }
 
 }
