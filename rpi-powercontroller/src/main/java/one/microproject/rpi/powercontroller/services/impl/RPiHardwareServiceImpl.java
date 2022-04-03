@@ -1,15 +1,9 @@
 package one.microproject.rpi.powercontroller.services.impl;
 
-import com.pi4j.io.gpio.GpioController;
-import com.pi4j.io.gpio.GpioFactory;
-import com.pi4j.io.gpio.GpioPinDigitalMultipurpose;
-import com.pi4j.io.gpio.Pin;
-import com.pi4j.io.gpio.PinMode;
-import com.pi4j.io.gpio.RaspiPin;
-import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
-import com.pi4j.io.gpio.event.GpioPinListenerDigital;
-import one.microproject.rpi.hardware.gpio.sensors.BMP180;
-import one.microproject.rpi.hardware.gpio.sensors.HTU21DF;
+import com.pi4j.Pi4J;
+import com.pi4j.context.Context;
+import one.microproject.rpi.hardware.gpio.sensors.sensors.BMP180;
+import one.microproject.rpi.hardware.gpio.sensors.sensors.HTU21DF;
 import one.microproject.rpi.powercontroller.config.Configuration;
 import one.microproject.rpi.powercontroller.dto.PortType;
 import one.microproject.rpi.powercontroller.dto.Measurements;
@@ -31,15 +25,14 @@ public class RPiHardwareServiceImpl implements RPiService {
 
     private final BMP180 bmp180;
     private final HTU21DF htu21DF;
-    private final GpioController gpio;
     private final Map<Integer, GpioPinDigitalMultipurpose> ports;
     private final Map<Integer, PortType> portTypes;
 
     public RPiHardwareServiceImpl(PortListener portListener, Configuration configuration) {
         LOG.info("initializing hardware ...");
-        this.bmp180 = new BMP180();
-        this.htu21DF = new HTU21DF();
-        this.gpio = GpioFactory.getInstance();
+        Context context = Pi4J.newAutoContext();
+        this.bmp180 = new BMP180(context);
+        this.htu21DF = new HTU21DF(context);
         this.ports = new ConcurrentHashMap<>();
         this.portTypes = configuration.getPortsTypes();
         this.portTypes.forEach((k, v) -> {
@@ -49,6 +42,9 @@ public class RPiHardwareServiceImpl implements RPiService {
             gpioPinDigitalMultipurpose.addListener(new PinListener(k, portListener));
             if (PortType.OUTPUT.equals(v)) {
                 gpioPinDigitalMultipurpose.setState(false);
+            }
+            if (PortType.INPUT.equals(v)) {
+
             }
             ports.put(k, gpioPinDigitalMultipurpose);
         });
@@ -92,7 +88,8 @@ public class RPiHardwareServiceImpl implements RPiService {
     @Override
     public void close() throws Exception {
         LOG.info("closing");
-        gpio.shutdown();
+        bmp180.close();
+        htu21DF.close();
     }
 
     public static Pin mapPin(Integer port) {

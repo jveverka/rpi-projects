@@ -2,14 +2,19 @@ plugins {
     id 'java'
     id 'maven-publish'
     id 'signing'
+    id 'application'
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
 
 group = 'one.microproject.rpi'
 archivesBaseName = "rpi-drivers"
-version = '1.0.0'
+version = '2.0.0'
+
+application {
+    mainClass = 'one.microproject.rpi.hardware.gpio.sensors.Main'
+}
 
 repositories {
    mavenLocal()
@@ -17,7 +22,12 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.pi4j:pi4j-core:1.2'
+    implementation 'org.slf4j:slf4j-api:1.7.36'
+    implementation 'org.slf4j:slf4j-simple:1.7.36'
+    implementation 'com.pi4j:pi4j-core:2.1.1'
+    implementation 'com.pi4j:pi4j-plugin-raspberrypi:2.1.1'
+    implementation 'com.pi4j:pi4j-plugin-linuxfs:2.1.1'
+    implementation 'com.pi4j:pi4j-plugin-pigpio:2.1.1'
 }
 
 ext.isSnapshot = version.endsWith("-SNAPSHOT")

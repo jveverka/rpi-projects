@@ -4,8 +4,8 @@ plugins {
     id 'application'
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
 
 group = 'one.microproject.rpi'
 version = '1.4.2'
@@ -18,16 +18,19 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.pi4j:pi4j-core:1.2'
-    implementation 'io.undertow:undertow-core:2.2.9.Final'
-    implementation 'org.slf4j:slf4j-api:1.7.32'
-    implementation 'org.slf4j:slf4j-simple:1.7.32'
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.12.4'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.4'
-    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.12.4'
+    implementation 'com.pi4j:pi4j-core:2.1.1'
+    implementation 'com.pi4j:pi4j-plugin-raspberrypi:2.1.1'
+    implementation 'com.pi4j:pi4j-plugin-linuxfs:2.1.1'
+    implementation 'com.pi4j:pi4j-plugin-pigpio:2.1.1'
+    implementation 'io.undertow:undertow-core:2.2.16.Final'
+    implementation 'org.slf4j:slf4j-api:1.7.36'
+    implementation 'org.slf4j:slf4j-simple:1.7.36'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.13.2'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.2'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.13.2'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
-    testImplementation 'com.squareup.okhttp3:okhttp:4.9.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
+    testImplementation 'com.squareup.okhttp3:okhttp:4.9.3'
 }
 
 jar {

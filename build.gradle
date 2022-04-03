@@ -9,9 +9,6 @@ subprojects {
 project(':rpi-drivers') {
 }
 
-project(':rpi-drivers-ng') {
-}
-
 project(':rpi-device') {
 }
 

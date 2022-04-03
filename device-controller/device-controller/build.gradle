@@ -31,7 +31,7 @@ dependencies {
     implementation 'one.microproject.iamservice:iam-model:2.5.9-RELEASE'
     implementation 'one.microproject.iamservice:iam-client:2.5.9-RELEASE'
     implementation 'one.microproject.iamservice:iam-core:2.5.9-RELEASE'
-    implementation 'com.squareup.okhttp3:okhttp:4.9.1'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.3'
     implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
 
     testImplementation 'one.microproject.iamservice:iam-service-client:2.5.9-RELEASE'

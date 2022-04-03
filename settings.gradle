@@ -1,5 +1,4 @@
 include "rpi-drivers"
-include "rpi-drivers-ng"
 include "rpi-device"
 include "rpi-powercontroller-client"
 include "rpi-powercontroller"
