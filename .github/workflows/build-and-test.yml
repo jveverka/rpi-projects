@@ -3,9 +3,9 @@ name: Build and Test
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, pi4j-v2 ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, pi4j-v2 ]
 
 jobs:
   build-core-java8:
