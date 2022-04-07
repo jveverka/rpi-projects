@@ -221,26 +221,6 @@ public class BMP180Impl implements BMP180 {
         int UT = this.readRawTemp();
         int UP = this.readRawPressure();
 
-        // You can use the datasheet values to test the conversion results
-        // boolean dsValues = true;
-        boolean dsValues = false;
-        if (dsValues) {
-            UT = 27898;
-            UP = 23843;
-            this.calAC6 = 23153;
-            this.calAC5 = 32757;
-            this.calMB = -32768;
-            this.calMC = -8711;
-            this.calMD = 2868;
-            this.calB1 = 6190;
-            this.calB2 = 4;
-            this.calAC3 = -14383;
-            this.calAC2 = -72;
-            this.calAC1 = 408;
-            this.calAC4 = 32741;
-            this.mode = BMP180_ULTRALOWPOWER;
-            this.showCalibrationData();
-        }
         // True Temperature Calculations
         int X1 = (int) ((UT - this.calAC6) * this.calAC5) >> 15;
         int X2 = (this.calMC << 11) / (X1 + this.calMD);
