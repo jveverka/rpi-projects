@@ -1,11 +1,15 @@
-package one.microproject.rpi.hardware.gpio.sensors.sensors;
+package one.microproject.rpi.hardware.gpio.sensors.impl;
 
 import com.pi4j.context.Context;
 import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.io.i2c.I2CProvider;
+import one.microproject.rpi.hardware.gpio.sensors.BMP180;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static one.microproject.rpi.hardware.gpio.sensors.impl.Utils.getSigned;
+import static one.microproject.rpi.hardware.gpio.sensors.impl.Utils.waitfor;
 
 
 /**
@@ -14,15 +18,19 @@ import org.slf4j.LoggerFactory;
  *
  * @author gergej
  */
-public class BMP180 implements AutoCloseable {
+public class BMP180Impl implements BMP180 {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BMP180.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BMP180Impl.class);
 
     public static final int LITTLE_ENDIAN = 0;
     public static final int BIG_ENDIAN = 1;
     private static final int BMP180_ENDIANNESS = BIG_ENDIAN;
 
     public static final int ADDRESS = 0x77;
+
+    private static final int ID_REGISTER    = 0xD0;
+    private static final int RESET_REGISTER = 0xE0;
+
     // Operating Modes
     public static final int BMP180_ULTRALOWPOWER = 0;
     public static final int BMP180_STANDARD = 1;
@@ -61,18 +69,46 @@ public class BMP180 implements AutoCloseable {
     private int calMD = 0;
     private int mode = BMP180_STANDARD;
 
+    private final int address;
+    private final String deviceId;
+    private final Context context;
+    private final int i2cBus;
     private final I2C bmp180;
 
-    public BMP180(Context pi4j) {
-        this(pi4j, ADDRESS);
+    public BMP180Impl(Context pi4j) {
+        this(pi4j, ADDRESS, 1);
     }
 
-    public BMP180(Context pi4j, int address) {
+    public BMP180Impl(Context pi4j, int address, int i2cBus) {
+        this.address = address;
+        this.deviceId = "BMP180";
+        this.context = pi4j;
+        this.i2cBus = i2cBus;
 		I2CProvider i2CProvider = pi4j.provider("linuxfs-i2c");
-		I2CConfig i2cConfig = I2C.newConfigBuilder(pi4j).id("BMP180").bus(1).device(address).build();
+		I2CConfig i2cConfig = I2C.newConfigBuilder(pi4j).id(deviceId).bus(i2cBus).device(address).build();
 		bmp180 = i2CProvider.create(i2cConfig);
-        LOG.info("BMP180 Connected to bus {}. OK.", address);
+        LOG.info("BMP180 Connected to i2c bus={} address={}. OK.", i2cBus, address);
         readCalibrationData();
+    }
+
+    @Override
+    public int getAddress() {
+        return address;
+    }
+
+    @Override
+    public Context getContext() {
+        return context;
+    }
+
+    @Override
+    public int getI2CBus() {
+        return i2cBus;
+    }
+
+    @Override
+    public String getDeviceId() {
+        return deviceId;
     }
 
     private int readU8(int reg) {
@@ -85,9 +121,7 @@ public class BMP180 implements AutoCloseable {
     private int readS8(int reg) {
         // "Reads a signed byte from the I2C device"
         int result = bmp180.readRegister(reg);
-        if (result > 127) {
-            result -= 256;
-        }
+        result = getSigned(result);
         LOG.debug("I2C: Device returned {} from reg {}", result, reg);
         return result;
     }
@@ -110,7 +144,7 @@ public class BMP180 implements AutoCloseable {
         return (hi << 8) + lo;
     }
 
-    public void readCalibrationData() {
+    private void readCalibrationData() {
         // Reads the calibration data from the IC
         calAC1 = readS16(BMP180_CAL_AC1);   // INT16
         calAC2 = readS16(BMP180_CAL_AC2);   // INT16
@@ -141,7 +175,7 @@ public class BMP180 implements AutoCloseable {
         LOG.debug("DBG: MD  = {}", calMD);
     }
 
-    public int readRawTemp() {
+    private int readRawTemp() {
         // Reads the raw (uncompensated) temperature from the sensor
         bmp180.write((byte)BMP180_CONTROL, (byte) BMP180_READTEMPCMD);
         waitfor(5);  // Wait 5ms
@@ -150,7 +184,7 @@ public class BMP180 implements AutoCloseable {
         return raw;
     }
 
-    public int readRawPressure() {
+    private int readRawPressure() {
         // Reads the raw (uncompensated) pressure level from the sensor
         bmp180.write((byte)BMP180_CONTROL, (byte) (BMP180_READPRESSURECMD + (this.mode << 6)));
         if (this.mode == BMP180_ULTRALOWPOWER) {
@@ -170,25 +204,31 @@ public class BMP180 implements AutoCloseable {
         return raw;
     }
 
-    public float readTemperature() {
-        // Gets the compensated temperature in degrees celcius
-        int UT = 0;
-        int X1 = 0;
-        int X2 = 0;
-        int B5 = 0;
-        float temp = 0.0f;
+    @Override
+    public int getId() {
+        return bmp180.readRegister(ID_REGISTER);
+    }
 
+    @Override
+    public void reset() {
+        bmp180.writeRegister(RESET_REGISTER, 0xB6);
+    }
+
+    @Override
+    public float getTemperature() {
+        // Gets the compensated temperature in degrees celcius
         // Read raw temp before aligning it with the calibration values
-        UT = this.readRawTemp();
-        X1 = ((UT - this.calAC6) * this.calAC5) >> 15;
-        X2 = (this.calMC << 11) / (X1 + this.calMD);
-        B5 = X1 + X2;
-        temp = ((B5 + 8) >> 4) / 10.0f;
+        int UT = this.readRawTemp();
+        int X1 = ((UT - this.calAC6) * this.calAC5) >> 15;
+        int X2 = (this.calMC << 11) / (X1 + this.calMD);
+        int B5 = X1 + X2;
+        float temp = ((B5 + 8) >> 4) / 10.0f;
         LOG.debug("DBG: Calibrated temperature = {} C", temp);
         return temp;
     }
 
-    public float readPressure() {
+    @Override
+    public float getPressure() {
         // Gets the compensated pressure in pascal
         int UT = 0;
         int UP = 0;
@@ -271,14 +311,6 @@ public class BMP180 implements AutoCloseable {
         p = p + ((X1 + X2 + 3791) >> 4);
         LOG.debug("DBG: Pressure = {} Pa", p);
         return p;
-    }
-
-    protected static void waitfor(long howMuch) {
-        try {
-            Thread.sleep(howMuch);
-        } catch (InterruptedException e) {
-            LOG.error("Error: ", e);
-        }
     }
 
     @Override

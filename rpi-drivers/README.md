@@ -16,13 +16,13 @@ RaspberryPi compatibility: 3, 4, zero
 <dependency>
     <groupId>one.microproject.rpi</groupId>
     <artifactId>rpi-drivers</artifactId>
-    <version>2.0.0</version>
+    <version>2.1.0</version>
 </dependency>
 ```
 
 ### Use with gradle
 ```
-implementation 'one.microproject.rpi:rpi-drivers:2.0.0'
+implementation 'one.microproject.rpi:rpi-drivers:2.1.0'
 ```
 
 ## Compile and Test on RaspberryPI
@@ -42,11 +42,11 @@ implementation 'one.microproject.rpi:rpi-drivers:2.0.0'
    ```
 5. Copy to RaspberryPI device:
    ```
-   scp build/distributions/rpi-drivers-2.0.0.zip pi@<raspberry-pi>:/home/pi/
+   scp build/distributions/rpi-drivers-2.1.0.zip pi@<raspberry-pi>:/home/pi/
    ```
 6. Run tests on RaspberryPI device:
    ```
-   unzip rpi-drivers-2.0.0.zip
-   cd rpi-drivers-2.0.0/bin
-   ./rpi-drivers ALL | ADS1115 | BMP180 | HTU21D | PCF8591 
+   unzip rpi-drivers-2.1.0.zip
+   cd rpi-drivers-2.1.0/bin
+   ./rpi-drivers ALL | ADS1115 | BMP180 | BME280 | HTU21D | PCF8591 
    ```

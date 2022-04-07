@@ -1,17 +1,18 @@
-package one.microproject.rpi.hardware.gpio.sensors.sensors;
+package one.microproject.rpi.hardware.gpio.sensors.impl;
 
 import com.pi4j.context.Context;
 import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.io.i2c.I2CProvider;
+import one.microproject.rpi.hardware.gpio.sensors.ADS1115;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ADS1115 implements AutoCloseable {
+public class ADS1115Impl implements ADS1115 {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ADS1115.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ADS1115Impl.class);
 
-    private static final int ADDRESS = 0x48;
+    public static final int ADDRESS = 0x48;
     private static final int CONVERSION_REGISTER = 0x00;
     private static final int CONFIG_REGISTER     = 0x01;
     private static final int LO_THRESH_REGISTER  = 0x02;
@@ -45,38 +46,70 @@ public class ADS1115 implements AutoCloseable {
     private static final int A2_IN = 0b0110000000000000;
     private static final int A3_IN = 0b0111000000000000;
 
+    private final int address;
+    private final String deviceId;
+    private final Context context;
+    private final int i2cBus;
     private final I2C i2c;
     private final GAIN gain;
 
-    public ADS1115(Context pi4j) {
-        this(pi4j, ADDRESS, GAIN.GAIN_4_096V);
+    public ADS1115Impl(Context pi4j) {
+        this(pi4j, ADDRESS, GAIN.GAIN_4_096V, 1);
     }
 
-    public ADS1115(Context pi4j, int address) {
-        this(pi4j, address, GAIN.GAIN_4_096V);
+    public ADS1115Impl(Context pi4j, int address) {
+        this(pi4j, address, GAIN.GAIN_4_096V, 1);
     }
 
-    public ADS1115(Context pi4j, int address, GAIN gain) {
+    public ADS1115Impl(Context pi4j, int address, GAIN gain, int i2cBus) {
+        this.address = address;
+        this.deviceId = "ADS1115";
+        this.context = pi4j;
+        this.i2cBus = i2cBus;
         this.gain = gain;
         I2CProvider i2CProvider = pi4j.provider("linuxfs-i2c");
-        I2CConfig i2cConfig = I2C.newConfigBuilder(pi4j).id("ADS1115").bus(1).device(address).build();
+        I2CConfig i2cConfig = I2C.newConfigBuilder(pi4j).id(deviceId).bus(i2cBus).device(address).build();
         i2c = i2CProvider.create(i2cConfig);
-        LOG.info("ADS1115 Connected to bus {}. OK.", address);
+        LOG.info("ADS1115 Connected to i2c bus={} address={}. OK.", i2cBus, address);
     }
 
-    public double readAIn0() {
+    @Override
+    public int getAddress() {
+        return address;
+    }
+
+    @Override
+    public Context getContext() {
+        return context;
+    }
+
+    @Override
+    public int getI2CBus() {
+        return i2cBus;
+    }
+
+    @Override
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    @Override
+    public double getAIn0() {
         return gain.gainPerByte * readIn(calculateConfig(A0_IN));
     }
 
-    public double readAIn1() {
+    @Override
+    public double getAIn1() {
         return  gain.gainPerByte * readIn(calculateConfig(A1_IN));
     }
 
-    public double readAIn2() {
+    @Override
+    public double getAIn2() {
         return  gain.gainPerByte * readIn(calculateConfig(A2_IN));
     }
 
-    public double readAIn3() {
+    @Override
+    public double getAIn3() {
         return  gain.gainPerByte * readIn(calculateConfig(A3_IN));
     }
 
