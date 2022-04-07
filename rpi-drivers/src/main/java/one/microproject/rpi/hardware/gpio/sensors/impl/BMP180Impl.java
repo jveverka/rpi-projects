@@ -8,6 +8,7 @@ import one.microproject.rpi.hardware.gpio.sensors.BMP180;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static one.microproject.rpi.hardware.gpio.sensors.impl.Utils.getRawValue;
 import static one.microproject.rpi.hardware.gpio.sensors.impl.Utils.getSigned;
 import static one.microproject.rpi.hardware.gpio.sensors.impl.Utils.waitfor;
 
@@ -21,10 +22,6 @@ import static one.microproject.rpi.hardware.gpio.sensors.impl.Utils.waitfor;
 public class BMP180Impl implements BMP180 {
 
     private static final Logger LOG = LoggerFactory.getLogger(BMP180Impl.class);
-
-    public static final int LITTLE_ENDIAN = 0;
-    public static final int BIG_ENDIAN = 1;
-    private static final int BMP180_ENDIANNESS = BIG_ENDIAN;
 
     public static final int ADDRESS = 0x77;
 
@@ -127,21 +124,15 @@ public class BMP180Impl implements BMP180 {
     }
 
     private int readU16(int register) {
-        int hi = this.readU8(register);
-        int lo = this.readU8(register + 1);
-        return (BMP180_ENDIANNESS == BIG_ENDIAN) ? (hi << 8) + lo : (lo << 8) + hi; // Big Endian
+        int msb = this.readU8(register);
+        int lsb = this.readU8(register + 1);
+        return getRawValue(msb, lsb);
     }
 
     private int readS16(int register) {
-        int hi = 0, lo = 0;
-        if (BMP180_ENDIANNESS == BIG_ENDIAN) {
-            hi = this.readS8(register);
-            lo = this.readU8(register + 1);
-        } else {
-            lo = this.readS8(register);
-            hi = this.readU8(register + 1);
-        }
-        return (hi << 8) + lo;
+        int msb = this.readS8(register);
+        int lsb = this.readU8(register + 1);
+        return getRawValue(msb, lsb);
     }
 
     private void readCalibrationData() {
@@ -216,7 +207,7 @@ public class BMP180Impl implements BMP180 {
 
     @Override
     public float getTemperature() {
-        // Gets the compensated temperature in degrees celcius
+        // Gets the compensated temperature in degrees celsius
         // Read raw temp before aligning it with the calibration values
         int UT = this.readRawTemp();
         int X1 = ((UT - this.calAC6) * this.calAC5) >> 15;
@@ -230,25 +221,13 @@ public class BMP180Impl implements BMP180 {
     @Override
     public float getPressure() {
         // Gets the compensated pressure in pascal
-        int UT = 0;
-        int UP = 0;
-        int B3 = 0;
-        int B5 = 0;
-        int B6 = 0;
-        int X1 = 0;
-        int X2 = 0;
-        int X3 = 0;
         int p = 0;
-        int B4 = 0;
-        int B7 = 0;
-
-        UT = this.readRawTemp();
-        UP = this.readRawPressure();
+        int UT = this.readRawTemp();
+        int UP = this.readRawPressure();
 
         // You can use the datasheet values to test the conversion results
         // boolean dsValues = true;
         boolean dsValues = false;
-
         if (dsValues) {
             UT = 27898;
             UP = 23843;
@@ -267,19 +246,19 @@ public class BMP180Impl implements BMP180 {
             this.showCalibrationData();
         }
         // True Temperature Calculations
-        X1 = (int) ((UT - this.calAC6) * this.calAC5) >> 15;
-        X2 = (this.calMC << 11) / (X1 + this.calMD);
-        B5 = X1 + X2;
+        int X1 = (int) ((UT - this.calAC6) * this.calAC5) >> 15;
+        int X2 = (this.calMC << 11) / (X1 + this.calMD);
+        int B5 = X1 + X2;
         LOG.debug("DBG: X1 = {}", X1);
         LOG.debug("DBG: X2 = {}", X2);
         LOG.debug("DBG: B5 = {}", B5);
         LOG.debug("DBG: True Temperature = {} C", (((B5 + 8) >> 4) / 10.0));
         // Pressure Calculations
-        B6 = B5 - 4000;
+        int B6 = B5 - 4000;
         X1 = (this.calB2 * (B6 * B6) >> 12) >> 11;
         X2 = (this.calAC2 * B6) >> 11;
-        X3 = X1 + X2;
-        B3 = (((this.calAC1 * 4 + X3) << this.mode) + 2) / 4;
+        int X3 = X1 + X2;
+        int B3 = (((this.calAC1 * 4 + X3) << this.mode) + 2) / 4;
         LOG.debug("DBG: B6 = {}", B6);
         LOG.debug("DBG: X1 = {}", X1);
         LOG.debug("DBG: X2 = {}", X2);
@@ -288,8 +267,8 @@ public class BMP180Impl implements BMP180 {
         X1 = (this.calAC3 * B6) >> 13;
         X2 = (this.calB1 * ((B6 * B6) >> 12)) >> 16;
         X3 = ((X1 + X2) + 2) >> 2;
-        B4 = (this.calAC4 * (X3 + 32768)) >> 15;
-        B7 = (UP - B3) * (50000 >> this.mode);
+        int B4 = (this.calAC4 * (X3 + 32768)) >> 15;
+        int B7 = (UP - B3) * (50000 >> this.mode);
         LOG.debug("DBG: X1 = {}", X1);
         LOG.debug("DBG: X2 = {}", X2);
         LOG.debug("DBG: X3 = {}", X3);
@@ -301,7 +280,6 @@ public class BMP180Impl implements BMP180 {
             p = (B7 / B4) * 2;
         }
         LOG.debug("DBG: X1 = {}", X1);
-
         X1 = (p >> 8) * (p >> 8);
         X1 = (X1 * 3038) >> 16;
         X2 = (-7357 * p) >> 16;

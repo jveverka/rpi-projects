@@ -10,7 +10,7 @@ public class Utils {
     private Utils() {
     }
 
-    public static float compensateTemperature(int rawTemp, int digT1, int digT2, int digT3) {
+    public static float compensateTemperatureBME280(int rawTemp, int digT1, int digT2, int digT3) {
         LOG.info("compensateTemperature: rawTemp={}, digT1={}, digT2={}, digT3={}", rawTemp, digT1, digT2, digT3);
 
         int var1 = ((((rawTemp>>3) - (digT1<<1))) * (digT2)) >> 11;

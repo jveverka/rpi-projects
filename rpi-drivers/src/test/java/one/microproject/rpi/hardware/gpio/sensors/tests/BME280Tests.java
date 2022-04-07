@@ -6,7 +6,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static one.microproject.rpi.hardware.gpio.sensors.impl.Utils.compensateTemperature;
+import static one.microproject.rpi.hardware.gpio.sensors.impl.Utils.compensateTemperatureBME280;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class BME280Tests {
@@ -20,7 +20,7 @@ class BME280Tests {
     @ParameterizedTest
     @MethodSource("provideTemperature")
     void testTemperatureCompensation(int rawTemp, int digT1, int digT2, int digT3, float expecterTemperature) {
-        float temperature = compensateTemperature(rawTemp, digT1, digT2, digT3);
+        float temperature = compensateTemperatureBME280(rawTemp, digT1, digT2, digT3);
         assertEquals(expecterTemperature, temperature);
     }
 

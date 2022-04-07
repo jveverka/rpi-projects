@@ -8,7 +8,7 @@ import one.microproject.rpi.hardware.gpio.sensors.BME280;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static one.microproject.rpi.hardware.gpio.sensors.impl.Utils.compensateTemperature;
+import static one.microproject.rpi.hardware.gpio.sensors.impl.Utils.compensateTemperatureBME280;
 import static one.microproject.rpi.hardware.gpio.sensors.impl.Utils.getRawValue;
 import static one.microproject.rpi.hardware.gpio.sensors.impl.Utils.getSigned;
 import static one.microproject.rpi.hardware.gpio.sensors.impl.Utils.waitfor;
@@ -138,7 +138,7 @@ public class BME280Impl implements BME280 {
     @Override
     public float getTemperature() {
         int rawTemp = readRawTemp();
-        return compensateTemperature(rawTemp, digT1, digT2, digT3);
+        return compensateTemperatureBME280(rawTemp, digT1, digT2, digT3);
     }
 
     @Override
