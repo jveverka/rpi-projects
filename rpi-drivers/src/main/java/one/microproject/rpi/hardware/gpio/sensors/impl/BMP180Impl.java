@@ -8,6 +8,7 @@ import one.microproject.rpi.hardware.gpio.sensors.BMP180;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static one.microproject.rpi.hardware.gpio.sensors.impl.Utils.compensateTemperatureBMP180;
 import static one.microproject.rpi.hardware.gpio.sensors.impl.Utils.getRawValue;
 import static one.microproject.rpi.hardware.gpio.sensors.impl.Utils.getSigned;
 import static one.microproject.rpi.hardware.gpio.sensors.impl.Utils.waitfor;
@@ -209,13 +210,8 @@ public class BMP180Impl implements BMP180 {
     public float getTemperature() {
         // Gets the compensated temperature in degrees celsius
         // Read raw temp before aligning it with the calibration values
-        int UT = this.readRawTemp();
-        int X1 = ((UT - this.calAC6) * this.calAC5) >> 15;
-        int X2 = (this.calMC << 11) / (X1 + this.calMD);
-        int B5 = X1 + X2;
-        float temp = ((B5 + 8) >> 4) / 10.0f;
-        LOG.debug("DBG: Calibrated temperature = {} C", temp);
-        return temp;
+        int ut = this.readRawTemp();
+        return compensateTemperatureBMP180(ut, calAC6, calAC5, calMC, calMD);
     }
 
     @Override

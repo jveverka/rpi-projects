@@ -24,6 +24,16 @@ public class Utils {
         return temp;
     }
 
+    public static float compensateTemperatureBMP180(int ut, int calAC6, int calAC5, int calMC, int calMD) {
+        LOG.debug("compensateTemperature: ut={}, calAC6={}, calAC5={}, calMC={}, calMD={}", ut, calAC6, calAC5, calMC, calMD);
+        int x1 = ((ut - calAC6) * calAC5) >> 15;
+        int x2 = (calMC << 11) / (x1 + calMD);
+        int b5 = x1 + x2;
+        float temp = ((b5 + 8) >> 4) / 10.0f;
+        LOG.debug("compensateTemperature: Calibrated temperature = {} C", temp);
+        return temp;
+    }
+
     public static int getRawValue(int msb, int lsb, int xlsb) {
         LOG.info("getRawValue: msb={} lsb={} xlsb={}", msb, lsb, xlsb);
         return (((msb << 8) + lsb)<<4) + (xlsb>>4);
