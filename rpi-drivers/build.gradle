@@ -10,7 +10,7 @@ targetCompatibility = JavaVersion.VERSION_11
 
 group = 'one.microproject.rpi'
 archivesBaseName = "rpi-drivers"
-version = '2.0.0'
+version = '2.1.0'
 
 application {
     mainClass = 'one.microproject.rpi.hardware.gpio.sensors.Main'
@@ -28,6 +28,16 @@ dependencies {
     implementation 'com.pi4j:pi4j-plugin-raspberrypi:2.1.1'
     implementation 'com.pi4j:pi4j-plugin-linuxfs:2.1.1'
     implementation 'com.pi4j:pi4j-plugin-pigpio:2.1.1'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
 }
 
 ext.isSnapshot = version.endsWith("-SNAPSHOT")
@@ -78,11 +88,11 @@ publishing {
             pom {
                 name = 'RPI Drivers for Java'
                 description = 'Collection of drivers for various chips for Raspberry PI Written in Java using pi4j.'
-                url = 'https://github.com/jveverka/rpi-projects/tree/master/rpi-drivers'
+                url = 'https://github.com/jveverka/rpi-projects/tree/pi4j-v2/rpi-drivers'
                 licenses {
                     license {
                         name = 'Apache License 2.0'
-                        url = 'https://github.com/jveverka/rpi-projects/blob/master/LICENSE'
+                        url = 'https://github.com/jveverka/rpi-projects/blob/pi4j-v2/LICENSE'
                     }
                 }
                 developers {

@@ -1,9 +1,10 @@
-package one.microproject.rpi.hardware.gpio.sensors.sensors;
+package one.microproject.rpi.hardware.gpio.sensors.impl;
 
 import com.pi4j.context.Context;
 import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.io.i2c.I2CProvider;
+import one.microproject.rpi.hardware.gpio.sensors.HTU21DF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,9 +14,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author gergej
  */
-public class HTU21DF implements AutoCloseable {
+public class HTU21DFImpl implements HTU21DF {
 
-    private static final Logger LOG = LoggerFactory.getLogger(HTU21DF.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HTU21DFImpl.class);
 
     public static final int ADDRESS = 0x40;
     // HTU21DF Registers
@@ -29,17 +30,45 @@ public class HTU21DF implements AutoCloseable {
     public static final int HTU21DF_READREG = 0xE7;
     public static final int HTU21DF_RESET = 0xFE;
 
+    private final int address;
+    private final String deviceId;
+    private final Context context;
+    private final int i2cBus;
     private I2C htu21df;
 
-    public HTU21DF(Context pi4j) {
-        this(pi4j, ADDRESS);
+    public HTU21DFImpl(Context pi4j) {
+        this(pi4j, ADDRESS, 1);
     }
 
-    public HTU21DF(Context pi4j, int address) {
+    public HTU21DFImpl(Context pi4j, int address, int i2cBus) {
+        this.address = address;
+        this.deviceId = "HTU21DF";
+        this.context = pi4j;
+        this.i2cBus = i2cBus;
         I2CProvider i2CProvider = pi4j.provider("linuxfs-i2c");
-        I2CConfig i2cConfig = I2C.newConfigBuilder(pi4j).id("HTU21DF").bus(1).device(address).build();
+        I2CConfig i2cConfig = I2C.newConfigBuilder(pi4j).id(deviceId).bus(i2cBus).device(address).build();
         htu21df = i2CProvider.create(i2cConfig);
-        LOG.info("HTU21DF Connected to bus {}. OK.", address);
+        LOG.info("HTU21DF Connected to i2c bus={} address={}. OK.", i2cBus, address);
+    }
+
+    @Override
+    public int getAddress() {
+        return address;
+    }
+
+    @Override
+    public Context getContext() {
+        return context;
+    }
+
+    @Override
+    public int getI2CBus() {
+        return i2cBus;
+    }
+
+    @Override
+    public String getDeviceId() {
+        return deviceId;
     }
 
     public boolean begin() {
@@ -65,7 +94,8 @@ public class HTU21DF implements AutoCloseable {
         htu21df.close();
     }
 
-    public float readTemperature() {
+    @Override
+    public float getTemperature() {
         // Reads the raw temperature from the sensor
         LOG.debug("Read Temp: Written 0x{}", lpad(Integer.toHexString((HTU21DF_READTEMP & 0xff)), "0", 2));
         htu21df.write((byte) (HTU21DF_READTEMP)); //  & 0xff));
@@ -91,7 +121,8 @@ public class HTU21DF implements AutoCloseable {
         return temp;
     }
 
-    public float readHumidity() {
+    @Override
+    public float getHumidity() {
         // Reads the raw (uncompensated) humidity from the sensor
         htu21df.write((byte) HTU21DF_READHUM);
         waitfor(50); // Wait 50ms

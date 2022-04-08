@@ -6,23 +6,24 @@ Written in Java using [pi4j](http://pi4j.com/).
 RaspberryPi compatibility: 3, 4, zero
 
 ## Supported chips:
-* [__BMP180__](https://www.adafruit.com/product/1603) - bosch I2C temperature and pressure sensor
-* [__HTU21D__](https://www.adafruit.com/product/3515) - I2C relative humidity and temperature sensor
-* [__PCF8591__](https://www.adafruit.com/product/4648) - I2C 8-bit 4-channel ADC
-* [__ADS1115__](https://www.adafruit.com/product/1085) - I2C 16-bit 4-channel ADC
+* [__BMP180__](https://www.adafruit.com/product/1603) - Bosch I2C temperature and pressure sensor [datasheet](docs/BME280.pdf).
+* [__BME280__](https://www.adafruit.com/product/2652) - Bosch I2C temperature, humidity and pressure sensor [datasheet](docs/BMP180.pdf).
+* [__HTU21D__](https://www.adafruit.com/product/3515) - I2C relative humidity and temperature sensor [datasheet](docs/HTU21D.pdf).
+* [__PCF8591__](https://www.adafruit.com/product/4648) - I2C 8-bit 4-channel ADC [datasheet](docs/PCF8591.pdf).
+* [__ADS1115__](https://www.adafruit.com/product/1085) - I2C 16-bit 4-channel ADC [datasheet](docs/ADS1115.pdf).
 
 ### Use with maven
 ```
 <dependency>
     <groupId>one.microproject.rpi</groupId>
     <artifactId>rpi-drivers</artifactId>
-    <version>2.0.0</version>
+    <version>2.1.0</version>
 </dependency>
 ```
 
 ### Use with gradle
 ```
-implementation 'one.microproject.rpi:rpi-drivers:2.0.0'
+implementation 'one.microproject.rpi:rpi-drivers:2.1.0'
 ```
 
 ## Compile and Test on RaspberryPI
@@ -42,11 +43,12 @@ implementation 'one.microproject.rpi:rpi-drivers:2.0.0'
    ```
 5. Copy to RaspberryPI device:
    ```
-   scp build/distributions/rpi-drivers-2.0.0.zip pi@<raspberry-pi>:/home/pi/
+   scp build/distributions/rpi-drivers-2.1.0.zip pi@<raspberry-pi>:/home/pi/
    ```
 6. Run tests on RaspberryPI device:
    ```
-   unzip rpi-drivers-2.0.0.zip
-   cd rpi-drivers-2.0.0/bin
-   ./rpi-drivers ALL | ADS1115 | BMP180 | HTU21D | PCF8591 
+   unzip rpi-drivers-2.1.0.zip
+   cd rpi-drivers-2.1.0/bin
+   ./rpi-drivers ALL | ADS1115 | BMP180 | BME280 | HTU21D | PCF8591 
    ```
+
