@@ -6,8 +6,8 @@ Written in Java using [pi4j](http://pi4j.com/).
 RaspberryPi compatibility: 3, 4, zero
 
 ## Supported chips:
-* [__BMP180__](https://www.adafruit.com/product/1603) - Bosch I2C temperature and pressure sensor [datasheet](docs/BME280.pdf).
-* [__BME280__](https://www.adafruit.com/product/2652) - Bosch I2C temperature, humidity and pressure sensor [datasheet](docs/BMP180.pdf).
+* [__BMP180__](https://www.adafruit.com/product/1603) - Bosch I2C temperature and pressure sensor [datasheet](docs/BMP180.pdf).
+* [__BME280__](https://www.adafruit.com/product/2652) - Bosch I2C temperature, humidity and pressure sensor [datasheet](docs/BME280.pdf).
 * [__HTU21D__](https://www.adafruit.com/product/3515) - I2C relative humidity and temperature sensor [datasheet](docs/HTU21D.pdf).
 * [__PCF8591__](https://www.adafruit.com/product/4648) - I2C 8-bit 4-channel ADC [datasheet](docs/PCF8591.pdf).
 * [__ADS1115__](https://www.adafruit.com/product/1085) - I2C 16-bit 4-channel ADC [datasheet](docs/ADS1115.pdf).
