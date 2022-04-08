@@ -1,7 +1,7 @@
 package one.microproject.rpi.hardware.gpio.sensors;
 
 /**
- * HTU21DF Temperature & Humidity Sensor.
+ * HTU21DF Temperature Humidity Sensor.
  * https://www.adafruit.com/product/3515
  */
 public interface HTU21DF extends I2CDevice {
