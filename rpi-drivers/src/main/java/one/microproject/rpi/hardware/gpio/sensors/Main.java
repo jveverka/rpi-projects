@@ -3,6 +3,7 @@ package one.microproject.rpi.hardware.gpio.sensors;
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
 import one.microproject.rpi.hardware.gpio.sensors.tests.ADS1115Test;
+import one.microproject.rpi.hardware.gpio.sensors.tests.BH1750Test;
 import one.microproject.rpi.hardware.gpio.sensors.tests.BME280Test;
 import one.microproject.rpi.hardware.gpio.sensors.tests.BMP180Test;
 import one.microproject.rpi.hardware.gpio.sensors.tests.HTU21DTest;
@@ -42,9 +43,14 @@ public class Main {
             PCF8591Test.test(context);
         }
 
+        if (arguments.contains("ALL") || arguments.contains("BH1750")) {
+            context = lazyConfigInit(context);
+            BH1750Test.test(context);
+        }
+
         if (context == null) {
             LOG.info("No tests triggered !");
-            LOG.info("Use arguments: ALL ADS1115 BMP180 BME280 HTU21D PCF8591");
+            LOG.info("Use arguments: ALL ADS1115 BME280 BMP180 HTU21D PCF8591 BH1750");
         }
     }
 

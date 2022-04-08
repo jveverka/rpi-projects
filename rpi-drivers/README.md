@@ -11,19 +11,20 @@ RaspberryPi compatibility: 3, 4, zero
 * [__HTU21D__](https://www.adafruit.com/product/3515) - I2C relative humidity and temperature sensor [datasheet](docs/HTU21D.pdf).
 * [__PCF8591__](https://www.adafruit.com/product/4648) - I2C 8-bit 4-channel ADC [datasheet](docs/PCF8591.pdf).
 * [__ADS1115__](https://www.adafruit.com/product/1085) - I2C 16-bit 4-channel ADC [datasheet](docs/ADS1115.pdf).
+* [__BH1750__](https://www.adafruit.com/product/4681) - Light Intensity Sensor [datasheet](docs/BH1750FVI.pdf).
 
 ### Use with maven
 ```
 <dependency>
     <groupId>one.microproject.rpi</groupId>
     <artifactId>rpi-drivers</artifactId>
-    <version>2.1.0</version>
+    <version>2.1.1</version>
 </dependency>
 ```
 
 ### Use with gradle
 ```
-implementation 'one.microproject.rpi:rpi-drivers:2.1.0'
+implementation 'one.microproject.rpi:rpi-drivers:2.1.1'
 ```
 
 ## Compile and Test on RaspberryPI
@@ -43,12 +44,12 @@ implementation 'one.microproject.rpi:rpi-drivers:2.1.0'
    ```
 5. Copy to RaspberryPI device:
    ```
-   scp build/distributions/rpi-drivers-2.1.0.zip pi@<raspberry-pi>:/home/pi/
+   scp build/distributions/rpi-drivers-2.1.1.zip pi@<raspberry-pi>:/home/pi/
    ```
 6. Run tests on RaspberryPI device:
    ```
-   unzip rpi-drivers-2.1.0.zip
-   cd rpi-drivers-2.1.0/bin
-   ./rpi-drivers ALL | ADS1115 | BMP180 | BME280 | HTU21D | PCF8591 
+   unzip rpi-drivers-2.1.1.zip
+   cd rpi-drivers-2.1.1/bin
+   ./rpi-drivers ALL | ADS1115 | BME280 | BMP180 | HTU21D | PCF8591 | BH1750
    ```
 

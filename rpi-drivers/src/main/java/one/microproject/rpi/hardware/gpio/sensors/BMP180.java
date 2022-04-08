@@ -1,5 +1,7 @@
 package one.microproject.rpi.hardware.gpio.sensors;
 
+import one.microproject.rpi.hardware.gpio.sensors.impl.BMP180Impl;
+
 /**
  * Bosch BMP180 Temperature Pressure Sensor.
  * https://www.adafruit.com/product/1603
@@ -28,5 +30,11 @@ public interface BMP180 extends I2CDevice {
      * @return - pressure reading [Pascal].
      */
     float getPressure();
+
+    /**
+     * Read all sensors (ambient temperature and pressure).
+     * @return - ambient temperature and pressure data.
+     */
+    BMP180Impl.Data getSensorValues();
 
 }

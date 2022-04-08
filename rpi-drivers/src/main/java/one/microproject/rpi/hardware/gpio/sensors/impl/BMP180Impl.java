@@ -216,6 +216,11 @@ public class BMP180Impl implements BMP180 {
 
     @Override
     public float getPressure() {
+        return getSensorValues().getPressure();
+    }
+
+    @Override
+    public Data getSensorValues() {
         // Gets the compensated pressure in pascal
         int p = 0;
         int UT = this.readRawTemp();
@@ -225,10 +230,11 @@ public class BMP180Impl implements BMP180 {
         int X1 = (int) ((UT - this.calAC6) * this.calAC5) >> 15;
         int X2 = (this.calMC << 11) / (X1 + this.calMD);
         int B5 = X1 + X2;
+        float temperature = (((B5 + 8) >> 4) / 10.0f);
         LOG.debug("DBG: X1 = {}", X1);
         LOG.debug("DBG: X2 = {}", X2);
         LOG.debug("DBG: B5 = {}", B5);
-        LOG.debug("DBG: True Temperature = {} C", (((B5 + 8) >> 4) / 10.0));
+        LOG.debug("DBG: True Temperature = {} C", temperature);
         // Pressure Calculations
         int B6 = B5 - 4000;
         X1 = (this.calB2 * (B6 * B6) >> 12) >> 11;
@@ -264,12 +270,30 @@ public class BMP180Impl implements BMP180 {
         LOG.debug("DBG: X2 = {}", X2);
         p = p + ((X1 + X2 + 3791) >> 4);
         LOG.debug("DBG: Pressure = {} Pa", p);
-        return p;
+        return new Data(temperature, p);
     }
 
     @Override
     public void close() throws Exception {
         bmp180.close();
+    }
+
+    public class Data {
+        private final float temperature;
+        private final float pressure;
+
+        public Data(float temperature, float pressure) {
+            this.temperature = temperature;
+            this.pressure = pressure;
+        }
+
+        public float getTemperature() {
+            return temperature;
+        }
+
+        public float getPressure() {
+            return pressure;
+        }
     }
 
 }

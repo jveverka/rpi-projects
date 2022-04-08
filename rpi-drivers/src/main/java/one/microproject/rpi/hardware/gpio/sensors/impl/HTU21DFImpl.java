@@ -8,6 +8,8 @@ import one.microproject.rpi.hardware.gpio.sensors.HTU21DF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static one.microproject.rpi.hardware.gpio.sensors.impl.Utils.waitFor;
+
 /**
  * HTU-21D I2C
  * 3.3V temperature and relative humidity sensor
@@ -85,7 +87,7 @@ public class HTU21DFImpl implements HTU21DF {
             htu21df.write((byte) HTU21DF_RESET);
             LOG.debug("DBG: Reset OK");
         } finally {
-            waitfor(15); // Wait 15ms
+            waitFor(15); // Wait 15ms
         }
     }
 
@@ -99,7 +101,7 @@ public class HTU21DFImpl implements HTU21DF {
         // Reads the raw temperature from the sensor
         LOG.debug("Read Temp: Written 0x{}", lpad(Integer.toHexString((HTU21DF_READTEMP & 0xff)), "0", 2));
         htu21df.write((byte) (HTU21DF_READTEMP)); //  & 0xff));
-        waitfor(50); // Wait 50ms
+        waitFor(50); // Wait 50ms
         byte[] buf = new byte[3];
         /*int rc  = */
         htu21df.read(buf, 0, 3);
@@ -125,7 +127,7 @@ public class HTU21DFImpl implements HTU21DF {
     public float getHumidity() {
         // Reads the raw (uncompensated) humidity from the sensor
         htu21df.write((byte) HTU21DF_READHUM);
-        waitfor(50); // Wait 50ms
+        waitFor(50); // Wait 50ms
         byte[] buf = new byte[3];
         /* int rc  = */
         htu21df.read(buf, 0, 3);
@@ -145,14 +147,6 @@ public class HTU21DFImpl implements HTU21DF {
 
         LOG.debug("DBG: Humidity: {}", hum);
         return hum;
-    }
-
-    protected static void waitfor(long howMuch) {
-        try {
-            Thread.sleep(howMuch);
-        } catch (InterruptedException e) {
-            LOG.error("Error: ", e);
-        }
     }
 
     private static String lpad(String s, String with, int len) {

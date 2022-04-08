@@ -10,7 +10,7 @@ targetCompatibility = JavaVersion.VERSION_11
 
 group = 'one.microproject.rpi'
 archivesBaseName = "rpi-drivers"
-version = '2.1.0'
+version = '2.1.1'
 
 application {
     mainClass = 'one.microproject.rpi.hardware.gpio.sensors.Main'
