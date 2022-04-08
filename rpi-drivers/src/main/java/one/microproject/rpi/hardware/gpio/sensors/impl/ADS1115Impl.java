@@ -94,6 +94,11 @@ public class ADS1115Impl implements ADS1115 {
     }
 
     @Override
+    public GAIN getGain() {
+        return gain;
+    }
+
+    @Override
     public double getAIn0() {
         return gain.gainPerByte * readIn(calculateConfig(A0_IN));
     }

@@ -71,6 +71,11 @@ public class PCF8591Impl implements PCF8591 {
     }
 
     @Override
+    public double getMaxVoltage() {
+        return maxVoltage;
+    }
+
+    @Override
     public double getAIn0() {
         return readAIn(RA0);
     }
