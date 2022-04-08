@@ -1,6 +1,6 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 ![Build and Test](https://github.com/jveverka/rpi-projects/workflows/Build%20and%20Test/badge.svg)
-[![Maven Central](https://img.shields.io/badge/maven%20central-release-green.svg)](https://search.maven.org/search?q=one.microproject.rpi)
+[![Maven Central](https://img.shields.io/badge/maven%20central-release-green.svg)](https://search.maven.org/artifact/one.microproject.rpi/rpi-drivers)
 
 # Raspberry PI projects and drivers
 
