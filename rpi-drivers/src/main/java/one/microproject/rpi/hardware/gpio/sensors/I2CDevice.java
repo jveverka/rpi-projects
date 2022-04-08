@@ -20,8 +20,8 @@ public interface I2CDevice extends AutoCloseable {
     Context getContext();
 
     /**
-     * Get I2C but ID.
-     * @return - I2C but ID.
+     * Get I2C bus ID.
+     * @return - I2C bus ID.
      */
     int getI2CBus();
 
