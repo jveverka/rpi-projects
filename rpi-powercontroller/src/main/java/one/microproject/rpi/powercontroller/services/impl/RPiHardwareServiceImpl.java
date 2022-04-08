@@ -3,11 +3,15 @@ package one.microproject.rpi.powercontroller.services.impl;
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
 import com.pi4j.io.gpio.digital.DigitalInput;
+import com.pi4j.io.gpio.digital.DigitalInputConfigBuilder;
 import com.pi4j.io.gpio.digital.DigitalOutput;
+import com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder;
+import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.io.gpio.digital.DigitalStateChangeEvent;
 import com.pi4j.io.gpio.digital.DigitalStateChangeListener;
-import one.microproject.rpi.hardware.gpio.sensors.sensors.BMP180;
-import one.microproject.rpi.hardware.gpio.sensors.sensors.HTU21DF;
+import com.pi4j.io.gpio.digital.PullResistance;
+import one.microproject.rpi.hardware.gpio.sensors.impl.BMP180Impl;
+import one.microproject.rpi.hardware.gpio.sensors.impl.HTU21DFImpl;
 import one.microproject.rpi.powercontroller.config.Configuration;
 import one.microproject.rpi.powercontroller.dto.PortMapping;
 import one.microproject.rpi.powercontroller.dto.PortType;
@@ -28,8 +32,8 @@ public class RPiHardwareServiceImpl implements RPiService {
 
     private static final Logger LOG = LoggerFactory.getLogger(RPiHardwareServiceImpl.class);
 
-    private final BMP180 bmp180;
-    private final HTU21DF htu21DF;
+    private final BMP180Impl bmp180;
+    private final HTU21DFImpl htu21DF;
     private final Map<Integer, DigitalOutput> outPorts;
     private final Map<Integer, DigitalInput> inPorts;
     private final Map<Integer, PortMapping> portMapping;
@@ -37,8 +41,8 @@ public class RPiHardwareServiceImpl implements RPiService {
     public RPiHardwareServiceImpl(PortListener portListener, Configuration configuration) {
         LOG.info("Initializing RPi hardware ...");
         Context context = Pi4J.newAutoContext();
-        this.bmp180 = new BMP180(context);
-        this.htu21DF = new HTU21DF(context);
+        this.bmp180 = new BMP180Impl(context);
+        this.htu21DF = new HTU21DFImpl(context);
         this.outPorts = new ConcurrentHashMap<>();
         this.inPorts = new ConcurrentHashMap<>();
         this.portMapping = configuration.getPortsMapping();
@@ -46,13 +50,18 @@ public class RPiHardwareServiceImpl implements RPiService {
             int pinId = v.getAddress();
             LOG.info("Initializing port {} pinId={} as {}", k, pinId, v);
             if (PortType.OUTPUT.equals(v.getType())) {
-                DigitalOutput digitalOutput = context.dout().create(pinId);
-                digitalOutput.low();
+                //DigitalOutput digitalOutput = context.provider("pigpio-digital-input").context().dout().create(pinId);
+                DigitalOutputConfigBuilder outConfigBuilder = DigitalOutput.newConfigBuilder(context);
+                outConfigBuilder.id("button" + pinId).address(pinId).provider("pigpio-digital-input").shutdown(DigitalState.LOW).initial(DigitalState.LOW);
+                DigitalOutput digitalOutput = context.create(outConfigBuilder);
                 outPorts.put(k, digitalOutput);
                 LOG.info("OUTPUT port created");
             }
             if (PortType.INPUT.equals(v.getType())) {
-                DigitalInput digitalInput = context.din().create(pinId);
+                //DigitalInput digitalInput = context.provider("pigpio-digital-input").context().din().create(pinId);
+                DigitalInputConfigBuilder inConfigBuilder = DigitalInput.newConfigBuilder(context);
+                inConfigBuilder.id("button" + pinId).address(pinId).provider("pigpio-digital-input").pull(PullResistance.PULL_DOWN);
+                DigitalInput digitalInput = context.create(inConfigBuilder);
                 digitalInput.addListener(new PinListener(k, portListener));
                 inPorts.put(k, digitalInput);
                 LOG.info("INPUT port created");
@@ -67,9 +76,9 @@ public class RPiHardwareServiceImpl implements RPiService {
     public Measurements getMeasurements() {
         try {
             LOG.debug("getMeasurements");
-            float temperature = bmp180.readTemperature();
-            float pressure = bmp180.readPressure() / 1000f;
-            float relHumidity = htu21DF.readHumidity();
+            float temperature = bmp180.getTemperature();
+            float pressure = bmp180.getPressure() / 1000f;
+            float relHumidity = htu21DF.getHumidity();
             return new Measurements(new Date(), temperature, "celsius", relHumidity, "percent", pressure, "kPa");
         } catch (Exception e) {
             LOG.error("ERROR: ", e);
