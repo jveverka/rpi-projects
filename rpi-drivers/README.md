@@ -5,7 +5,7 @@ Collection of drivers for various I2C chips for Raspberry PI
 Written in Java using [pi4j](http://pi4j.com/).
 RaspberryPi compatibility: 3, 4, zero
 
-## Supported chips:
+## Supported I2C sensors:
 * [__BMP180__](https://www.adafruit.com/product/1603) - Bosch I2C temperature and pressure sensor [datasheet](docs/BMP180.pdf).
 * [__BME280__](https://www.adafruit.com/product/2652) - Bosch I2C temperature, humidity and pressure sensor [datasheet](docs/BME280.pdf).
 * [__HTU21D__](https://www.adafruit.com/product/3515) - I2C relative humidity and temperature sensor [datasheet](docs/HTU21D.pdf).
