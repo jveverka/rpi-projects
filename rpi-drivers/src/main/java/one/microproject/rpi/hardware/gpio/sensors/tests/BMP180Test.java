@@ -18,7 +18,7 @@ public class BMP180Test {
 		try (BMP180 bmp180 = BMP180Builder.get().context(context).build()) {
 			LOG.info("BMP180Test started ...");
 			int id = bmp180.getId();
-			LOG.info("BME280 CHIP ID={}", id);
+			LOG.info("BME180 CHIP ID={}", id);
 			for (int i = 0; i < 10; i++) {
 				BMP180Impl.Data data = bmp180.getSensorValues();
 				float pressure = data.getPressure() / 1000;
