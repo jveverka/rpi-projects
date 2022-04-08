@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import static one.microproject.rpi.hardware.gpio.sensors.impl.Utils.compensateTemperatureBMP180;
 import static one.microproject.rpi.hardware.gpio.sensors.impl.Utils.getRawValue;
 import static one.microproject.rpi.hardware.gpio.sensors.impl.Utils.getSigned;
-import static one.microproject.rpi.hardware.gpio.sensors.impl.Utils.waitfor;
+import static one.microproject.rpi.hardware.gpio.sensors.impl.Utils.waitFor;
 
 
 /**
@@ -170,7 +170,7 @@ public class BMP180Impl implements BMP180 {
     private int readRawTemp() {
         // Reads the raw (uncompensated) temperature from the sensor
         bmp180.write((byte)BMP180_CONTROL, (byte) BMP180_READTEMPCMD);
-        waitfor(5);  // Wait 5ms
+        waitFor(5);  // Wait 5ms
         int raw = readU16(BMP180_TEMPDATA);
         LOG.debug("DBG: Raw Temp: {}, {}", (raw & 0xFFFF), raw);
         return raw;
@@ -180,13 +180,13 @@ public class BMP180Impl implements BMP180 {
         // Reads the raw (uncompensated) pressure level from the sensor
         bmp180.write((byte)BMP180_CONTROL, (byte) (BMP180_READPRESSURECMD + (this.mode << 6)));
         if (this.mode == BMP180_ULTRALOWPOWER) {
-            waitfor(5);
+            waitFor(5);
         } else if (this.mode == BMP180_HIGHRES) {
-            waitfor(14);
+            waitFor(14);
         } else if (this.mode == BMP180_ULTRAHIGHRES) {
-            waitfor(26);
+            waitFor(26);
         } else {
-            waitfor(8);
+            waitFor(8);
         }
         int msb = bmp180.readRegister(BMP180_PRESSUREDATA);
         int lsb = bmp180.readRegister(BMP180_PRESSUREDATA + 1);

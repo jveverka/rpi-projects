@@ -8,11 +8,14 @@ import one.microproject.rpi.hardware.gpio.sensors.BME280;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static one.microproject.rpi.hardware.gpio.sensors.impl.Utils.compensateTemperatureBME280;
-import static one.microproject.rpi.hardware.gpio.sensors.impl.Utils.getRawValue;
-import static one.microproject.rpi.hardware.gpio.sensors.impl.Utils.getSigned;
-import static one.microproject.rpi.hardware.gpio.sensors.impl.Utils.waitfor;
+import static one.microproject.rpi.hardware.gpio.sensors.impl.Utils.compensateDataBME280;
+import static one.microproject.rpi.hardware.gpio.sensors.impl.Utils.signed16Bits;
+import static one.microproject.rpi.hardware.gpio.sensors.impl.Utils.unsigned16Bits;
+import static one.microproject.rpi.hardware.gpio.sensors.impl.Utils.waitFor;
 
+/**
+ * Inspired by: https://github.com/s5uishida/bme280-driver/blob/master/src/io/github/s5uishida/iot/device/bme280/driver/BME280Driver.java
+ */
 public class BME280Impl implements BME280 {
 
     private static final Logger LOG = LoggerFactory.getLogger(BME280Impl.class);
@@ -21,18 +24,52 @@ public class BME280Impl implements BME280 {
     private static final int ID_REGISTER     = 0xD0;
     private static final int RESET_REGISTER  = 0xE0;
     private static final int STATUS_REGISTER = 0xF3;
-    private static final int CTRL_MEAS = 0xF4;
-    private static final int CTRL_HUM  = 0xF2;
 
-    private int digT1;
-    private int digT2;
-    private int digT3;
+    private static final int CALIBRATION_DATA_LENGTH_1	 = 24;
+    private static final int CALIBRATION_DATA_LENGTH_2	 = 7;
+
+    private static final int DIG_T1_REG = 0x88;
+    private static final int DIG_H1_REG = 0xa1;
+    private static final int DIG_H2_REG = 0xe1;
+
+    private static final int CONTROL_HUMIDITY_REG				= 0xf2;
+    private static final int CONTROL_MEASUREMENT_REG			= 0xf4;
+    private static final byte CONTROL_HUMIDITY_OSRS_H_1			= 0x01;
+    private static final byte CONTROL_MEASUREMENT_OSRS_T_1		= (byte)0x20;
+    private static final byte CONTROL_MEASUREMENT_OSRS_P_1		= (byte)0x04;
+    private static final byte CONTROL_MEASUREMENT_FORCED_MODE		= (byte)0x01;
+
+    private static final int CONFIG_REG			= 0xf5;
+    private static final byte CONFIG_T_SB_0_5		= (byte)0x00;
+    private static final int PRESSURE_DATA_REG		= 0xf7;
+    private static final int SENSOR_DATA_LENGTH	 = 8;
+
+    private static final int MEASUREMENT_TIME_MILLIS = 10;
 
     private final int address;
     private final String deviceId;
     private final Context context;
     private final int i2cBus;
     private final I2C bme280;
+
+    private int digT1;
+    private int digT2;
+    private int digT3;
+    private int digP1;
+    private int digP2;
+    private int digP3;
+    private int digP4;
+    private int digP5;
+    private int digP6;
+    private int digP7;
+    private int digP8;
+    private int digP9;
+    private int digH1;
+    private int digH2;
+    private int digH3;
+    private int digH4;
+    private int digH5;
+    private int digH6;
 
     public BME280Impl(Context pi4j) {
         this(pi4j, ADDRESS, 1);
@@ -52,52 +89,57 @@ public class BME280Impl implements BME280 {
 
     private void readCalibrationData() {
         LOG.debug("readCalibrationData:");
-        this.digT1 = readU16(0x88);
-        this.digT2 = readS16(0x8A);
-        this.digT3 = readS16(0x8C);
-        LOG.debug("digT1={}", digT1);
-        LOG.debug("digT2={}", digT2);
-        LOG.debug("digT3={}", digT3);
+        byte[] data = read(DIG_T1_REG, CALIBRATION_DATA_LENGTH_1);
+
+        digT1 = unsigned16Bits(data, 0);
+        digT2 = signed16Bits(data, 2);
+        digT3 = signed16Bits(data, 4);
+
+        digP1 = unsigned16Bits(data, 6);
+        digP2 = signed16Bits(data, 8);
+        digP3 = signed16Bits(data, 10);
+        digP4 = signed16Bits(data, 12);
+        digP5 = signed16Bits(data, 14);
+        digP6 = signed16Bits(data, 16);
+        digP7 = signed16Bits(data, 18);
+        digP8 = signed16Bits(data, 20);
+        digP9 = signed16Bits(data, 22);
+
+        digH1 = read(DIG_H1_REG) & 0xff;
+        data = read(DIG_H2_REG, CALIBRATION_DATA_LENGTH_2);
+
+        digH2 = signed16Bits(data, 0);
+        digH3 = data[2] & 0xff;
+        digH4 = ((data[3] & 0xff) << 4) + (data[4] & 0x0f);
+        digH5 = ((data[5] & 0xff) << 4) + ((data[4] & 0xff) >> 4);
+        digH6 = data[6];
     }
 
-    private int readU8(int register) {
-        // "Read an unsigned byte from the I2C device"
-        int result = bme280.readRegister(register);
-        LOG.debug("I2C: Device returned {} from reg {}", result, register);
-        return result;
+    private byte[] read(int register, int length) {
+        byte[] in = new byte[length];
+        bme280.readRegister(register, in);
+        return in;
     }
 
-    private int readS8(int register) {
-        // "Reads a signed byte from the I2C device"
-        int result = bme280.readRegister(register);
-        result = getSigned(result);
-        LOG.debug("I2C: Device returned {} from reg {}", result, register);
-        return result;
+    private int read(int register) {
+        return bme280.readRegister(register);
     }
 
-    private int readU16(int register) {
-        int msb = this.readU8(register);
-        int lsb = this.readU8(register + 1);
-        return getRawValue(msb, lsb);
+    private void write(int register, byte out) {
+        bme280.writeRegister(register, out);
     }
 
-    private int readS16(int register) {
-        int msb = this.readS8(register);
-        int lsb = this.readU8(register + 1);
-        return getRawValue(msb, lsb);
-    }
-
-    private int readRawTemp() {
-        // Reads the raw (uncompensated) temperature from the sensor
-        bme280.write((byte)CTRL_HUM, (byte)0x01);
-        bme280.write((byte)CTRL_MEAS, (byte)0b00100111);
-        waitfor(5);
-        int msb = readU8(0xFA);
-        int lsb = readU8(0xFB);
-        int xlsb = readU8(0xFC);
-        int raw = getRawValue(msb, lsb, xlsb);
-        LOG.info("DBG: Raw Temp: {}", raw);
-        return raw;
+    @Override
+    public Data getSensorValues() {
+        write(CONTROL_HUMIDITY_REG, CONTROL_HUMIDITY_OSRS_H_1);
+        write(CONTROL_MEASUREMENT_REG, (byte)(CONTROL_MEASUREMENT_OSRS_T_1 | CONTROL_MEASUREMENT_OSRS_P_1 | CONTROL_MEASUREMENT_FORCED_MODE));
+        write(CONFIG_REG, CONFIG_T_SB_0_5);
+        waitFor(MEASUREMENT_TIME_MILLIS);
+        byte[] data = read(PRESSURE_DATA_REG, SENSOR_DATA_LENGTH);
+        float[] floats = compensateDataBME280(data, digT1, digT2, digT3,
+                digP1, digP2, digP3, digP4, digP5, digP6, digP7, digP8, digP9,
+                digH1, digH2, digH3, digH4, digH5, digH6);
+        return new Data(floats[0], floats[1], floats[2]);
     }
 
     @Override
@@ -137,23 +179,46 @@ public class BME280Impl implements BME280 {
 
     @Override
     public float getTemperature() {
-        int rawTemp = readRawTemp();
-        return compensateTemperatureBME280(rawTemp, digT1, digT2, digT3);
+        return getSensorValues().getTemperature();
     }
 
     @Override
     public float getPressure() {
-        return 0;
+        return getSensorValues().getPressure();
     }
 
     @Override
-    public float getHumidity() {
-        return 0;
+    public float getRelativeHumidity() {
+        return getSensorValues().getRelativeHumidity();
     }
 
     @Override
     public void close() throws Exception {
         bme280.close();
+    }
+
+    public class Data {
+        private final float temperature;
+        private final float relativeHumidity;
+        private final float pressure;
+
+        public Data(float temperature, float relativeHumidity, float pressure) {
+            this.temperature = temperature;
+            this.relativeHumidity = relativeHumidity;
+            this.pressure = pressure;
+        }
+
+        public float getTemperature() {
+            return temperature;
+        }
+
+        public float getRelativeHumidity() {
+            return relativeHumidity;
+        }
+
+        public float getPressure() {
+            return pressure;
+        }
     }
 
 }

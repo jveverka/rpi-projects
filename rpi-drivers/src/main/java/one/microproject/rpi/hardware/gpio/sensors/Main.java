@@ -44,7 +44,7 @@ public class Main {
 
         if (context == null) {
             LOG.info("No tests triggered !");
-            LOG.info("Use arguments: ALL, ADS1115, BMP180, BME280, HTU21D, PCF8591");
+            LOG.info("Use arguments: ALL ADS1115 BMP180 BME280 HTU21D PCF8591");
         }
     }
 

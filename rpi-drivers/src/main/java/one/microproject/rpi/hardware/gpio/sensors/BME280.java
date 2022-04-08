@@ -1,5 +1,7 @@
 package one.microproject.rpi.hardware.gpio.sensors;
 
+import one.microproject.rpi.hardware.gpio.sensors.impl.BME280Impl;
+
 public interface BME280 extends I2CDevice {
 
     /**
@@ -16,6 +18,8 @@ public interface BME280 extends I2CDevice {
 
     float getPressure();
 
-    float getHumidity();
+    float getRelativeHumidity();
+
+    BME280Impl.Data getSensorValues();
 
 }

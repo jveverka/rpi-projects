@@ -50,3 +50,4 @@ implementation 'one.microproject.rpi:rpi-drivers:2.1.0'
    cd rpi-drivers-2.1.0/bin
    ./rpi-drivers ALL | ADS1115 | BMP180 | BME280 | HTU21D | PCF8591 
    ```
+
