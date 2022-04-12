@@ -3,8 +3,8 @@
 # RPI Drivers
 Collection of drivers for various I2C sensors 
 written in Java using [pi4j](http://pi4j.com/).
-* Raspberry Pi compatibility: 3, 4, zero
-* Raspberry Pi OS: April 4th 2022, 32-bit, 64-bit
+* Raspberry Pi compatibility: 3, 4, zero, zero W, zero 2W
+* [Raspberry Pi OS](https://www.raspberrypi.com/software/operating-systems/): April 4th 2022, 32-bit, 64-bit
 
 ## Supported I2C sensors:
 * [__BMP180__](https://www.adafruit.com/product/1603) - Bosch I2C temperature and pressure sensor. [reference](docs/BMP180.md), [datasheet](docs/BMP180.pdf).
@@ -29,12 +29,12 @@ implementation 'one.microproject.rpi:rpi-drivers:2.1.1'
 ```
 
 ## Compile and Test on RaspberryPI
-1. Install java on raspberry pi.
+1. Install java on Raspberry PI.
    ```
    sudo apt install openjdk-11-jdk
    ```
 2. Enable I2C on raspberry pi using ``sudo raspi-config``.
-3. Make sure I2C sensors are connected to RaspberryPI device.
+3. Make sure I2C sensors are connected to Raspberry PI device.
    ```
    i2cdetect -y 1
    ```
@@ -43,11 +43,11 @@ implementation 'one.microproject.rpi:rpi-drivers:2.1.1'
    ```
    gradle clean build test publishToMavenLocal installDist distZip
    ```
-5. Copy binary to RaspberryPI device:
+5. Copy binary build to Raspberry PI device:
    ```
    scp build/distributions/rpi-drivers-2.1.1.zip pi@<raspberry-pi>:/home/pi/
    ```
-6. Run tests on RaspberryPI device:
+6. Run tests on Raspberry PI device, select only tests for connected sensors:
    ```
    unzip rpi-drivers-2.1.1.zip
    cd rpi-drivers-2.1.1/bin

@@ -5,3 +5,5 @@ Digital 16bit I2C Ambient Light Sensor.
 * [datasheet](BH1750FVI.pdf)
 * [interface](../src/main/java/one/microproject/rpi/hardware/gpio/sensors/BH1750.java)
 * [example of use](../src/main/java/one/microproject/rpi/hardware/gpio/sensors/tests/BH1750Test.java)
+
+![reference-schema](BH1750FVI-schema.svg)
