@@ -26,6 +26,9 @@ This project contains various DYI projects, hardware drivers, schematics and cod
 * __[rpi-camera](rpi-camera)__ - Capture images via HTTP/REST APIs. 
 * __[rpi-camera-client](rpi-camera-client)__ - Java Client for [rpi-camera](rpi-camera).
 
+### RPi Radiation Monitoring
+* __[rpi-radiation-monitor](rpi-radiation-monitor)__ - simple radiation background monitor.
+
 ### Others
 * __[Device Controller](device-controller)__ - controller gateway for RPi devices.
 * __[Kubernetes Cluster](k8s-cluster)__ - running backend on Arm64 RPi4 hardware.
