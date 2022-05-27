@@ -30,7 +30,20 @@ class ServerHandler(BaseHTTPRequestHandler):
         self.send_header("Content-type", "application/json")
         self.end_headers()
         timestamp = time.time()
-        self.wfile.write(bytes("{ \"radiation\": " + str(radiation) + ", \"cpm\": " + str(cpm) + ", \"unit\": \"uSv/h\", \"timestamp\": " + str(timestamp) + ", \"uptime\": " + str(uptime) + ", \"totalcount\": " + str(counter) + " }", "utf-8"))
+        response ={
+            "radiation": {
+                "value": radiation,
+                "unit": "uSv/h"
+            },
+            "counter": {
+                "cpm": cpm,
+                "total": counter
+            },
+            "timestamp": timestamp,
+            "uptime": uptime
+        }
+        responseBody = json.dumps(response);
+        self.wfile.write(bytes(responseBody, "utf-8"))
 
 def start_web_server():
     webServer = HTTPServer(('0.0.0.0', 8080), ServerHandler)
