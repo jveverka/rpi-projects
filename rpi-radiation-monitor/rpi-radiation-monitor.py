@@ -20,6 +20,7 @@ interval=60
 measurements = []
 radiation = 0
 cpm = 0
+counter= 0
 uptime = 0
 started= 0
 
@@ -29,7 +30,7 @@ class ServerHandler(BaseHTTPRequestHandler):
         self.send_header("Content-type", "application/json")
         self.end_headers()
         timestamp = time.time()
-        self.wfile.write(bytes("{ \"radiation\": " + str(radiation) + ", \"cpm\": " + str(cpm) + ", \"unit\": \"uSv/h\", \"timestamp\": " + str(timestamp) + ", \"uptime\": " + str(uptime) + " }", "utf-8"))
+        self.wfile.write(bytes("{ \"radiation\": " + str(radiation) + ", \"cpm\": " + str(cpm) + ", \"unit\": \"uSv/h\", \"timestamp\": " + str(timestamp) + ", \"uptime\": " + str(uptime) + ", \"totalcount\": " + str(counter) + " }", "utf-8"))
 
 def start_web_server():
     webServer = HTTPServer(('0.0.0.0', 8080), ServerHandler)
@@ -48,7 +49,6 @@ def add_and_calculate(timestamp, measurements, interval):
     radiation = cpm/151
     return measurements_copy, cpm, radiation
 
-#webServer = start_web_server()
 webThread = threading.Thread( target=start_web_server, args=() )
 webThread.start()
 started = time.time()
@@ -57,6 +57,7 @@ while True:
     timestamp = time.time() * 1000
     uptime = time.time() - started
     GPIO.wait_for_edge(15, GPIO.FALLING)
+    counter = counter + 1
     measurements, cpm, radiation = add_and_calculate(timestamp, measurements, interval)
     logging.info('CPM: ' + str(cpm) + ', radiation: ' + str(radiation) + ' uSv/h')
 
