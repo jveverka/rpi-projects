@@ -37,7 +37,7 @@ is used as radiation sensor.
   ```shell
   curl -u client-001:Jah7thei --location --request GET 'http://<hostname>:<port>/api/v1/system/measurements'
   ``` 
-  Example response. cpm = count per last minute.
+  Example response. cpm = count per last minute. Measurement values are recalculated after each detected pulse from CAJOE.
   ```json
   {
     "radiation": {
