@@ -38,8 +38,8 @@ is used as radiation sensor.
   ```shell
   curl -u client-001:Jah7thei --location --request GET 'http://<hostname>:<port>/api/v1/system/measurements'
   ``` 
-  Example response. cpm = count per last minute. Measurement values are recalculated after each detected pulse from CAJOE.
-  Norman background radiation (depends on your environment) should be between 0.3 - 0.1 &mu;Sv/h
+  Example response. cpm = count per minute (last minute). Measurement values are recalculated after each pulse from detector.
+  Normal background radiation (depends on your environment) should be between 0.3 - 0.1 &mu;Sv/h
   ```json
   {
     "radiation": {
