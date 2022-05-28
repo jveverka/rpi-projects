@@ -9,11 +9,16 @@ import base64
 import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-monitor_pin=15
+cf = open(sys.argv[1])
+config = json.load(cf)
+
+version = "1.0.0"
 tube_constant=151
-hostname='0.0.0.0'
-port=8080
-interval=60
+monitor_pin  = config["monitor-pin"]
+hostname = config["host"]
+port     = config["port"]
+
+interval = 60
 measurements = []
 radiation = 0
 cpm = 0
@@ -26,15 +31,36 @@ GPIO.setup(monitor_pin, GPIO.IN)
 GPIO.setup(monitor_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
-logging.info('RPi Radiation Monitor 1.0.0')
+logging.info('RPi Radiation Monitor %s', version)
 
 class ServerHandler(BaseHTTPRequestHandler):
     def do_GET(self):
-        self.send_response(200)
-        self.send_header("Content-type", "application/json")
-        self.end_headers()
-        timestamp = time.time()
-        response ={
+        authorization = self.headers['authorization']
+        if not isAuthorized(authorization, config['credentials']):
+           self.send_response(401)
+           self.send_header('WWW-Authenticate', 'Basic realm="Access to RPi camera"')
+           self.send_header('Proxy-Authenticate', 'Basic realm="Access to RPi camera"')
+           self.end_headers()
+        elif self.path == '/api/v1/system/info':
+           system_info = {
+               "id": config['id'],
+               "type": "rpi-radiation-monitor",
+               "version": version,
+               "name": config['name'],
+               "timestamp": int(time.time()),
+               "uptime": uptime
+           }
+           self.send_response(200)
+           self.send_header("Content-type", "application/json")
+           self.end_headers()
+           responseBody = json.dumps(system_info);
+           self.wfile.write(bytes(responseBody, "utf-8"))
+        elif self.path == '/api/v1/system/measurements':
+           self.send_response(200)
+           self.send_header("Content-type", "application/json")
+           self.end_headers()
+           timestamp = time.time()
+           response = {
             "radiation": {
                 "value": radiation,
                 "unit": "uSv/h"
@@ -45,13 +71,33 @@ class ServerHandler(BaseHTTPRequestHandler):
             },
             "timestamp": timestamp,
             "uptime": uptime
-        }
-        responseBody = json.dumps(response);
-        self.wfile.write(bytes(responseBody, "utf-8"))
+           }
+           responseBody = json.dumps(response);
+           self.wfile.write(bytes(responseBody, "utf-8"))
+        else:
+           self.send_error(404)
+           self.end_headers()
+
+def isAuthorized(authorization, credentials):
+    if authorization is None:
+        logging.error("authorization header is missing !")
+        return False
+    if not authorization.startswith( 'Basic ' ):
+        logging.error("authorization Basic is expected !")
+        return False
+    decoded = str(base64.b64decode(authorization.split()[1]),'utf-8')
+    auth_split = decoded.split(":")
+    if auth_split[0] in credentials:
+        password = credentials[auth_split[0]]
+        if password == auth_split[1]:
+            logging.info("user and password match !")
+            return True
+    logging.error("authorization failed !")
+    return False
 
 def start_web_server(hostname, port):
     webServer = HTTPServer((hostname, port), ServerHandler)
-    logging.info('Web server started !');
+    logging.info('Web server started %s:%s!', hostname, port);
     webServer.serve_forever()
     return webServer
 
@@ -76,7 +122,7 @@ while True:
     GPIO.wait_for_edge(monitor_pin, GPIO.FALLING)
     counter = counter + 1
     measurements, cpm, radiation = add_and_calculate(timestamp, measurements, interval)
-    logging.info('CPM: ' + str(cpm) + ', radiation: ' + str(radiation) + ' uSv/h')
+    logging.info('Counter: %s, CPM: %s, radiation: %s uSv/h', counter, cpm, radiation)
 
 webThread.stop()
 GPIO.cleanup()
