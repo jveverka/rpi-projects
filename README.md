@@ -27,7 +27,7 @@ This project contains various DYI projects, hardware drivers, schematics and cod
 * __[rpi-camera-client](rpi-camera-client)__ - Java Client for [rpi-camera](rpi-camera).
 
 ### RPi Radiation Monitoring
-* __[rpi-radiation-monitor](rpi-radiation-monitor)__ - simple radiation background monitor.
+* __[rpi-radiation-monitor](rpi-radiation-monitor)__ - simple radiation background monitor with HTTP/REST access.
 
 ### Others
 * __[Device Controller](device-controller)__ - controller gateway for RPi devices.
