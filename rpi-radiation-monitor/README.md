@@ -11,6 +11,7 @@ is used as radiation sensor.
 2. [74HC14N](https://datasheet.octopart.com/74HC14N-Philips-datasheet-7274161.pdf) - Hex Schmitt Inverter, transforming slowly changing input signals into sharply
    defined, jitter-free output signals.
 3. [RadiationD-1.1(CAJOE) board](https://github.com/SensorsIot/Geiger-Counter-RadiationD-v1.1-CAJOE-)
+   Perform [board calibration](https://github.com/SensorsIot/Geiger-Counter-RadiationD-v1.1-CAJOE-/blob/master/En_Calibration_GMv1.1.pdf) before use. 
 
 ## Install on Raspberry PI
 1. Install [Raspberry Pi OS Lite](https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2022-04-07/2022-04-04-raspios-bullseye-armhf-lite.img.xz)
@@ -38,6 +39,7 @@ is used as radiation sensor.
   curl -u client-001:Jah7thei --location --request GET 'http://<hostname>:<port>/api/v1/system/measurements'
   ``` 
   Example response. cpm = count per last minute. Measurement values are recalculated after each detected pulse from CAJOE.
+  Norman background radiation (depends on your environment) should be between 0.3 - 0.1 &mu;Sv/h
   ```json
   {
     "radiation": {
