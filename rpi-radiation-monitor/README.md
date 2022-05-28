@@ -31,14 +31,41 @@ is used as radiation sensor.
    ```
 
 ### REST API
-* Get system info
-  ```
-  curl -u client-001:Jah7thei --location --request GET 'http://<hostname>:<port>/api/v1/system/info'
-  ```
-* Get radiation measurements
-  ```
+* Security [HTTP Basic access authentication](https://en.wikipedia.org/wiki/Basic_access_authentication) 
+  is used for all REST endpoints, credentials are set in [config](rpi-radiation-monitor.json) file. 
+* GET radiation measurements:
+  ```shell
   curl -u client-001:Jah7thei --location --request GET 'http://<hostname>:<port>/api/v1/system/measurements'
   ``` 
+  Example response. cpm = count per last minute.
+  ```json
+  {
+    "radiation": {
+        "value": 0.1390728476821192,
+        "unit": "uSv/h"
+    },
+    "counter": {
+        "cpm": 21,
+        "total": 2463
+    },
+    "timestamp": 1653722329.4236865,
+    "uptime": 6450.739503145218
+  }
+  ```
+* GET system info:
+  ```shell
+  curl -u client-001:Jah7thei --location --request GET 'http://<hostname>:<port>/api/v1/system/info'
+  ```
+  ```json
+  {
+    "id": "rpi-radiation-monitor-001",
+    "type": "rpi-radiation-monitor",
+    "version": "1.0.0",
+    "name": "RPI Radiation Monitor",
+    "timestamp": 1653722673,
+    "uptime": 6793
+  }
+  ```
 
 ### Prototype
 ![prototype](docs/rpi-radiation-monitor.jpg)

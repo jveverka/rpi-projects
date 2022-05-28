@@ -25,6 +25,7 @@ cpm = 0
 counter= 0
 uptime = 0
 started= 0
+timestamp = time.time() * 1000
 
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(monitor_pin, GPIO.IN)
@@ -49,7 +50,7 @@ class ServerHandler(BaseHTTPRequestHandler):
                "version": version,
                "name": config['name'],
                "timestamp": int(time.time()),
-               "uptime": uptime
+               "uptime": int(uptime)
            }
            self.send_response(200)
            self.send_header("Content-type", "application/json")
@@ -60,7 +61,6 @@ class ServerHandler(BaseHTTPRequestHandler):
            self.send_response(200)
            self.send_header("Content-type", "application/json")
            self.end_headers()
-           timestamp = time.time()
            response = {
             "radiation": {
                 "value": radiation,
