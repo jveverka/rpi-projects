@@ -30,13 +30,14 @@ GPIO.setmode(GPIO.BOARD)
 GPIO.setup(monitor_pin, GPIO.IN)
 GPIO.setup(monitor_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
+logging.basicConfig(filename='rpi-radiation-monitor.log', level=logging.INFO)
+#logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 logging.info('RPi Radiation Monitor %s', version)
 
 class ServerHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         authorization = self.headers['authorization']
-        if not isAuthorized(authorization, config['credentials']):
+        if not is_authorized(authorization, config['credentials']):
            self.send_response(401)
            self.send_header('WWW-Authenticate', 'Basic realm="Access to RPi camera"')
            self.send_header('Proxy-Authenticate', 'Basic realm="Access to RPi camera"')
@@ -53,8 +54,8 @@ class ServerHandler(BaseHTTPRequestHandler):
            self.send_response(200)
            self.send_header("Content-type", "application/json")
            self.end_headers()
-           responseBody = json.dumps(system_info);
-           self.wfile.write(bytes(responseBody, "utf-8"))
+           response_body = json.dumps(system_info);
+           self.wfile.write(bytes(response_body, "utf-8"))
         elif self.path == '/api/v1/system/measurements':
            self.send_response(200)
            self.send_header("Content-type", "application/json")
@@ -72,13 +73,13 @@ class ServerHandler(BaseHTTPRequestHandler):
             "timestamp": timestamp,
             "uptime": uptime
            }
-           responseBody = json.dumps(response);
-           self.wfile.write(bytes(responseBody, "utf-8"))
+           response_body = json.dumps(response);
+           self.wfile.write(bytes(response_body, "utf-8"))
         else:
            self.send_error(404)
            self.end_headers()
 
-def isAuthorized(authorization, credentials):
+def is_authorized(authorization, credentials):
     if authorization is None:
         logging.error("authorization header is missing !")
         return False
@@ -96,10 +97,10 @@ def isAuthorized(authorization, credentials):
     return False
 
 def start_web_server(hostname, port):
-    webServer = HTTPServer((hostname, port), ServerHandler)
+    web_server = HTTPServer((hostname, port), ServerHandler)
     logging.info('Web server started %s:%s!', hostname, port);
-    webServer.serve_forever()
-    return webServer
+    web_server.serve_forever()
+    return web_server
 
 def add_and_calculate(timestamp, measurements, interval):
     evictiontime = timestamp - (interval * 1000)
