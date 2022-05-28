@@ -7,7 +7,7 @@ is used as radiation sensor.
 ![block-schema](docs/rpi-radiation-monitor-block.drawio.svg)
 
 ## Hardware components
-1. Raspberry PI 3,4,zero
+1. RPi devices: Raspberry Pi Zero, Zero W, Zero 2W, 3, 4.
 2. [74HC14N](https://datasheet.octopart.com/74HC14N-Philips-datasheet-7274161.pdf) - Hex Schmitt Inverter, transforming slowly changing input signals into sharply
    defined, jitter-free output signals.
 3. [RadiationD-1.1(CAJOE) board](https://github.com/SensorsIot/Geiger-Counter-RadiationD-v1.1-CAJOE-)
@@ -34,7 +34,7 @@ is used as radiation sensor.
 ### REST API
 * Security [HTTP Basic access authentication](https://en.wikipedia.org/wiki/Basic_access_authentication) 
   is used for all REST endpoints, credentials are set in [config](rpi-radiation-monitor.json) file. 
-* GET radiation measurements:
+* __GET radiation measurements__:
   ```shell
   curl -u client-001:Jah7thei --location --request GET 'http://<hostname>:<port>/api/v1/system/measurements'
   ``` 
@@ -54,7 +54,7 @@ is used as radiation sensor.
     "uptime": 6450.739503145218
   }
   ```
-* GET system info:
+* __GET system info__:
   ```shell
   curl -u client-001:Jah7thei --location --request GET 'http://<hostname>:<port>/api/v1/system/info'
   ```

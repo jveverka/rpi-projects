@@ -14,6 +14,7 @@ This project contains various DYI projects, hardware drivers, schematics and cod
 * __[sensehat-games](sensehat-games)__ - small compilation of python games for 8x8 [sensehat](https://www.raspberrypi.org/products/sense-hat/) display.
 * __[pir-motion-detectors](pir-motion-detectors)__ - RPi compatible motion detectors.
 
+## IOT devices
 ### RPi Power Controller   
 * __[rpi-powercontroller](rpi-powercontroller)__ - Control relay power switch via HTTP/REST APIs.
 * __[rpi-powercontroller-client](rpi-powercontroller-client)__ - Java Client for [rpi-powercontroller](rpi-powercontroller).
@@ -29,7 +30,7 @@ This project contains various DYI projects, hardware drivers, schematics and cod
 ### RPi Radiation Monitoring
 * __[rpi-radiation-monitor](rpi-radiation-monitor)__ - simple radiation background monitor with HTTP/REST access.
 
-### Others
+## Others
 * __[Device Controller](device-controller)__ - controller gateway for RPi devices.
 * __[Kubernetes Cluster](k8s-cluster)__ - running backend on Arm64 RPi4 hardware.
 * __[Guidelines and Procedures](guidelines-and-procedures)__ - various guidelines.
