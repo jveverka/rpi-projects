@@ -2,6 +2,7 @@
 
 import RPi.GPIO as GPIO
 import json
+import ssl
 import sys
 import time
 import logging
@@ -74,7 +75,8 @@ def write_to_elastic(device_id, now_timestamp, interval, voltage, consumed, pric
             "current": current
         }
     }
-    connection = http.client.HTTPConnection(elastic)
+    #connection = http.client.HTTPConnection(elastic)
+    connection = http.client.HTTPSConnection(elastic, context = ssl._create_unverified_context())
     connection.request("POST", index + "/_doc", headers = elastic_headers, body = json.dumps(body))
     response = connection.getresponse()
     logging.info("elastic response: %s", response.status)
